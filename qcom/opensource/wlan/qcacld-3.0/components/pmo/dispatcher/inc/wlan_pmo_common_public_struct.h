@@ -195,7 +195,8 @@ enum pmo_suspend_mode {
 	PMO_SUSPEND_SHUTDOWN
 };
 
-#define PMO_TARGET_SUSPEND_TIMEOUT   (4000)
+/* Allow the vendor firmware additional time to suspend. */
+#define PMO_TARGET_SUSPEND_TIMEOUT   (10000)
 #define PMO_WAKE_LOCK_TIMEOUT        1000
 #define PMO_RESUME_TIMEOUT           (4000)
 
