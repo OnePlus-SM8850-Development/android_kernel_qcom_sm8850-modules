@@ -886,8 +886,18 @@ static void _gmu_trace_pwr_constraint(struct kgsl_device *device,
 	u32 payload_bytes = payload_words * sizeof(u32);
 
 	memcpy(&data, pkt->payload, min_t(u32, payload_bytes, sizeof(data)));
-	trace_kgsl_constraint(device, data.type, data.value,
-		data.status, pkt->ticks, data.owner_ctx_id);
+
+	{
+		struct kgsl_context *ctx = kgsl_context_get(device, data.owner_ctx_id);
+
+		trace_kgsl_constraint(device, data.type, data.value,
+			data.status, pkt->ticks,
+			data.owner_ctx_id,
+			ctx ? ctx->tid : 0,
+			_context_comm(ctx));
+		if (ctx)
+			kgsl_context_put(ctx);
+	}
 }
 
 static void stream_trace_data(struct kgsl_device *device, struct gmu_trace_packet *pkt)

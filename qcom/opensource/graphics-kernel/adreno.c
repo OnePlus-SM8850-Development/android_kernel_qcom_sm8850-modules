@@ -3,6 +3,7 @@
  * Copyright (c) 2002,2007-2021, The Linux Foundation. All rights reserved.
  * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
+#include <dt-bindings/regulator/qcom,rpmh-regulator-levels.h>
 #include <linux/component.h>
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -796,6 +797,26 @@ static int adreno_of_parse_pwrlevels(struct adreno_device *adreno_dev,
 		level->bus_max = level->bus_freq;
 		kgsl_of_property_read_ddrtype(child,
 			"qcom,bus-max", &level->bus_max);
+
+		/* Map LOW_SVS_D2_1 and LOW_SVS_D3 to LOW_SVS_D2 for cpr_rev0 */
+		if (adreno_is_gen8_2_1(adreno_dev) && (device->cpr_rev == 0)) {
+		#ifdef RPMH_REGULATOR_LEVEL_LOW_SVS_D2_1
+			if (voltage == RPMH_REGULATOR_LEVEL_LOW_SVS_D2_1) {
+				dev_err_once(device->dev,
+					"Voltage override due to CPR Rev ID: 0x%x\n",
+					device->cpr_rev);
+				level->voltage_level = RPMH_REGULATOR_LEVEL_LOW_SVS_D2;
+			}
+		#endif
+		#ifdef RPMH_REGULATOR_LEVEL_LOW_SVS_D3
+			if (voltage == RPMH_REGULATOR_LEVEL_LOW_SVS_D3) {
+				dev_err_once(device->dev,
+					"Voltage override due to CPR Rev ID: 0x%x\n",
+					device->cpr_rev);
+				level->voltage_level = RPMH_REGULATOR_LEVEL_LOW_SVS_D2;
+			}
+		#endif
+		}
 	}
 
 	adreno_build_opp_table(&device->pdev->dev, pwr);
@@ -830,6 +851,8 @@ static void adreno_of_get_initial_pwrlevels(struct kgsl_pwrctrl *pwr,
 
 	pwr->min_render_pwrlevel = level;
 	pwr->min_pwrlevel = level;
+
+	pr_info("kgsl initial pwrlevels: %s: min_pwrlevel = %d, default_pwrlevel = %u\n", __func__, level, pwr->default_pwrlevel);
 }
 
 static void adreno_of_get_limits(struct adreno_device *adreno_dev,
@@ -1490,6 +1513,11 @@ int adreno_device_probe(struct platform_device *pdev,
 		dev_err(device->dev, "failed to read gpu_niden_en nvmem cell\n");
 
 	device->gpu_niden_en = status;
+
+	if (adreno_is_gen8_2_1(adreno_dev)) {
+		status = adreno_read_fuse(pdev, "cpr_rev");
+		device->cpr_rev = status;
+	}
 
 	adreno_read_soc_code(device);
 
@@ -2719,6 +2747,8 @@ int adreno_set_constraint(struct kgsl_device *device,
 			context->id,
 			context->pwr_constraint.type,
 			context->pwr_constraint.sub_type);
+		pr_info("kgsl user_pwrlevel_constraint: %s:  GPU_SET tid=%d level=%u\n",
+			__func__, context->tid, context->pwr_constraint.sub_type);
 		}
 		break;
 	case KGSL_CONSTRAINT_NONE: {
@@ -2727,6 +2757,8 @@ int adreno_set_constraint(struct kgsl_device *device,
 				context->id,
 				KGSL_CONSTRAINT_NONE,
 				context->pwr_constraint.sub_type);
+			pr_info("kgsl user_pwrlevel_constraint: %s:  GPU_CLEAR tid=%d prev_level=%u\n",
+				__func__, context->tid, context->pwr_constraint.sub_type);
 
 			context->pwr_constraint.type = KGSL_CONSTRAINT_NONE;
 			adreno_gmu_based_dcvs_pwr_ops(device, context->id,
@@ -2761,15 +2793,20 @@ int adreno_set_constraint(struct kgsl_device *device,
 		trace_kgsl_user_pwrlevel_constraint(device, context->id,
 			context->l3_pwr_constraint.type,
 			context->l3_pwr_constraint.sub_type);
+		pr_info("kgsl user_pwrlevel_constraint: %s:  L3_SET tid=%d level=%u\n",
+			__func__, context->tid, context->l3_pwr_constraint.sub_type);
 		}
 		break;
 	case KGSL_CONSTRAINT_L3_NONE: {
 		unsigned int type = context->l3_pwr_constraint.type;
 
-		if (type == KGSL_CONSTRAINT_L3_PWRLEVEL)
+		if (type == KGSL_CONSTRAINT_L3_PWRLEVEL) {
 			trace_kgsl_user_pwrlevel_constraint(device, context->id,
 				KGSL_CONSTRAINT_L3_NONE,
 				context->l3_pwr_constraint.sub_type);
+			pr_info("kgsl user_pwrlevel_constraint: %s:  L3_CLEAR tid=%d prev_level=%u\n",
+				__func__, context->tid, context->l3_pwr_constraint.sub_type);
+		}
 		context->l3_pwr_constraint.type = KGSL_CONSTRAINT_L3_NONE;
 		}
 		break;
@@ -2783,7 +2820,9 @@ int adreno_set_constraint(struct kgsl_device *device,
 		(context->id == device->pwrctrl.constraint.owner_id)) {
 		trace_kgsl_constraint(device, device->pwrctrl.constraint.type,
 			device->pwrctrl.active_pwrlevel, 0, 0,
-			device->pwrctrl.constraint.owner_id);
+			device->pwrctrl.constraint.owner_id,
+			device->pwrctrl.constraint.owner_tid,
+			device->pwrctrl.constraint.owner_comm);
 		device->pwrctrl.constraint.type = KGSL_CONSTRAINT_NONE;
 	}
 

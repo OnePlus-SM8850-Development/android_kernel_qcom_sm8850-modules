@@ -355,6 +355,9 @@ struct kgsl_device {
 	u32 debugbus_en;
 	/** @gpu_niden_en: GPU NIDEN debug capability */
 	u32 gpu_niden_en;
+
+	/** @cpr_rev: Cpr rev id for the soc if applicable */
+	u32 cpr_rev;
 	/** @soc_code: Identifier containing product and feature code */
 	u32 soc_code;
 	/** @gmu_fault: Set when a gmu or rgmu fault is encountered */
@@ -367,6 +370,10 @@ struct kgsl_device {
 	spinlock_t timelines_lock;
 	/** @fence_trace_array: A local trace array for fence debugging */
 	struct trace_array *fence_trace_array;
+#ifdef CONFIG_OPLUS_GPU_MINIDUMP
+	bool snapshot_control;
+	int snapshotfault;
+#endif /* CONFIG_OPLUS_GPU_MINIDUMP */
 	/** @l3_vote: Enable/Disable l3 voting */
 	bool l3_vote;
 	/** @pdev_loaded: Flag to test if platform driver is probed */
@@ -706,6 +713,9 @@ struct kgsl_snapshot {
 	bool first_read;
 	bool recovered;
 	struct kgsl_device *device;
+#ifdef CONFIG_OPLUS_GPU_MINIDUMP
+	char snapshot_hashid[96];
+#endif /* CONFIG_OPLUS_GPU_MINIDUMP */
 };
 
 /**
@@ -1102,6 +1112,28 @@ static inline void kgsl_process_dec_cmd_count(struct kgsl_process_private *proce
 	atomic_dec(&process->cmd_count);
 }
 #endif
+
+#ifdef CONFIG_OPLUS_GPU_MINIDUMP
+/**
+ * kgsl_sysfs_store() - parse a string from a sysfs store function
+ * @buf: Incoming string to parse
+ * @ptr: Pointer to an unsigned int to store the value
+ */
+static inline int kgsl_sysfs_store(const char *buf, unsigned int *ptr)
+{
+	unsigned int val;
+	int rc;
+
+	rc = kstrtou32(buf, 0, &val);
+	if (rc)
+		return rc;
+
+	if (ptr)
+		*ptr = val;
+
+	return 0;
+}
+#endif /* CONFIG_OPLUS_GPU_MINIDUMP */
 
 /*
  * A helper macro to print out "not enough memory functions" - this

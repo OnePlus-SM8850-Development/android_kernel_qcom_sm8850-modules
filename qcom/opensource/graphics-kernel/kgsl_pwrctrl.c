@@ -33,6 +33,10 @@
 #include "kgsl_util.h"
 #include "gen8_reg.h"
 
+#ifndef OPLUS_GPU_OLD_CHIPS
+#define OPLUS_GPU_OLD_CHIPS
+#endif
+
 #define UPDATE_BUSY_VAL		1000000
 
 #define KGSL_MAX_BUSLEVELS	20
@@ -189,7 +193,10 @@ done:
 	if (reset) {
 		/* Trace the constraint being un-set by the driver */
 		trace_kgsl_constraint(device, pwr->constraint.type,
-			old_level, 0, 0, pwr->constraint.owner_id);
+			old_level, 0, 0,
+			pwr->constraint.owner_id,
+			pwr->constraint.owner_tid,
+			pwr->constraint.owner_comm);
 		/*Invalidate the constraint set */
 		pwr->constraint.expires = 0;
 		pwr->constraint.type = KGSL_CONSTRAINT_NONE;
@@ -326,15 +333,21 @@ void kgsl_pwrctrl_set_constraint(struct kgsl_device *device,
 		pwrc_old->expires = jiffies +
 			msecs_to_jiffies(atomic64_read(&device->pwrctrl.interval_timeout));
 		pwrc_old->owner_timestamp = ts;
+		pwrc_old->owner_tid = pwrc->owner_tid;
+		strscpy(pwrc_old->owner_comm, pwrc->owner_comm, TASK_COMM_LEN);
 		kgsl_pwrctrl_pwrlevel_change(device, constraint);
 		/* Trace the constraint being set by the driver */
-		trace_kgsl_constraint(device, pwrc_old->type, constraint, 1, 0, pwrc_old->owner_id);
+		trace_kgsl_constraint(device, pwrc_old->type, constraint, 1, 0,
+				pwrc_old->owner_id, pwrc_old->owner_tid,
+				pwrc_old->owner_comm);
 	} else if ((pwrc_old->type == pwrc->type) && (pwrc_old->sub_type == pwrc->sub_type)) {
 		pwrc_old->owner_id = id;
 		pwrc_old->owner_timestamp = ts;
 		pwrc_old->expires = jiffies +
 			msecs_to_jiffies(atomic64_read(&device->pwrctrl.interval_timeout));
-		trace_kgsl_constraint(device, pwrc_old->type, constraint, 1, 0, pwrc_old->owner_id);
+		trace_kgsl_constraint(device, pwrc_old->type, constraint, 1, 0,
+				pwrc_old->owner_id, pwrc_old->owner_tid,
+				pwrc_old->owner_comm);
 	}
 }
 
@@ -499,7 +512,17 @@ static ssize_t num_pwrlevels_show(struct device *dev,
 static int _get_nearest_pwrlevel(struct kgsl_pwrctrl *pwr, unsigned int clock)
 {
 	int i;
-
+	#ifdef OPLUS_GPU_OLD_CHIPS
+	if (clock > pwr->pwrlevels[0].gpu_freq){
+		if(kgsl_driver.devp[0]->dev != NULL){
+			dev_err(kgsl_driver.devp[0]->dev, "kgsl_clock %u> pwr->pwrlevels[0].gpu_freq  %u, \n",clock, pwr->pwrlevels[0].gpu_freq);
+		}
+		clock = pwr->pwrlevels[0].gpu_freq;
+	}
+	if (clock < pwr->pwrlevels[pwr->num_pwrlevels - 1].gpu_freq){
+		clock = pwr->pwrlevels[pwr->num_pwrlevels - 1].gpu_freq;
+	}
+	#endif /* OPLUS_GPU_OLD_CHIPS */
 	for (i = pwr->num_pwrlevels - 1; i >= 0; i--) {
 		if (abs(pwr->pwrlevels[i].gpu_freq - clock) < 5000000)
 			return i;
@@ -2099,7 +2122,15 @@ static int pmqos_max_notifier_call(struct notifier_block *nb, unsigned long val,
 
 	if (device->host_based_dcvs && !device->pwrscale.devfreq_enabled)
 		return NOTIFY_DONE;
-
+	#ifdef OPLUS_GPU_OLD_CHIPS
+	if (max_freq > pwr->pwrlevels[0].gpu_freq){
+		dev_err(device->dev, "kgsl_max_freq %u> pwr->pwrlevels[0].gpu_freq  %u\n",max_freq, pwr->pwrlevels[0].gpu_freq);
+		max_freq = pwr->pwrlevels[0].gpu_freq;
+	}
+	if (max_freq < pwr->pwrlevels[pwr->num_pwrlevels - 1].gpu_freq){
+		max_freq = pwr->pwrlevels[pwr->num_pwrlevels - 1].gpu_freq;
+	}
+	#endif /*OPLUS_GPU_OLD_CHIPS*/
 	for (level = pwr->num_pwrlevels - 1; level >= 0; level--) {
 		/* get nearest power level with a maximum delta of 5MHz */
 		if (abs(pwr->pwrlevels[level].gpu_freq - max_freq) < 5000000)
@@ -2115,6 +2146,7 @@ static int pmqos_max_notifier_call(struct notifier_block *nb, unsigned long val,
 	pwr->pmqos_max_pwrlevel = level;
 
 	trace_kgsl_thermal_constraint(max_freq);
+	pr_info("kgsl pmqos set constraint: %s: set pmqos_max_pwrlevel to %d, freq = %u\n", __func__, level, max_freq);
 
 	/* Apply the constraints only if first boot is done */
 	if (!device->ftbl->is_first_boot_done(device))
@@ -2193,6 +2225,7 @@ static int kgsl_cooling_set_cur_state(struct thermal_cooling_device *cooling_dev
 
 	freq = pwr->pwrlevels[state].gpu_freq;
 	trace_kgsl_thermal_constraint(freq);
+	pr_info("kgsl cooling device set constraint: %s: thermal_pwrlevel = %lu, freq = %u\n", __func__, state, freq);
 	WRITE_ONCE(pwr->thermal_pwrlevel, state);
 
 	kthread_queue_work(pwr->cooling_worker, &pwr->cooling_work);

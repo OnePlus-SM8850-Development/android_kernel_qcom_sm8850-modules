@@ -142,3 +142,8 @@ config QCOM_KGSL_DEVCOREDUMP
 	  instead of the custom sysfs interface. Snapshot data will be
 	  accessible through /sys/class/devcoredump/ interface. If enabled,
 	  the snapshot/dump sysfs node will not be set up.
+
+config OPLUS_GPU_MINIDUMP
+	bool "Enable GPU_MINIDUMP in KGSL"
+	help
+	  Enable GPU_MINIDUMP in KGSL.

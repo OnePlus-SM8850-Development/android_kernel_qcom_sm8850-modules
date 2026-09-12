@@ -13,6 +13,91 @@
 #include "kgsl_device.h"
 #include "kgsl_trace.h"
 
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_GEAS_GPU)
+
+#define KBPS_TO_MHZ(kbps, w) (mult_frac(kbps, 1024, w * 1000000ULL))
+
+#include "adreno.h"
+#include "adreno_hfi.h"
+
+struct gpu_params {
+	int imin;
+	int imax;
+	int amin;
+	int amax;
+	int ascale;
+	int fmin;
+	int fmax;
+	int resv[2];
+};
+
+static struct gpu_params gpu_data;
+struct kgsl_device *kgsl_device_ptr;
+int geas_update_gpu_params(struct gpu_params *data)
+{
+	struct adreno_device *adreno_dev = NULL;
+	struct adreno_hwsched *hwsched = NULL;
+	struct kgsl_pwrctrl *pwr = NULL;
+	int update_imin = 0, update_imax = 0, update_amin = 0, update_amax = 0;
+
+	memcpy(&gpu_data, data, sizeof(struct gpu_params));
+
+	if (kgsl_device_ptr && !kgsl_device_ptr->host_based_dcvs) {
+		adreno_dev = ADRENO_DEVICE(kgsl_device_ptr);
+		hwsched = &(adreno_dev->hwsched);
+		pwr = &kgsl_device_ptr->pwrctrl;
+		if ((data->imin == -1) || ((data->imin > 0) && (data->imin < pwr->ddr_table_count)))
+			update_imin = 1;
+		if ((data->imax == -1) || ((data->imax > 0) && (data->imax < pwr->ddr_table_count)))
+			update_imax = 1;
+		if ((data->amin > 0) || (data->amin == -1))
+			update_amin = 1;
+		if ((data->amax > 0) || (data->amax == -1))
+			update_amax = 1;
+
+		pr_err("%s, update_imin = %d, update_imax = %d, update_amin = %d, update_amax = %d", __func__, update_imin, update_imax, update_amin, update_amax);
+
+		kgsl_mutex_lock(&kgsl_device_ptr->mutex);
+		if (update_imin) {
+			if (data->imin > 0) {
+				u64 kbps = (u64)pwr->ddr_table[data->imin];
+				hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_BUS_MIN_FREQUENCY].value = KBPS_TO_MHZ(kbps, 4) + 1;
+				pr_err("%s, data->imin = %d, freq = %lld", __func__, data->imin, (u64)KBPS_TO_MHZ(kbps, 4) + 1);
+			} else {
+				hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_BUS_MIN_FREQUENCY].value = -1;
+			}
+			kgsl_device_ptr->ftbl->gmu_based_dcvs_pwr_ops(kgsl_device_ptr,  GPU_TUNING_KEY_BUS_MIN_FREQUENCY,
+					GPU_PWRLEVEL_OP_TUNING_ATTR);
+		}
+		if (update_imax) {
+			if (data->imax > 0) {
+				u64 kbps = (u64)pwr->ddr_table[data->imax];
+				hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_BUS_MAX_FREQUENCY].value = KBPS_TO_MHZ(kbps, 4) + 1;
+				pr_err("%s, data->imax = %d, freq = %lld", __func__, data->imax, (u64)KBPS_TO_MHZ(kbps, 4) + 1);
+			} else {
+				hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_BUS_MAX_FREQUENCY].value = -1;
+			}
+			kgsl_device_ptr->ftbl->gmu_based_dcvs_pwr_ops(kgsl_device_ptr,  GPU_TUNING_KEY_BUS_MAX_FREQUENCY,
+					GPU_PWRLEVEL_OP_TUNING_ATTR);
+		}
+		if (update_amin) {
+			hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_MIN_AB_MBPS].value = data->amin;
+			kgsl_device_ptr->ftbl->gmu_based_dcvs_pwr_ops(kgsl_device_ptr,  GPU_TUNING_KEY_MIN_AB_MBPS,
+					GPU_PWRLEVEL_OP_TUNING_ATTR);
+		}
+		if (update_amax) {
+			hwsched->sysfs_dcvs_tunables[GPU_TUNING_KEY_MAX_AB_MBPS].value = data->amax;
+			kgsl_device_ptr->ftbl->gmu_based_dcvs_pwr_ops(kgsl_device_ptr,  GPU_TUNING_KEY_MAX_AB_MBPS,
+					GPU_PWRLEVEL_OP_TUNING_ATTR);
+		}
+		kgsl_mutex_unlock(&kgsl_device_ptr->mutex);
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(geas_update_gpu_params);
+
+#endif
 
 static u32 _ab_buslevel_update(struct kgsl_pwrctrl *pwr,
 		u32 ib)
@@ -61,12 +146,33 @@ int kgsl_bus_update(struct kgsl_device *device,
 		{
 		/* FIXME: this might be wrong? */
 		int cur = pwr->pwrlevels[pwr->active_pwrlevel].bus_freq;
-
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_GEAS_GPU)
+		int imin = gpu_data.imin;
+		int imax = gpu_data.imax;
+		int amin = gpu_data.amin;
+		int amax = gpu_data.amax;
+#endif
 		buslevel = min_t(int, pwr->pwrlevels[0].bus_max,
 				cur + pwr->bus_mod);
 		buslevel = max_t(int, buslevel, 1);
 		pwr->cur_dcvs_buslevel = buslevel;
 		ab = _ab_buslevel_update(pwr, pwr->ddr_table[buslevel]);
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_GEAS_GPU)
+		if (imin > 0 && imin < pwr->ddr_table_count) {
+			buslevel = max_t(int, imin, buslevel);
+		}
+		if (imax > 0 && imax < pwr->ddr_table_count) {
+			buslevel = min_t(int, imax, buslevel);
+		}
+		pwr->cur_dcvs_buslevel = buslevel;
+
+		if (amin > 0) {
+			ab = max_t(int, amin, ab);
+		}
+		if (amax > 0) {
+			ab = min_t(int, amax, ab);
+		}
+#endif
 		break;
 		}
 	case KGSL_BUS_VOTE_MINIMUM:
@@ -200,6 +306,9 @@ done:
 		pwr->ddr_table = NULL;
 		return PTR_ERR(pwr->icc_path);
 	}
+#if IS_ENABLED(CONFIG_OPLUS_FEATURE_GEAS_GPU)
+	kgsl_device_ptr = device;
+#endif
 
 	return 0;
 }

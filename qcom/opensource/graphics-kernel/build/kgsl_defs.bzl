@@ -173,6 +173,7 @@ def define_target_variant_module(target, variant):
                   soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
                   soc_label("{}/kernel/msm_sysstats".format(tv)),
                   #"//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
+                  modules_label("oplus/kernel/mm:oplus_bsp_mm_osvelte"),
                 ],
                 "//build/kernel/kleaf:socrepo_false": [ "//msm-kernel:all_headers" ],
         })
@@ -200,9 +201,10 @@ def define_target_variant_module(target, variant):
             "CONFIG_DEVFREQ_GOV_QCOM_GPUBW_MON": { False: [ "governor_gpubw_mon.c" ] }
         },
         deps = ddk_deps + ext_deps,
+        copts = ["-DCONFIG_OPLUS_FEATURE_GEAS_GPU"],
         includes = ["include", "."],
         kernel_build = kernel_build,
-        visibility = ["//visibility:private"]
+        visibility = ["//visibility:public"]
     )
 
     copy_to_dist_dir(
