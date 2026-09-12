@@ -356,6 +356,9 @@ enum wlan_crypto_oem_eht_mlo_config {
 	WLAN_HOST_CRYPTO_WPA2_ALLOW_NON_MLO_EHT_MFPC_SET  = BIT(2),
 	WLAN_HOST_CRYPTO_WPA2_ALLOW_MLO_MFPC_SET          = BIT(3),
 	/* Bits 4-15 are reserved for future WPA2 security configs */
+	//#ifdef OPLUS_BUG_STABILITY
+	WLAN_HOST_CRYPTO_NONE_ALLOW_EHT                   = BIT(15),
+	//#endif /* OPLUS_BUG_STABILITY */
 
 	WLAN_HOST_CRYPTO_WPA3_SAE_ALLOW_NON_MLO_EHT_HnP   = BIT(16),
 	WLAN_HOST_CRYPTO_WPA3_SAE_ALLOW_MLO_HnP           = BIT(17),
@@ -369,6 +372,11 @@ enum wlan_crypto_oem_eht_mlo_config {
 #define WLAN_CRYPTO_WPA2_OEM_EHT_CFG_PMF_ALLOWED(_cfg) \
 	 ((_cfg) & WLAN_HOST_CRYPTO_WPA2_ALLOW_NON_MLO_EHT_MFPC_SET || \
 	  (_cfg) & WLAN_HOST_CRYPTO_WPA2_ALLOW_MLO_MFPC_SET)
+
+//#ifdef OPLUS_BUG_STABILITY
+#define WLAN_CRYPTO_NONE_OEM_EHT_CFG_ALLOWED(_cfg) \
+	 ((_cfg) & WLAN_HOST_CRYPTO_NONE_ALLOW_EHT)
+//#endif /* OPLUS_BUG_STABILITY */
 
 #define WLAN_CRYPTO_WPA3_SAE_OEM_EHT_CFG_IS_STRICT_H2E(_cfg) \
 	(((_cfg) & WLAN_HOST_CRYPTO_WPA3_SAE_ALLOW_NON_MLO_EHT_HnP || \
