@@ -9520,9 +9520,14 @@ static int oplus_pci_reset_ops_set(const char *kmessage, const struct kernel_par
 	return 0;
 }
 
+static int oplus_pci_reset_ops_get(char *buffer, const struct kernel_param *kp)
+{
+	return scnprintf(buffer, PAGE_SIZE, "%ld\n", *(long *)kp->arg);
+}
+
 static const struct kernel_param_ops oplus_pci_reset_ops = {
 	.set = oplus_pci_reset_ops_set,
-	.get = param_get_long,
+	.get = oplus_pci_reset_ops_get,
 };
 
 module_param_cb(pci_reset, &oplus_pci_reset_ops, &reset_signal,
