@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 
@@ -6,12 +7,12 @@ def define_sch(target, variant):
     include_base = "../../../{}".format(native.package_name())
 
     deps_sch = select({
-	"//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+	"//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
 	"//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
 
     kernel_build = select({
-	"//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+	"//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
 	"//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 

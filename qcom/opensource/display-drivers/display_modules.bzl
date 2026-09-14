@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label")
 load(":display_driver_build.bzl", "display_module_entry")
 
 display_driver_modules = display_module_entry([":display_drivers_headers"])
@@ -234,28 +235,28 @@ module_entry(
     # Configs are handled by config_options = []
     config_deps = {
         "CONFIG_QTI_HW_FENCE": [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence",
-            "//vendor/qcom/opensource/synx-kernel:%b_modules",
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
+            modules_label("qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence"),
+            modules_label("qcom/opensource/synx-kernel:%b_modules"),
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
         ],
         "CONFIG_QCOM_SPEC_SYNC": [
-            "//vendor/qcom/opensource/mm-drivers/sync_fence:%b_sync_fence",
+            modules_label("qcom/opensource/mm-drivers/sync_fence:%b_sync_fence"),
         ],
         "CONFIG_MSM_EXT_DISPLAY": [
-            "//vendor/qcom/opensource/mm-drivers/msm_ext_display:%b_msm_ext_display",
+            modules_label("qcom/opensource/mm-drivers/msm_ext_display:%b_msm_ext_display"),
         ],
         "CONFIG_HDCP_QSEECOM": [
-            "//vendor/qcom/opensource/securemsm-kernel:%b_hdcp_qseecom_dlkm",
+            modules_label("qcom/opensource/securemsm-kernel:%b_hdcp_qseecom_dlkm"),
         ],
         "CONFIG_MSM_MMRM": [
-            "//vendor/qcom/opensource/mmrm-driver:%b_mmrm_driver",
+            modules_label("qcom/opensource/mmrm-driver:%b_mmrm_driver"),
         ],
         "CONFIG_SMMU_PROXY": [
-            "//vendor/qcom/opensource/securemsm-kernel:%b_smmu_proxy_dlkm",
-            "//vendor/qcom/opensource/securemsm-kernel:smmu_proxy_headers",
+            modules_label("qcom/opensource/securemsm-kernel:%b_smmu_proxy_dlkm"),
+            modules_label("qcom/opensource/securemsm-kernel:smmu_proxy_headers"),
         ],
         "CONFIG_QTI_HFI_CORE": [
-            "//vendor/qcom/opensource/mm-drivers/hfi_core:%b_msm_hfi_core",
+            modules_label("qcom/opensource/mm-drivers/hfi_core:%b_msm_hfi_core"),
         ],
     },
 )

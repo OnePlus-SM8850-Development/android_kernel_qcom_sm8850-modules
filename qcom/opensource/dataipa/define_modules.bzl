@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load(":target_variants.bzl", "get_all_variants")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
@@ -19,27 +20,27 @@ def define_modules(target, variant):
     ipam_local_defines = []
     if target == "niobe":
             ipam_deps_list.extend([
-             "//vendor/qcom/opensource/synx-kernel:synx_headers",
-             "//vendor/qcom/opensource/synx-kernel:{}_modules".format(kernel_build_variant),
+             modules_label("qcom/opensource/synx-kernel:synx_headers"),
+             modules_label("qcom/opensource/synx-kernel:{}_modules".format(kernel_build_variant)),
             ])
             ipam_local_defines.append(
               "CONFIG_IPA_RTP=y".format(include_base),
             )
     elif target == "seraph":
             ipam_deps_list.extend([
-             "//vendor/qcom/opensource/synx-kernel:synx_headers",
-             "//vendor/qcom/opensource/synx-kernel:{}_modules".format(kernel_build_variant),
+             modules_label("qcom/opensource/synx-kernel:synx_headers"),
+             modules_label("qcom/opensource/synx-kernel:{}_modules".format(kernel_build_variant)),
             ])
     else:
              ipam_deps_list.append(
-              "//vendor/qcom/opensource/datarmnet-ext/mem:{}_rmnet_mem".format(kernel_build_variant),
+              modules_label("qcom/opensource/datarmnet-ext/mem:{}_rmnet_mem".format(kernel_build_variant)),
              )
              ipam_local_defines.append(
               "CONFIG_IPA_RMNET_MEM=y".format(include_base),
              )
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 
@@ -50,9 +51,9 @@ def define_modules(target, variant):
 
     gsim_deps += select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
@@ -68,18 +69,18 @@ def define_modules(target, variant):
 
     ipam_deps += select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(kernel_build_variant),
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/smem".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_ramdump".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/usb/gadget/function/usb_f_gsi".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(kernel_build_variant)),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant)),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant)),
+            soc_label("{}/drivers/iommu/qcom_iommu_util".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/smem".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/qcom_aoss".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/qcom_ramdump".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant)),
+            soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(kernel_build_variant)),
+            soc_label("{}/drivers/usb/gadget/function/usb_f_gsi".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
@@ -97,9 +98,9 @@ def define_modules(target, variant):
 
     ipanetm_deps += select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(kernel_build_variant),
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(kernel_build_variant)),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
@@ -118,7 +119,7 @@ def define_modules(target, variant):
         ]
         ipatestm_deps += select({
             "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:all_headers",
+                soc_label("all_headers"),
             ],
             "//build/qcom_build_extensions:qtisocrepo_false": [
                 "//msm-kernel:all_headers",

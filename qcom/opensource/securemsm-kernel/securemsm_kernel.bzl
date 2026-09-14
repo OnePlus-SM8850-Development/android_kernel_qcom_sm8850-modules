@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load(
     "//build/kernel/kleaf:kernel.bzl",
     "ddk_module",
@@ -71,25 +72,25 @@ def define_target_variant_modules(target, variant, modules, extra_options = [], 
 
     deps = select({
         "//build/kernel/kleaf:socrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/virt/gunyah/gh_msgq".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/dma-buf/heaps/qcom_dma_heaps".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant)),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant)),
+            soc_label("{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build_variant)),
+            soc_label("{}/drivers/iommu/qcom_iommu_util".format(kernel_build_variant)),
+            soc_label("{}/drivers/virt/gunyah/gh_msgq".format(kernel_build_variant)),
+            soc_label("{}/drivers/dma-buf/heaps/qcom_dma_heaps".format(kernel_build_variant)),
         ],
         "//build/kernel/kleaf:socrepo_false": ["//msm-kernel:all_headers"],
     })
     kernel_build = select({
-        "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/kernel/kleaf:socrepo_false": "//msm-kernel:{}".format(tv),
     })
     if not vm_target or target == "alor-le" or target == "bengal-le":
         deps += select({
             "//build/kernel/kleaf:socrepo_true": [
-                "//soc-repo:{}/drivers/soc/qcom/sps/sps_drv".format(kernel_build_variant),
+                soc_label("{}/drivers/soc/qcom/sps/sps_drv".format(kernel_build_variant)),
             ],
             "//build/kernel/kleaf:socrepo_false": [],
         })
@@ -97,7 +98,7 @@ def define_target_variant_modules(target, variant, modules, extra_options = [], 
     if target in qseecom_proxy_targets:
         deps += select({
             "//build/kernel/kleaf:socrepo_true": [
-                "//soc-repo:{}/drivers/misc/qseecom_proxy".format(kernel_build_variant),
+                soc_label("{}/drivers/misc/qseecom_proxy".format(kernel_build_variant)),
             ],
             "//build/kernel/kleaf:socrepo_false": [],
         })
@@ -105,7 +106,7 @@ def define_target_variant_modules(target, variant, modules, extra_options = [], 
     if target == "autogvm":
         deps += select({
             "//build/kernel/kleaf:socrepo_true": [
-                "//soc-repo:{}/drivers/soc/qcom/hab/msm_hab".format(kernel_build_variant),
+                soc_label("{}/drivers/soc/qcom/hab/msm_hab".format(kernel_build_variant)),
             ],
             "//build/kernel/kleaf:socrepo_false": [],
         })

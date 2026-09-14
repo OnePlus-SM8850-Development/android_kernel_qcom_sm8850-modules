@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "kernel_module_group")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 
@@ -41,15 +42,15 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
     kernel_build = "{}_{}".format(target, variant)
     deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/clk/qcom/clk-qcom".format(kernel_build),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/clk/qcom/clk-qcom".format(kernel_build)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
         ],
     })
     kernel_build_label = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build),
     })
 

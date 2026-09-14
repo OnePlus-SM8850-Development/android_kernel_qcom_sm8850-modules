@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "kernel_module_group")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 
@@ -68,25 +69,25 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
     deps = []
     all_module_deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build),
-            "//soc-repo:{}/drivers/firmware/qcom/qcom_scm_smci".format(kernel_build),
-            "//soc-repo:{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build),
-            "//soc-repo:{}/drivers/clk/qcom/clk-qcom".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/llcc-qcom".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/minidump".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/socinfo".format(kernel_build),
-            "//soc-repo:{}/drivers/iommu/msm_dma_iommu_mapping".format(kernel_build),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build)),
+            soc_label("{}/drivers/firmware/qcom/qcom_scm_smci".format(kernel_build)),
+            soc_label("{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build)),
+            soc_label("{}/drivers/clk/qcom/clk-qcom".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/llcc-qcom".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/minidump".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/socinfo".format(kernel_build)),
+            soc_label("{}/drivers/iommu/msm_dma_iommu_mapping".format(kernel_build)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
         ],
     })
     kernel_build_label = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build),
     })
 
@@ -139,25 +140,25 @@ def define_lunch_target_variant_modules(target, variant, registry, modules, lunc
     deps = []
     all_module_deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build),
-            "//soc-repo:{}/drivers/firmware/qcom/qcom_scm_smci".format(kernel_build),
-            "//soc-repo:{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build),
-            "//soc-repo:{}/drivers/clk/qcom/clk-qcom".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/llcc-qcom".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/minidump".format(kernel_build),
-            "//soc-repo:{}/drivers/soc/qcom/socinfo".format(kernel_build),
-            "//soc-repo:{}/drivers/iommu/msm_dma_iommu_mapping".format(kernel_build),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build)),
+            soc_label("{}/drivers/firmware/qcom/qcom_scm_smci".format(kernel_build)),
+            soc_label("{}/drivers/firmware/qcom/si_core/si_core_module".format(kernel_build)),
+            soc_label("{}/drivers/clk/qcom/clk-qcom".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/llcc-qcom".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/minidump".format(kernel_build)),
+            soc_label("{}/drivers/soc/qcom/socinfo".format(kernel_build)),
+            soc_label("{}/drivers/iommu/msm_dma_iommu_mapping".format(kernel_build)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
         ],
     })
     kernel_build_label = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build),
     })
 

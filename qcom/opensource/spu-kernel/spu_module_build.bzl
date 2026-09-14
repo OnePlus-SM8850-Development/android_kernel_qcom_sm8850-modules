@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_path", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "kernel_module",
                                         "kernel_modules_install",
                                         "ddk_module")
@@ -59,19 +60,19 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
     kernel_build = "{}_{}".format(target, variant)
 
     headers = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+        "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
     kernel_build_label = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build),
     })
 
     deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(kernel_build),
-            "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(kernel_build),
-            "//soc-repo:{}/drivers/remoteproc/qcom_spss".format(kernel_build),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(kernel_build)),
+            soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(kernel_build)),
+            soc_label("{}/drivers/remoteproc/qcom_spss".format(kernel_build)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
@@ -106,7 +107,7 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
     pkg_install(
         name = "{}_spu-drivers_dist".format(kernel_build),
         srcs = [":{}_dist_files".format(kernel_build)],
-        destdir = "../vendor/qcom/opensource/spu-drivers/out",
+        destdir = "../{}".format(modules_path("qcom/opensource/spu-drivers/out")),
     )
 
 def define_consolidate_gki_modules(target, registry, modules, config_options = []):

@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 
@@ -12,12 +13,12 @@ def define_mem(target, variant):
         target_copts.append("-DRMNET_LOWMEM_TARGET")
 
     deps_mem = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+        "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 

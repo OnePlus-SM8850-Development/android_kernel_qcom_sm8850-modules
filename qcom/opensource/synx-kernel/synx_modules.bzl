@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label")
 load(":synx_module_build.bzl", "create_module_registry")
 
 SYNX_KERNEL_ROOT = "synx-kernel"
@@ -22,8 +23,8 @@ register_synx_module(
     # Configs are handled by config_options = []
     config_deps = {
         "CONFIG_QTI_HW_FENCE": [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence",
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:hw_fence_headers",
+            modules_label("qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence"),
+            modules_label("qcom/opensource/mm-drivers/hw_fence:hw_fence_headers"),
         ],
     },
     deps = ["ipclite"],
@@ -42,8 +43,8 @@ register_synx_module(
     # Configs are handled by config_options = []
     config_deps = {
         "CONFIG_QTI_HW_FENCE": [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence",
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:hw_fence_headers",
+            modules_label("qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence"),
+            modules_label("qcom/opensource/mm-drivers/hw_fence:hw_fence_headers"),
         ],
     },
 )

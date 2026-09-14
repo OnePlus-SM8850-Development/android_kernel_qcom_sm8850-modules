@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("@rules_pkg//pkg:install.bzl", "pkg_install")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
@@ -6,9 +7,9 @@ def define_rmnet_ctl_module(target, variant):
     kernel_build_variant = "{}_{}".format(target, variant)
     deps_ctl = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant),
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant)),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
@@ -16,7 +17,7 @@ def define_rmnet_ctl_module(target, variant):
     })
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 
@@ -73,8 +74,8 @@ def define_rmnet_ctl_module(target, variant):
         },
         kernel_build = kernel_build,
         deps = deps_ctl + [
-            "//vendor/qcom/opensource/dataipa:{}_ipam".format(kernel_build_variant),
-            "//vendor/qcom/opensource/dataipa:include_headers",
+            modules_label("qcom/opensource/dataipa:{}_ipam".format(kernel_build_variant)),
+            modules_label("qcom/opensource/dataipa:include_headers"),
         ],
     )
 
@@ -86,8 +87,8 @@ def define_rmnet_core_module(target, variant):
     #include_defconfig = ":{}_defconfig".format(variant)
     deps_core = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/soc/qcom/qmi_helpers".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
@@ -95,20 +96,20 @@ def define_rmnet_core_module(target, variant):
     })
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 
     rmnet_core_deps = deps_core + [
         ":rmnet_core_headers",
-        "//vendor/qcom/opensource/datarmnet-ext/mem:{}_rmnet_mem".format(kernel_build_variant),
-        "//vendor/qcom/opensource/datarmnet-ext/mem:rmnet_mem_uapi_headers",
+        modules_label("qcom/opensource/datarmnet-ext/mem:{}_rmnet_mem".format(kernel_build_variant)),
+        modules_label("qcom/opensource/datarmnet-ext/mem:rmnet_mem_uapi_headers"),
     ]
     if target != "shikra":
         rmnet_core_deps += [
             ":{}_rmnet_ctl".format(kernel_build_variant),
-            "//vendor/qcom/opensource/dataipa:{}_ipam".format(kernel_build_variant),
-            "//vendor/qcom/opensource/dataipa:include_headers",
+            modules_label("qcom/opensource/dataipa:{}_ipam".format(kernel_build_variant)),
+            modules_label("qcom/opensource/dataipa:include_headers"),
         ]
 
     rmnet_core_srcs = [

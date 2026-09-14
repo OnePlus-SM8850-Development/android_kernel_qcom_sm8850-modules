@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load(":target_variants.bzl", "get_all_variants")
 load(":project_defconfig.bzl", "get_project_defconfig")
@@ -12,20 +13,20 @@ def _define_module(target, variant):
         "//build/kernel/kleaf:socrepo_true": [
             ":camera_headers",
             ":camera_banner",
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(tv),
-            "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/crm-v2".format(tv),
-            "//soc-repo:{}/drivers/clk/qcom/clk-qcom".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_rpmh".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/llcc-qcom".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(tv),
-            "//soc-repo:{}/drivers/leds/flash/leds-qcom-flash".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(tv),
-            "//soc-repo:{}/drivers/leds/leds-qti-flash".format(tv),
-            "//soc-repo:{}/drivers/video/backlight/qcom-spmi-wled".format(tv),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(tv)),
+            soc_label("{}/drivers/iommu/qcom_iommu_util".format(tv)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(tv)),
+            soc_label("{}/drivers/soc/qcom/crm-v2".format(tv)),
+            soc_label("{}/drivers/clk/qcom/clk-qcom".format(tv)),
+            soc_label("{}/drivers/soc/qcom/qcom_rpmh".format(tv)),
+            soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
+            soc_label("{}/drivers/soc/qcom/llcc-qcom".format(tv)),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(tv)),
+            soc_label("{}/drivers/leds/flash/leds-qcom-flash".format(tv)),
+            soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(tv)),
+            soc_label("{}/drivers/leds/leds-qti-flash".format(tv)),
+            soc_label("{}/drivers/video/backlight/qcom-spmi-wled".format(tv)),
         ],
         "//build/kernel/kleaf:socrepo_false": [
             ":camera_headers",
@@ -35,7 +36,7 @@ def _define_module(target, variant):
     })
 
     kernel_build = select({
-        "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/kernel/kleaf:socrepo_false": "//msm-kernel:{}".format(tv),
     })
 
@@ -54,33 +55,33 @@ def _define_module(target, variant):
 
     if target == "pineapple":
         deps.extend([
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/synx-kernel:{}_modules".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:smmu_proxy_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv),
-            "//vendor/qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv),
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/synx-kernel:{}_modules".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:smmu_proxy_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv)),
+            modules_label("qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv)),
         ])
     if target == "sun":
         deps.extend([
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/synx-kernel:{}_modules".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:smmu_proxy_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv),
-            "//vendor/qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv),
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/synx-kernel:{}_modules".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:smmu_proxy_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv)),
+            modules_label("qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv)),
         ])
     if target == "canoe":
         deps.extend([
-           "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/synx-kernel:{}_modules".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:smmu_proxy_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv),
-			"//vendor/qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv),
+           modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/synx-kernel:{}_modules".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:smmu_proxy_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smmu_proxy_dlkm".format(tv)),
+			modules_label("qcom/opensource/mmrm-driver:{}_mmrm_driver".format(tv)),
         ])
     ddk_module(
         name = "{}_camera".format(tv),
