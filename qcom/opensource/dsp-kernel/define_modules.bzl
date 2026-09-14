@@ -1,5 +1,6 @@
 # TODO
 # Add ddk module definition for frpc-trusted driver
+load(":repo_paths.bzl", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 
 load(
@@ -15,16 +16,16 @@ def define_modules(target, variant):
     kernel_build_variant = "{}_{}".format(target, variant)
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
     ddk_deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true":[
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/pdr_interface".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/rpmsg/qcom_glink".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/pdr_interface".format(kernel_build_variant)),
+            soc_label("{}/drivers/rpmsg/qcom_glink".format(kernel_build_variant)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
@@ -71,16 +72,16 @@ def define_vm_modules(target, variant):
     kernel_build_variant = "{}_{}".format(target, variant)
 
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 
     deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant),
-            "//soc-repo:{}/drivers/dma-buf/heaps/qcom_dma_heaps".format(kernel_build_variant),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(kernel_build_variant)),
+            soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(kernel_build_variant)),
+            soc_label("{}/drivers/dma-buf/heaps/qcom_dma_heaps".format(kernel_build_variant)),
             ] ,
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })

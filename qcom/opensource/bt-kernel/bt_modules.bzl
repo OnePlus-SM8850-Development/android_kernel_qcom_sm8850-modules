@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label")
 PWR_PATH = "pwr"
 SLIMBUS_PATH = "slimbus"
 FMRTC_PATH = "rtc6226"
@@ -60,12 +61,12 @@ register_bt_modules(
     srcs = ["btpower.c"],
     config_deps = {
 		    "CONFIG_BT_HW_SECURE_DISABLE": [ ":smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:%b_smcinvoke_dlkm",
+            modules_label("qcom/opensource/securemsm-kernel:%b_smcinvoke_dlkm"),
         ],
-        "CONFIG_FMD_ENABLE": ["//vendor/qcom/opensource/wlan/platform:%b_cnss_utils"],
+        "CONFIG_FMD_ENABLE": [modules_label("qcom/opensource/wlan/platform:%b_cnss_utils")],
     },
     deps = [
-        "//vendor/qcom/opensource/wlan/platform:all-wlan-platform-headers"
+        modules_label("qcom/opensource/wlan/platform:all-wlan-platform-headers")
     ],
 )
 
@@ -136,8 +137,8 @@ register_bt_modules(
     ],
     deps = [
         ":%b_btpower", ":%b_btfmcodec", ":btfmcodec_headers",
-        "//vendor/qcom/opensource/audio-kernel:audio_headers",
-        "//vendor/qcom/opensource/audio-kernel:%b_swr_dlkm",
+        modules_label("qcom/opensource/audio-kernel:audio_headers"),
+        modules_label("qcom/opensource/audio-kernel:%b_swr_dlkm"),
     ],
 )
 register_bt_modules(

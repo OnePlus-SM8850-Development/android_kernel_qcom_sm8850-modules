@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load(":build/target_variants.bzl", "get_all_variants")
@@ -92,18 +93,18 @@ def external_deps(target, variant):
     # Add msm_hw_fence in the dependency and defconfig lists for targets that use it
     if target in [ "pineapple" ]:
         deplist = deplist + [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:{}_msm_hw_fence".format(tv),
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:hw_fence_headers"
+            modules_label("qcom/opensource/mm-drivers/hw_fence:{}_msm_hw_fence".format(tv)),
+            modules_label("qcom/opensource/mm-drivers/hw_fence:hw_fence_headers")
             ]
         defconfigs = defconfigs + [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:defconfig"
+            modules_label("qcom/opensource/mm-drivers/hw_fence:defconfig")
             ]
 
     # Add synx-kernel in the dependency list for targets that use it for hardware fences
     if target in [ "sun", "niobe", "seraph", "canoe", "alor-le" ]:
         deplist = deplist + [
-            "//vendor/qcom/opensource/synx-kernel:{}_modules".format(tv),
-            "//vendor/qcom/opensource/synx-kernel:synx_headers"
+            modules_label("qcom/opensource/synx-kernel:{}_modules".format(tv)),
+            modules_label("qcom/opensource/synx-kernel:synx_headers")
             ]
 
     if target in [
@@ -120,7 +121,7 @@ def external_deps(target, variant):
         "shikra"
         ]:
         deplist = deplist + [
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:hw_fence_headers"
+            modules_label("qcom/opensource/mm-drivers/hw_fence:hw_fence_headers")
             ]
 
     native.genrule(
@@ -139,12 +140,12 @@ def define_target_variant_module(target, variant):
     if target in [ "neo-la" ]:
         kernel_build = select({
             "//build/kernel/kleaf:microxr_kernel_build_true": "//:target_kernel_build",
-            "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+            "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
             "//conditions:default": "//msm-kernel:{}".format(tv),
         })
     else:
         kernel_build = select({
-            "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+            "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
             "//build/kernel/kleaf:socrepo_false": "//msm-kernel:{}".format(tv),
         })
 
@@ -152,25 +153,25 @@ def define_target_variant_module(target, variant):
 
     ddk_deps = select({
                 "//build/kernel/kleaf:socrepo_true": [
-                  "//soc-repo:all_headers",
-                  "//soc-repo:{}/drivers/clk/qcom/clk-qcom".format(tv),
-                  "//soc-repo:{}/drivers/devfreq/governor_msm_adreno_tz".format(tv),
-                  "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(tv),
-                  "//soc-repo:{}/drivers/hwtracing/coresight/coresight".format(tv),
-                  "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(tv),
-                  "//soc-repo:{}/drivers/remoteproc/qcom_q6v5_pas".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/cmd-db".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/dcvs/qcom-dcvs".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/llcc-qcom".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/minidump".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/msm_performance".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/secure_buffer".format(tv),
-                  "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
-                  "//soc-repo:{}/kernel/msm_sysstats".format(tv),
+                  soc_label("all_headers"),
+                  soc_label("{}/drivers/clk/qcom/clk-qcom".format(tv)),
+                  soc_label("{}/drivers/devfreq/governor_msm_adreno_tz".format(tv)),
+                  soc_label("{}/drivers/firmware/qcom/qcom-scm".format(tv)),
+                  soc_label("{}/drivers/hwtracing/coresight/coresight".format(tv)),
+                  soc_label("{}/drivers/iommu/qcom_iommu_util".format(tv)),
+                  soc_label("{}/drivers/remoteproc/qcom_q6v5_pas".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/cmd-db".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/dcvs/qcom-dcvs".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/llcc-qcom".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/mdt_loader".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/mem_buf/mem_buf_dev".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/minidump".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/msm_performance".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/qcom_aoss".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/secure_buffer".format(tv)),
+                  soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
+                  soc_label("{}/kernel/msm_sysstats".format(tv)),
                   #"//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
                 ],
                 "//build/kernel/kleaf:socrepo_false": [ "//msm-kernel:all_headers" ],

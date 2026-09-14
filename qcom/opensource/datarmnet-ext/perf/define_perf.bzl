@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 
@@ -6,12 +7,12 @@ def define_perf(target, variant):
     include_base = "../../../{}".format(native.package_name())
 
     deps_perf = select({
-	"//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+	"//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
 	"//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
 
     kernel_build = select({
-	"//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(kernel_build_variant),
+	"//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(kernel_build_variant)),
 	"//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(kernel_build_variant),
     })
 
@@ -29,8 +30,8 @@ def define_perf(target, variant):
         kernel_build = kernel_build,
         deps = deps_perf + [
             ":include_headers",
-            "//vendor/qcom/opensource/datarmnet:{}_rmnet_core".format(kernel_build_variant),
-            "//vendor/qcom/opensource/datarmnet:rmnet_core_headers",
+            modules_label("qcom/opensource/datarmnet:{}_rmnet_core".format(kernel_build_variant)),
+            modules_label("qcom/opensource/datarmnet:rmnet_core_headers"),
         ],
         copts = ["-Wno-misleading-indentation"],
     )

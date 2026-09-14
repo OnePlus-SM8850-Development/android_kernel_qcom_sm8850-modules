@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load("@rules_pkg//pkg:install.bzl", "pkg_install")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
@@ -102,7 +103,7 @@ def _define_modules_for_target_variant(target, variant):
 
     if target != "sa510m" and target != "sa510m.1g":
         kernel_build = select({
-            "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+            "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(tv)),
             "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(tv),
         })
     else:
@@ -142,8 +143,8 @@ def _define_modules_for_target_variant(target, variant):
         if target != "sa510m" and target != "sa510m.1g":
             deps += select({
                    "//build/qcom_build_extensions:qtisocrepo_true": [
-                      "//soc-repo:all_headers",
-                      "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
+                      soc_label("all_headers"),
+                      soc_label("{}/drivers/soc/qcom/qmi_helpers".format(tv)),
                    ],
                    "//build/qcom_build_extensions:qtisocrepo_false": [
                       "//msm-kernel:all_headers",
@@ -155,7 +156,7 @@ def _define_modules_for_target_variant(target, variant):
         if target != "autogvm" and target != "x1e80100" and target != "sdxkova" and target != "art" and target != "art16k" and target != "sa510m" and target != "sa510m.1g":
             deps += select({
                   "//build/qcom_build_extensions:qtisocrepo_true": [
-                    "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
+                    modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
                 ],
                     "//build/qcom_build_extensions:qtisocrepo_false": [],
             })
@@ -163,24 +164,24 @@ def _define_modules_for_target_variant(target, variant):
         if target != "x1e80100" and target != "sdxkova" and target != "sa510m" and target != "sa510m.1g":
             deps += select({
                   "//build/qcom_build_extensions:qtisocrepo_true": [
-                    "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/qcom_ramdump".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/pdr_interface".format(tv),
-                    "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/memory_dump_v2".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/smem".format(tv),
-                    "//soc-repo:{}/drivers/bus/mhi/host/mhi".format(tv),
-                    "//soc-repo:{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/cmd-db".format(tv),
-                    "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(tv),
-                    "//soc-repo:{}/drivers/pci/controller/pci-msm-drv".format(tv),
+                    soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/qcom_ramdump".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/pdr_interface".format(tv)),
+                    soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/memory_dump_v2".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/smem".format(tv)),
+                    soc_label("{}/drivers/bus/mhi/host/mhi".format(tv)),
+                    soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/cmd-db".format(tv)),
+                    soc_label("{}/drivers/soc/qcom/qcom_aoss".format(tv)),
+                    soc_label("{}/drivers/pci/controller/pci-msm-drv".format(tv)),
                 ],
                     "//build/qcom_build_extensions:qtisocrepo_false": [],
             })
             deps += select({
                   "//build/qcom_build_extensions:qtisocrepo_true": [
-                    "//soc-repo:{}/drivers/soc/qcom/minidump".format(tv),
+                    soc_label("{}/drivers/soc/qcom/minidump".format(tv)),
                 ],
                     "//build/qcom_build_extensions:qtisocrepo_false": [],
             })
@@ -229,15 +230,15 @@ def _define_modules_for_target_variant(target, variant):
         defconfig = ":{}/{}_defconfig_generate_{}".format(module, tv, variant)
         deps = select({
                "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:all_headers",
-                "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qcom_ramdump".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/pdr_interface".format(tv),
-                "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
-                "//soc-repo:{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(tv),
+                soc_label("all_headers"),
+                soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
+                soc_label("{}/drivers/soc/qcom/qcom_ramdump".format(tv)),
+                soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
+                soc_label("{}/drivers/soc/qcom/pdr_interface".format(tv)),
+                soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(tv)),
+                soc_label("{}/drivers/soc/qcom/qmi_helpers".format(tv)),
+                soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv)),
+                soc_label("{}/drivers/soc/qcom/qcom_aoss".format(tv)),
                ],
                "//build/qcom_build_extensions:qtisocrepo_false": [
                   "//msm-kernel:all_headers",
@@ -278,7 +279,7 @@ def _define_modules_for_target_variant(target, variant):
     defconfig = ":{}/{}_defconfig_generate_{}".format(module, tv, variant)
     if target != "sa510m" and target != "sa510m.1g":
         deps = select({
-            "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+            "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
             "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
         })
     else:
@@ -323,14 +324,14 @@ def _define_modules_for_target_variant(target, variant):
 
     if target != "sa510m" and target != "sa510m.1g":
         cnss_utils_dep_list += select({
-            "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+            "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
             "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
         })
     else:
         cnss_utils_dep_list += [ kernel_header ]
 
     if target == "sun" or target == "canoe" or target == "art" or target == "chora" or target == "art16k":
-        cnss_utils_dep_list = cnss_utils_dep_list + ["//vendor/qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv),]
+        cnss_utils_dep_list = cnss_utils_dep_list + [modules_label("qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv)),]
     if target == "sdxkova":
         tgt = "target-aarch64_cortex-a53_musl"
         board = "sdx85"
@@ -356,8 +357,8 @@ def _define_modules_for_target_variant(target, variant):
     if target != "sa510m" and target != "sa510m.1g":
         deps = select({
             "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:all_headers",
-                "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
+                soc_label("all_headers"),
+                soc_label("{}/drivers/soc/qcom/qmi_helpers".format(tv)),
             ],
             "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
         })
@@ -385,9 +386,9 @@ def _define_modules_for_target_variant(target, variant):
         if target != "sa510m" and target != "sa510m.1g":
             deps = select({
                 "//build/qcom_build_extensions:qtisocrepo_true": [
-                    "//soc-repo:all_headers",
-                    "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
-                    "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
+                    soc_label("all_headers"),
+                    soc_label("{}/drivers/soc/qcom/qmi_helpers".format(tv)),
+                    soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
                 ],
                 "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
             })

@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load("@rules_pkg//pkg:install.bzl", "pkg_install")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
@@ -12,11 +13,11 @@ def define_modules(target, variant):
     rule_base = "{}_qbt_handler".format(tv)
 
     ddk_deps = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:all_headers"],
+        "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("all_headers")],
         "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
     })
     base_kernel = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(tv),
     })
 

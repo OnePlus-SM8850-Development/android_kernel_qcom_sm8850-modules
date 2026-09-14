@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label")
 load(":module_mgr.bzl", "create_module_registry")
 
 DSP_PATH = "dsp"
@@ -332,8 +333,8 @@ audio_modules.register(
     path = ASOC_CODECS_PATH,
     config_option = "CONFIG_SND_SOC_MSM_HDMI_CODEC_RX",
     srcs = ["msm_hdmi_codec_rx.c"],
-    deps = ["//vendor/qcom/opensource/mm-drivers/msm_ext_display:%b_msm_ext_display",
-            "//vendor/qcom/opensource/mm-drivers/msm_ext_display:msm_ext_display_headers",
+    deps = [modules_label("qcom/opensource/mm-drivers/msm_ext_display:%b_msm_ext_display"),
+            modules_label("qcom/opensource/mm-drivers/msm_ext_display:msm_ext_display_headers"),
 	   ],
 )
 audio_modules.register(

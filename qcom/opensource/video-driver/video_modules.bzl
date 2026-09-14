@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label")
 load(":video_driver_build.bzl", "video_module_entry")
 
 video_driver_modules = video_module_entry([":video_driver_headers"])
@@ -123,13 +124,13 @@ module_entry(
     deps = [],
     config_deps = {
         "CONFIG_MSM_VIDC_SYNX" : [
-            "//vendor/qcom/opensource/mm-drivers:mm_drivers_headers",
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/synx-kernel:%b_modules",
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence",
+            modules_label("qcom/opensource/mm-drivers:mm_drivers_headers"),
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/synx-kernel:%b_modules"),
+            modules_label("qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence"),
         ],
         "CONFIG_MSM_MMRM" : [
-            "//vendor/qcom/opensource/mmrm-driver:%b_mmrm_driver",
+            modules_label("qcom/opensource/mmrm-driver:%b_mmrm_driver"),
         ],
     },
 )
@@ -248,13 +249,13 @@ module_entry(
     deps = [],
     config_deps = {
         "CONFIG_MSM_VIDC_SYNX" : [
-            "//vendor/qcom/opensource/mm-drivers:mm_drivers_headers",
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/synx-kernel:%b_modules",
-            "//vendor/qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence",
+            modules_label("qcom/opensource/mm-drivers:mm_drivers_headers"),
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/synx-kernel:%b_modules"),
+            modules_label("qcom/opensource/mm-drivers/hw_fence:%b_msm_hw_fence"),
         ],
         "CONFIG_MSM_MMRM" : [
-            "//vendor/qcom/opensource/mmrm-driver:%b_mmrm_driver",
+            modules_label("qcom/opensource/mmrm-driver:%b_mmrm_driver"),
         ],
     },
 )

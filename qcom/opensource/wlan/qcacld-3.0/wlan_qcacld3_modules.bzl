@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load(":target_variants.bzl", "get_all_variants")
@@ -2555,19 +2556,19 @@ def _define_module_for_target_variant_chipset(target, variant, chipset):
     if target != "sa510m":
         deps = select({
             "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:all_headers",
-                "//soc-repo:{}/net/wireless/cfg80211".format(tv),
-                "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(tv),
-                "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
-                "//soc-repo:{}/kernel/sched/walt/sched-walt".format(tv),
+                soc_label("all_headers"),
+                soc_label("{}/net/wireless/cfg80211".format(tv)),
+                soc_label("{}/drivers/iommu/qcom_iommu_util".format(tv)),
+                soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(tv)),
+                soc_label("{}/drivers/soc/qcom/qmi_helpers".format(tv)),
+                soc_label("{}/kernel/sched/walt/sched-walt".format(tv)),
             ],
             "//build/qcom_build_extensions:qtisocrepo_false": ["//msm-kernel:all_headers"],
         })
 
         deps += select({
             "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:{}/drivers/soc/qcom/qcom_va_minidump".format(tv),
+                soc_label("{}/drivers/soc/qcom/qcom_va_minidump".format(tv)),
             ],
             "//build/qcom_build_extensions:qtisocrepo_false": [],
         })
@@ -2577,12 +2578,12 @@ def _define_module_for_target_variant_chipset(target, variant, chipset):
     if target == "neo-la":
         kernel_build = select({
             "//build/kernel/kleaf:microxr_kernel_build_true": "//:target_kernel_build",
-            "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+            "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
             "//conditions:default": "//msm-kernel:{}".format(tv),
         })
     else:
         kernel_build = select({
-            "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+            "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(tv)),
             "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(tv),
         })
 
@@ -2739,11 +2740,11 @@ def _define_module_for_target_variant_chipset(target, variant, chipset):
 
     if chipset == "qca6750" or chipset == "wcn7750" or chipset == "wcn6450" or chipset == "wlan" or chipset == "adrastea":
         deps += [
-            "//vendor/qcom/opensource/wlan/platform:{}_icnss2".format(tv),
+            modules_label("qcom/opensource/wlan/platform:{}_icnss2".format(tv)),
         ]
     elif target != "sa510m":
         deps += [
-            "//vendor/qcom/opensource/wlan/platform:{}_cnss2".format(tv),
+            modules_label("qcom/opensource/wlan/platform:{}_cnss2".format(tv)),
         ]
     else:
         deps += [
@@ -2751,10 +2752,10 @@ def _define_module_for_target_variant_chipset(target, variant, chipset):
         ]
     if target != "sa510m":
         deps = deps + [
-            "//vendor/qcom/opensource/wlan/platform:{}_cnss_prealloc".format(tv),
-            "//vendor/qcom/opensource/wlan/platform:{}_cnss_utils".format(tv),
-            "//vendor/qcom/opensource/wlan/platform:{}_cnss_nl".format(tv),
-            "//vendor/qcom/opensource/wlan/platform:wlan-platform-headers",
+            modules_label("qcom/opensource/wlan/platform:{}_cnss_prealloc".format(tv)),
+            modules_label("qcom/opensource/wlan/platform:{}_cnss_utils".format(tv)),
+            modules_label("qcom/opensource/wlan/platform:{}_cnss_nl".format(tv)),
+            modules_label("qcom/opensource/wlan/platform:wlan-platform-headers"),
         ]
     else:
         deps = deps + [
@@ -2771,8 +2772,8 @@ def _define_module_for_target_variant_chipset(target, variant, chipset):
         ]
     elif target != "x1e80100" and target != "anorak" and target != "neo-la" and target != "seraph" and target != "autogvm" and target != "autoghgvm" and target != "hamoa" and target != "alor-le" and target != "shikra":
         deps = deps + [
-            "//vendor/qcom/opensource/dataipa:include_headers",
-            "//vendor/qcom/opensource/dataipa:{}_{}_ipam".format(target, variant),
+            modules_label("qcom/opensource/dataipa:include_headers"),
+            modules_label("qcom/opensource/dataipa:{}_{}_ipam".format(target, variant)),
         ]
 
     if target == "sdxkova":

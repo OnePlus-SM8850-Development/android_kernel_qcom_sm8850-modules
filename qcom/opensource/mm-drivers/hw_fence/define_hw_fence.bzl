@@ -1,26 +1,27 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
-load("//vendor/qcom/opensource/mm-drivers:target_variants.bzl", "get_all_variants")
+load("//vendor/qcom/sm8850-modules/qcom/opensource/mm-drivers:target_variants.bzl", "get_all_variants")
 
 def _define_module(target, variant):
     tv = "{}_{}".format(target, variant)
 
     deps = select({
         "//build/kernel/kleaf:socrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
-            "//soc-repo:{}/drivers/remoteproc/qcom_q6v5_pas".format(tv),
-            "//soc-repo:{}/drivers/virt/gunyah/gh_dbl".format(tv),
-            "//soc-repo:{}/drivers/virt/gunyah/gh_rm_drv".format(tv),
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/hab/msm_hab".format(tv),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/remoteproc/rproc_qcom_common".format(tv)),
+            soc_label("{}/drivers/remoteproc/qcom_q6v5_pas".format(tv)),
+            soc_label("{}/drivers/virt/gunyah/gh_dbl".format(tv)),
+            soc_label("{}/drivers/virt/gunyah/gh_rm_drv".format(tv)),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(tv)),
+            soc_label("{}/drivers/soc/qcom/hab/msm_hab".format(tv)),
         ],
         "//build/kernel/kleaf:socrepo_false": [
             "//msm-kernel:all_headers",
         ],
     })
     kernel_build = select({
-        "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/kernel/kleaf:socrepo_false": "//msm-kernel:{}".format(tv),
     })
 
@@ -56,8 +57,8 @@ def _define_module(target, variant):
             }
         },
         deps = deps + [
-            "//vendor/qcom/opensource/synx-kernel:synx_headers",
-            "//vendor/qcom/opensource/mm-drivers:mm_drivers_headers",
+            modules_label("qcom/opensource/synx-kernel:synx_headers"),
+            modules_label("qcom/opensource/mm-drivers:mm_drivers_headers"),
         ],
         kernel_build = kernel_build,
     )

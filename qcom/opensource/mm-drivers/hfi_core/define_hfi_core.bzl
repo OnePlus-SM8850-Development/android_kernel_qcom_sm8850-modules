@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 load("//vendor/qcom/opensource/mm-drivers:target_variants.bzl", "get_all_variants")
@@ -7,10 +8,10 @@ def _define_module(target, variant):
 
     deps = select({
         "//build/kernel/kleaf:socrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/firmware/qcom/qcom-scm".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/mdt_loader".format(tv),
-            "//soc-repo:{}/drivers/soc/qcom/smem".format(tv),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/firmware/qcom/qcom-scm".format(tv)),
+            soc_label("{}/drivers/soc/qcom/mdt_loader".format(tv)),
+            soc_label("{}/drivers/soc/qcom/smem".format(tv)),
         ],
         "//build/kernel/kleaf:socrepo_false": [
             "//msm-kernel:all_headers",
@@ -18,7 +19,7 @@ def _define_module(target, variant):
     })
 
     kernel_build = select({
-        "//build/kernel/kleaf:socrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/kernel/kleaf:socrepo_false": "//msm-kernel:{}".format(tv),
     })
 
@@ -48,7 +49,7 @@ def _define_module(target, variant):
         defconfig = target_config,
         kconfig = "Kconfig",
         deps = deps + [
-            "//vendor/qcom/opensource/mm-drivers:mm_drivers_headers",
+            modules_label("qcom/opensource/mm-drivers:mm_drivers_headers"),
         ],
         kernel_build = kernel_build,
     )

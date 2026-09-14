@@ -1,3 +1,4 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_module")
 load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
 
@@ -7,28 +8,28 @@ def define_modules(target, variant):
     deps = []
     deps = select({
         "//build/qcom_build_extensions:qtisocrepo_true": [
-            "//soc-repo:all_headers",
-            "//soc-repo:{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv),
-            "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
+            soc_label("all_headers"),
+            soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv)),
+            soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
         ],
         "//build/qcom_build_extensions:qtisocrepo_false": [
             "//msm-kernel:all_headers",
         ],
     })
     kernel_build = select({
-        "//build/qcom_build_extensions:qtisocrepo_true": "//soc-repo:{}_base_kernel".format(tv),
+        "//build/qcom_build_extensions:qtisocrepo_true": soc_label("{}_base_kernel".format(tv)),
         "//build/qcom_build_extensions:qtisocrepo_false": "//msm-kernel:{}".format(tv),
     })
     if target == "sun":
         deps += select({
-            "//build/qcom_build_extensions:qtisocrepo_true": ["//soc-repo:{}/drivers/misc/qseecom_proxy".format(tv)],
+            "//build/qcom_build_extensions:qtisocrepo_true": [soc_label("{}/drivers/misc/qseecom_proxy".format(tv))],
             "//build/qcom_build_extensions:qtisocrepo_false": [],
         })
     if target == "sun":
         copts.append("-DNFC_SECURE_PERIPHERAL_ENABLED")
         deps += [
-            "//vendor/qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
+            modules_label("qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
         ]
 
     if target == "bengal":
@@ -41,8 +42,8 @@ def define_modules(target, variant):
         copts.append("-DCONFIG_NFC_BOB1")
         copts.append("-DNFC_SECURE_PERIPHERAL_ENABLED")
         deps += [
-            "//vendor/qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers",
-            "//vendor/qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv),
+            modules_label("qcom/opensource/securemsm-kernel:smcinvoke_kernel_headers"),
+            modules_label("qcom/opensource/securemsm-kernel:{}_smcinvoke_dlkm".format(tv)),
         ]
 
     if target == "chora":
