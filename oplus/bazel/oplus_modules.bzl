@@ -86,7 +86,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/storage:oplus_wq_dynamic_priority"),
         modules_label("oplus/kernel/storage:storage_log"),
         modules_label("oplus/kernel/storage:ufs-oplus-dbg"),
-        modules_label("oplus/kernel/storage:oplus_file_record"),
         modules_label("oplus/kernel/storage/oplus_overlayfs:oplus_overlay"),
         modules_label("oplus/kernel/synchronize:oplus_lock_torture"),
         modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
