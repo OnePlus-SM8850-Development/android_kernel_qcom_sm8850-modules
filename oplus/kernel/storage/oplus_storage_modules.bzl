@@ -101,18 +101,6 @@ def define_oplus_storage_modules():
             "storage_feature_in_module/common/oplus_uprobe/oplus_uprobe.h"
         ]
 
-    define_oplus_ddk_module(
-        name = "oplus_uprobe",
-        srcs = native.glob([
-            "storage_feature_in_module/common/oplus_uprobe/*.c"
-        ]),
-        hdrs = hdrs,
-        includes = ["."],
-        copts = copts,
-        ko_deps = ko_deps,
-        out = "oplus_uprobe.ko",
-    )
-
     # add for oplus_file_record
     if bazel_support_platform == "qcom":
         copts = []
@@ -194,7 +182,6 @@ def define_oplus_storage_modules():
         name = "oplus_storage",
         module_list = [
             "ufs-oplus-dbg",
-            "oplus_uprobe",
             "storage_log",
             "oplus_wq_dynamic_priority",
             "oplus_file_record",
