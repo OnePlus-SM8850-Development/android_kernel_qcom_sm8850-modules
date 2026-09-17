@@ -29,7 +29,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/cpu:cpufreq_bouncing"),
         modules_label("oplus/kernel/cpu:horae_shell_temp"),
         modules_label("oplus/kernel/cpu:oplus_bsp_frame_boost"),
-        modules_label("oplus/kernel/cpu:oplus_bsp_sched_ext"),
         modules_label("oplus/kernel/cpu:oplus_bsp_game_opt"),
         modules_label("oplus/kernel/cpu:oplus_bsp_geas_cpu"),
         modules_label("oplus/kernel/cpu:oplus_bsp_geas_system"),

@@ -1,4 +1,4 @@
-load(":repo_paths.bzl", "modules_label", "soc_label")
+load(":repo_paths.bzl", "soc_label")
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
@@ -96,42 +96,6 @@ def define_oplus_sched_assist_local_modules():
         config = ddk_config,
     )
 
-    if bazel_support_platform == "qcom" :
-        sched_ext_ko_deps = [
-            modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
-            modules_label("oplus/kernel/cpu:oplus_bsp_waker_identify"),
-            modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
-            soc_label("{}/drivers/soc/qcom/minidump").format(kernel_build_variant),
-        ]
-    else :
-        sched_ext_ko_deps = [
-            modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
-            modules_label("oplus/kernel/cpu:oplus_bsp_waker_identify"),
-            modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
-            "//kernel_device_modules-6.12/drivers/misc/mediatek/aee/mrdump:mrdump",
-        ]
-    define_oplus_ddk_module(
-        name = "oplus_bsp_sched_ext",
-        srcs = native.glob([
-            "sched_ext/*.c",
-            "sched_ext/*.h",
-            "sched_ext/hmbird_II/*.c",
-            "sched_ext/hmbird_II/*.h",
-            "sched_ext/hmbird_CameraScene/*.c",
-            "sched_ext/hmbird_CameraScene/*.h",
-        ]),
-        includes = ["sched_ext"],
-        conditional_defines = {
-            "mtk":  ["CONFIG_OPLUS_SYSTEM_KERNEL_MTK"],
-            "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
-        },
-        ko_deps = sched_ext_ko_deps,
-        header_deps = [
-            modules_label("oplus/kernel/cpu:config_headers"),
-        ],
-        generate_btf = True,
-    )
-
 def define_oplus_local_modules():
     define_oplus_sched_assist_local_modules()
     define_oplus_game_opt_local_modules()
@@ -165,7 +129,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_task_load",
                 "oplus_bsp_midas",
                 "oplus_bsp_task_overload",
-                "oplus_bsp_sched_ext",
                 "oplus_bsp_task_sched",
                 "osml_monitor",
             ],
@@ -209,6 +172,5 @@ def define_oplus_local_modules():
                 "oplus_bsp_schedinfo",
                 "oplus_bsp_midas",
                 "oplus_bsp_task_sched",
-                "oplus_bsp_sched_ext",
             ],
         )
