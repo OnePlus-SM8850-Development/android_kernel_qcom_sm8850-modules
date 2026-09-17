@@ -9,9 +9,6 @@ obj-$(CONFIG_OPLUS_FEATURE_PMIC_MONITOR) += qcom/qcom_pmic_monitor/
 
 
 
-#ifdef OPLUS_FEATURE_QCOM_WATCHDOG
-obj-$(CONFIG_OPLUS_FEATURE_QCOM_WATCHDOG) += qcom/qcom_watchdog/
-#endif /* OPLUS_FEATURE_QCOM_WATCHDOG */
 
 
 
