@@ -17,15 +17,6 @@ def define_oplus_local_modules():
         ko_oem_qmi_deps = []
 
     define_oplus_ddk_module(
-        name = "oplus_network_vnet",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_vnet/oplus_vnet.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_network_rf_cable_monitor",
         srcs = native.glob([
             "**/*.h",
@@ -105,7 +96,6 @@ def define_oplus_local_modules():
     ddk_copy_to_dist_dir(
         name = "oplus_network",
         module_list = [
-            "oplus_network_vnet",
             "oplus_network_rf_cable_monitor",
             "oplus_network_oem_qmi",
             "oplus_network_esim",
