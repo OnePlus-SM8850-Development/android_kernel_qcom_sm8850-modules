@@ -1,6 +1,6 @@
 load(":repo_paths.bzl", "modules_label")
-load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 def define_oplus_storage_modules():
     kernel_version = oplus_ddk_get_kernel_version()
@@ -55,31 +55,9 @@ def define_oplus_storage_modules():
     else:
         copts = ["-I$(srctree)/drivers/ufs/core/",
                  "-I$(srctree)/include/"]
-        configs = []
+
         ko_deps = []
         hdrs = []
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_storage_io_metrics",
-        srcs = native.glob([
-            "common/io_metrics/abnormal_io.c",
-            "common/io_metrics/abnormal_io.h",
-            "common/io_metrics/block_metrics.c",
-            "common/io_metrics/block_metrics.h",
-            "common/io_metrics/io_metrics_entry.c",
-            "common/io_metrics/io_metrics_entry.h",
-            "common/io_metrics/procfs.c",
-            "common/io_metrics/procfs.h",
-            "common/io_metrics/ufs_metrics.c",
-            "common/io_metrics/ufs_metrics.h",
-        ]),
-        hdrs = hdrs,
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_STORAGE_IOLATENCY_STATS"],
-        copts = copts,
-        ko_deps = ko_deps,
-        out = "oplus_bsp_storage_io_metrics.ko",
-    )
 
     #  add for storage_log
     if bazel_support_platform == "qcom":
@@ -90,7 +68,6 @@ def define_oplus_storage_modules():
         copts = []
         ko_deps = []
         hdrs = ["include/storage.h",]
-        configs = []
 
     define_oplus_ddk_module(
         name = "storage_log",
@@ -217,7 +194,6 @@ def define_oplus_storage_modules():
         name = "oplus_storage",
         module_list = [
             "ufs-oplus-dbg",
-            "oplus_bsp_storage_io_metrics",
             "oplus_uprobe",
             "storage_log",
             "oplus_wq_dynamic_priority",
