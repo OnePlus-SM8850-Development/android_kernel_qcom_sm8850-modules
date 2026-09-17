@@ -17,22 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_kswapd_opt",
-        srcs = native.glob([
-            "kswapd_opt/kswapd_opt.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_KSWAPD_OPT", "CONFIG_COSTLY_ALLOC_MASK_RECLAIM"],
-        conditional_defines = {
-            "qcom": ["CONFIG_QCOM_ALLOC_MASK_RECLAIM"],
-        },
-#       copts = select({
-#           "//build/kernel/kleaf:kocov_is_true": ["-fprofile-arcs", "-ftest-coverage"],
-#           "//conditions:default": [],
-#       }),
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_zstdn",
         srcs = native.glob([
             "**/*.h",
@@ -154,7 +138,6 @@ def define_oplus_local_modules():
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
-            "oplus_bsp_kswapd_opt",
             "oplus_bsp_memleak_detect",
             "oplus_bsp_zstdn",
             "oplus_bsp_mm_osvelte",

@@ -73,7 +73,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/graphics:oplus_sync_fence"),
         modules_label("oplus/kernel/hans:oplus_sys_hans"),
         modules_label("oplus/kernel/ipc:oplus_binder_strategy"),
-        modules_label("oplus/kernel/mm:oplus_bsp_kswapd_opt"),
         modules_label("oplus/kernel/mm:oplus_bsp_memleak_detect"),
         modules_label("oplus/kernel/mm:oplus_bsp_zstdn"),
         modules_label("oplus/kernel/mm:oplus_bsp_mm_osvelte"),
