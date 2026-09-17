@@ -99,5 +99,4 @@ config LOOK_AROUND
 source "mm/oplus_mm/hybridswap_zram/Kconfig"
 
 source "mm/oplus_mm/mm_osvelte/Kconfig"
-source "mm/oplus_mm/uxmem_opt/Kconfig"
 source "mm/oplus_mm/dynamic_readahead/Kconfig"

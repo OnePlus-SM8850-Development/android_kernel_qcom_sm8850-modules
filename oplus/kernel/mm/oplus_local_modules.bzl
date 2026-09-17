@@ -17,17 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_uxmem_opt",
-        srcs = native.glob([
-            "**/*.h",
-            "uxmem_opt/uxmem_opt.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_UXMEM_OPT"],
-        ko_deps = [":oplus_bsp_mm_osvelte", modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist")],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_mglru_opt",
         srcs = native.glob([
             "**/*.h",
@@ -196,7 +185,6 @@ def define_oplus_local_modules():
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
-            "oplus_bsp_uxmem_opt",
             "oplus_bsp_dynamic_readahead",
             "oplus_bsp_kswapd_opt",
             "oplus_bsp_pcppages_opt",
