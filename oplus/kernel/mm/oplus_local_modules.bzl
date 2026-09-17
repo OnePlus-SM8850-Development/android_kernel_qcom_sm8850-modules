@@ -1,4 +1,4 @@
-load(":repo_paths.bzl", "modules_label")
+
 
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
@@ -15,17 +15,6 @@ def define_oplus_local_modules():
 #        includes = ["."],
 #        )
 #
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dynamic_readahead",
-        srcs = native.glob([
-            "**/*.h",
-            "dynamic_readahead/dynamic_readahead.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_DYNAMIC_READAHEAD"],
-        ko_deps = [modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist")],
-    )
 
     define_oplus_ddk_module(
         name = "oplus_bsp_pcppages_opt",
@@ -174,7 +163,6 @@ def define_oplus_local_modules():
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
-            "oplus_bsp_dynamic_readahead",
             "oplus_bsp_kswapd_opt",
             "oplus_bsp_pcppages_opt",
             "oplus_bsp_memleak_detect",
