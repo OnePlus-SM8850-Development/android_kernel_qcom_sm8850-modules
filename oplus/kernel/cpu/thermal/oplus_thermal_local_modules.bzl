@@ -15,14 +15,3 @@ def define_oplus_thermal_local_modules():
     )
 
 #
-#    define_oplus_ddk_module(
-#        name = "oplus_ipa_thermal",
-#        srcs = native.glob([
-#            "**/*.h",
-#            "oplus_ipa_thermal.c",
-#        ]),
-#        ko_deps = [
-#            modules_label("oplus/kernel/cpu/thermal:horae_shell_temp"),
-#        ],
-#        includes = ["."],
-#    )
