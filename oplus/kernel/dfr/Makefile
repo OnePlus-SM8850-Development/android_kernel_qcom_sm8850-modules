@@ -8,9 +8,6 @@ obj-$(CONFIG_OPLUS_FEATURE_PMIC_MONITOR) += qcom/qcom_pmic_monitor/
 #endif /* OPLUS_FEATURE_PMIC_MONITOR */
 
 # common feature
-#ifdef OPLUS_FEATURE_SHUTDOWN_DETECT
-obj-$(CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT) += common/shutdown_detect/
-#endif /* OPLUS_FEATURE_SHUTDOWN_DETECT */
 
 #ifdef OPLUS_FEATURE_KEYEVENT_HANDLER
 obj-$(CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER) += common/keyevent_handler/
