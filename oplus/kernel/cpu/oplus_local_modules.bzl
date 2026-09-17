@@ -114,7 +114,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_schedinfo",
-                "oplus_bsp_task_load",
                 "oplus_bsp_task_sched",
             ],
         )
