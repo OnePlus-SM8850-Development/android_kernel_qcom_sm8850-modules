@@ -113,7 +113,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_frame_boost",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_waker_identify",
-                "oplus_bsp_schedinfo",
                 "oplus_bsp_task_sched",
             ],
         )
@@ -128,7 +127,6 @@ def define_oplus_local_modules():
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_task_cpustats",
-                "oplus_bsp_schedinfo",
                 "oplus_freq_qos_arbiter",
                 "oplus_bsp_task_sched",
             ],
@@ -142,7 +140,6 @@ def define_oplus_local_modules():
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_task_cpustats",
-                "oplus_bsp_schedinfo",
                 "oplus_bsp_task_sched",
             ],
         )
