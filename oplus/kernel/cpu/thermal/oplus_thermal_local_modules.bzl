@@ -14,14 +14,6 @@ def define_oplus_thermal_local_modules():
         includes = ["."],
     )
 
-#    define_oplus_ddk_module(
-#        name = "thermal_pa_adc",
-#        srcs = native.glob([
-#            "**/*.h",
-#            "thermal_pa_adc.c",
-#        ]),
-#         includes = ["."],
-#    )
 #
 #    define_oplus_ddk_module(
 #        name = "oplus_ipa_thermal",
