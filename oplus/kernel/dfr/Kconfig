@@ -33,9 +33,6 @@ source "drivers/soc/oplus/dfr/qcom/oplus_ordump/Kconfig"
 source "drivers/soc/oplus/dfr/common/shutdown_detect/Kconfig"
 #endif /* OPLUS_FEATURE_SHUTDOWN_DETECT */
 
-#ifdef OPLUS_FEATURE_HUNG_TASK_ENHANCE
-source "drivers/soc/oplus/dfr/common/hung_task_enhance/Kconfig"
-#endif /* OPLUS_FEATURE_HUNG_TASK_ENHANCE */
 
 #ifdef OPLUS_FEATURE_SAUPWK
 source "drivers/soc/oplus/dfr/common/oplus_saupwk/Kconfig"

@@ -56,7 +56,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_reason"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_fdleak_check"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_force_shutdown"),
-        modules_label("oplus/kernel/dfr:oplus_bsp_dfr_hung_task_enhance"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_init_watchdog"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_kp_freeze_detect"),

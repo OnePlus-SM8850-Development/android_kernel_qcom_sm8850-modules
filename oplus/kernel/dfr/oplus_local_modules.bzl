@@ -1,13 +1,12 @@
 load(":repo_paths.bzl", "modules_label", "soc_label")
-load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
     target = oplus_ddk_get_target()
     variant  = oplus_ddk_get_variant()
     kernel_build_variant = "{}_{}".format(target, variant)
-    kernel_version = oplus_ddk_get_kernel_version()
 
     if bazel_support_platform == "qcom" :
         combkey_monitor_ko_deps = [
@@ -15,10 +14,7 @@ def define_oplus_local_modules():
             modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
             modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb"),
         ]
-        hung_task_enhance_ko_deps = [
-            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
-            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
-        ]
+
         shutdown_detect_ko_deps = [
             modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
         ]
@@ -48,23 +44,6 @@ def define_oplus_local_modules():
         includes = ["."],
         ko_deps = combkey_monitor_ko_deps,
         local_defines = ["CONFIG_OPLUS_FEATURE_THEIA","CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER"],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_hung_task_enhance",
-        srcs = native.glob([
-            "**/*.h",
-            "common/hung_task_enhance/hung_task_enhance.c",
-        ]),
-        includes = ["."],
-        ko_deps = hung_task_enhance_ko_deps,
-        local_defines = [
-            "CONFIG_OPLUS_FEATURE_HUNG_TASK_ENHANCE",
-            "CONFIG_OPLUS_FEATURE_THEIA",
-            "CONFIG_OPLUS_FEATURE_DEATH_HEALER",
-            "CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE",
-            "CONFIG_OPLUS_FEATURE_HUNGTASK_GAIA",
-        ],
     )
 
     define_oplus_ddk_module(
@@ -126,7 +105,6 @@ def define_oplus_local_modules():
         includes = ["."],
         local_defines = ["CONFIG_OPLUS_FEATURE_SAUPWK"],
     )
-
 
     define_oplus_ddk_module(
         name = "oplus_bsp_dfr_shutdown_detect",
@@ -302,7 +280,6 @@ def define_oplus_local_modules():
         name = "oplus_bsp_dfr",
         module_list = [
             "oplus_bsp_dfr_combkey_monitor",
-            "oplus_bsp_dfr_hung_task_enhance",
             "oplus_bsp_dfr_init_watchdog",
             "oplus_bsp_dfr_keyevent_handler",
             "oplus_bsp_dfr_last_boot_reason",

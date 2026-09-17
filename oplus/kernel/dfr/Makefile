@@ -36,9 +36,6 @@ obj-$(CONFIG_OPLUS_FEATURE_FULLDUMP_BACK) += qcom/oplus_ordump/
 obj-$(CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT) += common/shutdown_detect/
 #endif /* OPLUS_FEATURE_SHUTDOWN_DETECT */
 
-#ifdef OPLUS_FEATURE_HUNG_TASK_ENHANCE
-obj-$(CONFIG_OPLUS_FEATURE_HUNG_TASK_ENHANCE) += common/hung_task_enhance/
-#endif /* OPLUS_FEATURE_HUNG_TASK_ENHANCE */
 
 #ifdef OPLUS_FEATURE_SAUPWK
 obj-$(CONFIG_OPLUS_FEATURE_SAUPWK) += common/oplus_saupwk/
