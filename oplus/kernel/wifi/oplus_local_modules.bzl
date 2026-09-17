@@ -12,15 +12,6 @@ def version_compare(v1, v2):
 def define_oplus_local_modules():
 
     define_oplus_ddk_module(
-        name = "oplus_wifi_wsa",
-        srcs = native.glob([
-            "oplus_wifi_wsa/oplus_wifismartantenna.c"
-        ]),
-        local_defines = ["OPLUS_FEATURE_WIFI_SMARTANTENNA"],
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_wificapcenter",
         srcs = native.glob([
             "**/*.h",
@@ -73,7 +64,6 @@ def define_oplus_local_modules():
         )
 
         module_list = [
-            "oplus_wifi_wsa",
             "oplus_wificapcenter",
             "oplus_wifi_swtp",
             "wonder",
@@ -81,7 +71,6 @@ def define_oplus_local_modules():
 
     else :
         module_list = [
-            "oplus_wifi_wsa",
             "oplus_wificapcenter",
         ]
 
