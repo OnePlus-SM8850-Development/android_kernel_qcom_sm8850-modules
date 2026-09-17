@@ -126,28 +126,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_inject_aw8692x",
-        srcs = native.glob([
-            "**/*.h",
-        ]),
-        conditional_srcs = {
-            "CONFIG_OPLUS_DDK_MTK": {
-                True:  ["fault_inject/vibrator/oplus_inject_aw8692x.c"],
-                False: ["fault_inject/vibrator/oplus_inject_haptics.c"],
-            },
-        },
-        ko_deps = [
-            modules_label("oplus/kernel/dfr:oplus_inject"),
-            modules_label("oplus/kernel/vibrator/bazel:oplus_bsp_haptic_feedback"),
-        ],
-        includes = ["."],
-        conditional_build = {
-            "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",
-        },
-        local_defines = ["CONFIG_HAPTIC_FEEDBACK_MODULE"],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_ordump",
         srcs = native.glob([
             "**/*.h",
@@ -192,17 +170,11 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_inject",
-            "oplus_inject_aw8692x",
             "oplus_bsp_dfr_ordump",
             "oplus_bsp_dfr_kp_freeze_detect",
             "mtk_wdt",
         ],
-        conditional_builds = {
-            "oplus_inject_aw8692x": {
+        conditional_builds = {"oplus_inject": {
                 "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",
-            },
-            "oplus_inject": {
-                "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",
-            },
-        },
+            }},
     )

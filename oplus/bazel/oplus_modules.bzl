@@ -131,7 +131,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
     if str(oplus_feature_list.get("OPLUS_FEATURE_BSP_DRV_INJECT_TEST", 'foo')).upper() == "1":
         oplus_ddk_targets += [
             modules_label("oplus/sensor/kernel/qcom:pseudo_sensor"),
-            modules_label("oplus/kernel/dfr:oplus_inject_aw8692x"),
             modules_label("oplus/kernel/dfr:oplus_inject"),
         ]
 

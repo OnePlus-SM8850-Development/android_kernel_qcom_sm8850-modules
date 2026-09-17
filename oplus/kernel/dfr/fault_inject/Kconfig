@@ -5,13 +5,7 @@
 source "drivers/soc/oplus/dfr/fault_inject/common/Kconfig"
 #endif /* OPLUS_FEATURE_FAULT_INJECT */
 
-#ifdef CONFIG_OPLUS_FEATURE_FAULT_INJECT_VIBRATOR
-source "drivers/soc/oplus/dfr/fault_inject/vibrator/Kconfig"
-#endif /* OPLUS_FEATURE_FAULT_INJECT_VIBRATOR */
 
-#ifdef CONFIG_OPLUS_FEATURE_FAULT_INJECT_AW8692X
-source "drivers/soc/oplus/dfr/fault_inject/vibrator/Kconfig"
-#endif /* CONFIG_OPLUS_FEATURE_FAULT_INJECT_AW8692X */
 
 #ifdef CONFIG_OPLUS_FEATURE_FAULT_INJECT_CHG
 source "drivers/soc/oplus/dfr/fault_inject/charger/Kconfig"
