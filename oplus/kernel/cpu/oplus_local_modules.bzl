@@ -112,7 +112,6 @@ def define_oplus_local_modules():
                 "horae_shell_temp",
                 "oplus_bsp_frame_boost",
                 "oplus_bsp_waker_identify",
-                "oplus_bsp_task_sched",
             ],
         )
     elif (bazel_support_platform == "mtk") and (target == "k6993v1_64") :
@@ -126,7 +125,6 @@ def define_oplus_local_modules():
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
                 "oplus_freq_qos_arbiter",
-                "oplus_bsp_task_sched",
             ],
         )
     else :
@@ -137,6 +135,5 @@ def define_oplus_local_modules():
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
-                "oplus_bsp_task_sched",
             ],
         )
