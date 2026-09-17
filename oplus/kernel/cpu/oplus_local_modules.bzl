@@ -107,7 +107,6 @@ def define_oplus_local_modules():
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
             module_list = [
-                "oplus_bsp_geas_system",
                 "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
