@@ -97,5 +97,3 @@ config LOOK_AROUND
 	  define this config to add oplus look_around memload optimization feature
 
 source "mm/oplus_mm/hybridswap_zram/Kconfig"
-
-source "mm/oplus_mm/mm_osvelte/Kconfig"
