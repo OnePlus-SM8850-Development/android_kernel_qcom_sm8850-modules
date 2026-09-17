@@ -1,12 +1,9 @@
-load(":repo_paths.bzl", "modules_label", "soc_label")
+load(":repo_paths.bzl", "modules_label")
 
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
-    target = oplus_ddk_get_target()
-    variant  = oplus_ddk_get_variant()
-    kernel_build_variant = "{}_{}".format(target, variant)
 
     if bazel_support_platform == "qcom" :
         combkey_monitor_ko_deps = [
@@ -16,12 +13,6 @@ def define_oplus_local_modules():
 
         shutdown_detect_ko_deps = [
             modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
-        ]
-
-        dump_device_info_ko_deps = [
-            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
-            modules_label("oplus/kernel/boot:oplusboot"),
-            soc_label("{}/drivers/soc/qcom/debug_symbol").format(kernel_build_variant),
         ]
 
     define_oplus_ddk_module(
@@ -72,16 +63,6 @@ def define_oplus_local_modules():
         includes = ["."],
     )
 
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_dump_device_info",
-        srcs = native.glob([
-            "**/*.h",
-            "qcom/dump_device_info/dump_device_info.c",
-        ]),
-        ko_deps = dump_device_info_ko_deps,
-        includes = ["."],
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_dfr",
         module_list = [
@@ -89,7 +70,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_keyevent_handler",
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_pmic_monitor",
-            "oplus_bsp_dfr_dump_device_info",
         ],
         conditional_builds = {},
     )

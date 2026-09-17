@@ -13,9 +13,6 @@ obj-$(CONFIG_OPLUS_FEATURE_PMIC_MONITOR) += qcom/qcom_pmic_monitor/
 obj-$(CONFIG_OPLUS_FEATURE_QCOM_WATCHDOG) += qcom/qcom_watchdog/
 #endif /* OPLUS_FEATURE_QCOM_WATCHDOG */
 
-#ifdef OPLUS_FEATURE_DUMP_DEVICE_INFO
-obj-$(CONFIG_OPLUS_FEATURE_DUMP_DEVICE_INFO)	+=  qcom/dump_device_info/
-#endif /* OPLUS_FEATURE_DUMP_DEVICE_INFO */
 
 
 
