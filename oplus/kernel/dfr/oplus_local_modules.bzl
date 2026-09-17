@@ -82,19 +82,6 @@ def define_oplus_local_modules():
         includes = ["."],
     )
 
-    define_oplus_ddk_module(
-        name = "oplus_inject",
-        srcs = native.glob([
-            "**/*.h",
-            "fault_inject/common/oplus_inject_hook.c",
-            "fault_inject/common/oplus_inject_proc.c",
-        ]),
-        includes = ["."],
-        conditional_build = {
-            "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",
-        },
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_dfr",
         module_list = [
@@ -103,9 +90,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
-            "oplus_inject",
         ],
-        conditional_builds = {"oplus_inject": {
-                "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",
-            }},
+        conditional_builds = {},
     )
