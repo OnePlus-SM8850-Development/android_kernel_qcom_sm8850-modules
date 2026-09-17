@@ -133,16 +133,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_qcom_enhance_watchdog",
-        srcs = native.glob([
-            "**/*.h",
-            "qcom_watchdog/qcom_enhance_watchdog.c",
-        ]),
-        includes = ["."],
-	local_defines = ["CONFIG_OPLUS_FEATURE_QCOM_WATCHDOG_MODULE"],
-    )
-
-    define_oplus_ddk_module(
         name = "tango32",
         srcs = native.glob([
             "htb/*.h",
@@ -166,7 +156,6 @@ def define_oplus_local_modules():
             "oplus_bsp_boot_projectinfo",
             "oplus_bsp_dfr_reboot_speed",
             "oplus_bsp_dfr_shutdown_speed",
-            "oplus_bsp_dfr_qcom_enhance_watchdog",
             "tango32",
         ],
     )

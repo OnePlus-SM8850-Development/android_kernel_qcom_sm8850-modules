@@ -15,7 +15,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
         modules_label("oplus/kernel/boot:oplus_bsp_bootloader_log"),
         modules_label("oplus/kernel/boot:oplus_bsp_bootmode"),
-        modules_label("oplus/kernel/boot:oplus_bsp_dfr_qcom_enhance_watchdog"),
         modules_label("oplus/kernel/boot:oplus_bsp_dfr_reboot_speed"),
         modules_label("oplus/kernel/boot:oplus_bsp_dfr_shutdown_speed"),
         modules_label("oplus/kernel/boot:oplus_charger_present"),
