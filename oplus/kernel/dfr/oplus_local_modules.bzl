@@ -125,16 +125,6 @@ def define_oplus_local_modules():
         },
     )
 
-    define_oplus_ddk_module(
-        name = "mtk_wdt",
-        srcs = native.glob([
-            "**/**/*.h",
-            "qcom/mtk_wdt/mtk_wdt.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_MTK_WDT"],
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_dfr",
         module_list = [
@@ -146,7 +136,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_inject",
-            "mtk_wdt",
         ],
         conditional_builds = {"oplus_inject": {
                 "OPLUS_FEATURE_BSP_DRV_INJECT_TEST": "1",

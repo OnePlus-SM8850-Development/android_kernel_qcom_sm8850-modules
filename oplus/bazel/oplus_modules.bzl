@@ -50,7 +50,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/device_info/magnetic_cover:oplus_magcvr_mxm1120"),
         modules_label("oplus/kernel/device_info/magnetic_cover:oplus_magnetic_cover"),
         modules_label("oplus/kernel/device_info/magtransfer:oplus_magcvr_notify"),
-        modules_label("oplus/kernel/dfr:mtk_wdt"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_combkey_monitor"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
