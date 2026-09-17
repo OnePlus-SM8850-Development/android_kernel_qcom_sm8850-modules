@@ -1,5 +1,5 @@
 load(":repo_paths.bzl", "modules_label", "soc_label")
-load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
+
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
@@ -10,7 +10,6 @@ def define_oplus_local_modules():
 
     if bazel_support_platform == "qcom" :
         zram_opt_ko_deps = [soc_label("{}/drivers/block/zram/zram").format(kernel_build_variant),modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),":oplus_bsp_mm_osvelte"]
-        hybridswap_zram_ko_deps = []
 
 #    define_oplus_ddk_module(
 #        name = "oplus_bsp_memleak_detect_simple",
@@ -22,14 +21,6 @@ def define_oplus_local_modules():
 #        includes = ["."],
 #        )
 #
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_sigkill_diagnosis",
-        srcs = native.glob([
-            "sigkill_diagnosis/sigkill_diagnosis.c",
-        ]),
-        includes = ["."],
-    )
 
     define_oplus_ddk_module(
         name = "oplus_bsp_zram_opt",
@@ -243,7 +234,6 @@ def define_oplus_local_modules():
         name = "oplus_bsp_mm",
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
-            "oplus_bsp_sigkill_diagnosis",
             "oplus_bsp_zram_opt",
             "oplus_bsp_proactive_compact",
 #            "oplus_bsp_hybridswap_zram",
