@@ -39,8 +39,3 @@ source "drivers/soc/oplus/dfr/common/combkey_monitor/Kconfig"
 #ifdef CONFIG_OPLUS_FEATURE_FAULT_INJECT
 source "drivers/soc/oplus/dfr/fault_inject/Kconfig"
 #endif /*CONFIG_OPLUS_FEATURE_FAULT_INJECT*/
-
-
-#ifdef CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE
-source "drivers/soc/oplus/dfr/common/oplus_bsp_dfr_ubt/Kconfig"
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */

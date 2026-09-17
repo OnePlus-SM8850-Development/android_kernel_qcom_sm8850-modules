@@ -55,16 +55,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         ko_deps = shutdown_detect_ko_deps,
-        local_defines = ["CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT","CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE"],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_ubt",
-        srcs = native.glob([
-            "**/*.h",
-            "common/oplus_bsp_dfr_ubt/oplus_bsp_dfr_ubt.c",
-        ]),
-        includes = ["."],
+        local_defines = ["CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT"],
     )
 
     define_oplus_ddk_module(
@@ -131,7 +122,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_combkey_monitor",
             "oplus_bsp_dfr_keyevent_handler",
             "oplus_bsp_dfr_shutdown_detect",
-            "oplus_bsp_dfr_ubt",
             "oplus_bsp_dfr_theia",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",

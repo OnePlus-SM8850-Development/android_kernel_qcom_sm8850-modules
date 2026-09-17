@@ -68,9 +68,6 @@
 #include <linux/pm_wakeup.h>
 #include <soc/oplus/system/oplus_project.h>
 
-#if IS_ENABLED (CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE)
-#include <soc/oplus/dfr/oplus_bsp_dfr_ubt.h>
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */
 
 #include <linux/blkdev.h>
 #include <linux/notifier.h>
@@ -204,9 +201,6 @@ static int shutdown_detect_func(void *dummy);
 static void shutdown_timeout_flag_write(int timeout);
 static void shutdown_dump_kernel_log(void);
 static int shutdown_timeout_flag_write_now(void *args);
-#if IS_ENABLED (CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE)
-static void shutdown_dump_ubt(void);
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */
 
 extern int creds_change_dac(void);
 extern int shutdown_kernel_log_save(void *args);
@@ -1031,38 +1025,6 @@ static void shutdown_dump_kernel_log(void)
 }
 
 
-#if IS_ENABLED (CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE)
-static const char *shutdown_key_processes[] = {
-	"surfaceflinger",
-	"Binder:vold",
-	"init",
-};
-
-static void shutdown_dump_ubt(void)
-{
-	struct task_struct *p = NULL;
-	struct task_struct *target_task = NULL;
-	int key_size = ARRAY_SIZE(shutdown_key_processes);
-	int idx = 0;
-
-	while(idx < key_size) {
-		rcu_read_lock();
-		for_each_process(p) {
-			if (!strncmp(p->comm, shutdown_key_processes[idx], TASK_COMM_LEN)) {
-				target_task = p;
-				break;
-			}
-		}
-		rcu_read_unlock();
-		if (target_task) {
-			/* user space backtrace */
-			dump_userspace_bt(target_task);
-		}
-		target_task = NULL;
-		idx++;
-	}
-}
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */
 
 
 static void shutdown_timeout_flag_write(int timeout)
@@ -1100,14 +1062,6 @@ static int shutdown_detect_func(void *dummy)
 	pr_err("shutdown_detect:%s shutdown_detect status:%u. \n", __func__,
 	       shutdown_phase);
 
-#if IS_ENABLED (CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE)
-	/* add init stage userspace backtrace dump */
-	if (shutdown_phase == SHUTDOWN_STAGE_INIT ||
-		shutdown_phase == SHUTDOWN_TIMEOUNT_UMOUNT ||
-		shutdown_phase == SHUTDOWN_TIMEOUNT_VOLUME) {
-		shutdown_dump_ubt();
-	}
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */
 
 	if (shutdown_phase >= SHUTDOWN_STAGE_INIT) {
 		shutdown_dump_android_log();
@@ -1167,9 +1121,6 @@ static int __init init_shutdown_detect_ctrl(void)
 	/* init shutdown timer */
 	timer_setup(&shutdown_timer, shutdown_timer_func,
 		TIMER_DEFERRABLE);
-#if IS_ENABLED (CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE)
-	dump_userspace_init("ubt,shutdown");
-#endif /* CONFIG_OPLUS_BSP_DFR_USERSPACE_BACKTRACE */
 
 	/* For recording the current shutdown record */
 	register_reboot_notifier(&reboot_nb);
