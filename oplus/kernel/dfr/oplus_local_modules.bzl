@@ -56,21 +56,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_fdleak_check",
-        srcs = native.glob([
-            "**/*.h",
-            "common/oplus_fdleak/oplus_fdleak_check.c",
-        ]),
-        conditional_defines = {
-            "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
-        },
-#        header_deps = [
-#            modules_label("oplus/kernel/cpu:config_headers"),
-#        ],
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_oplus_saupwk",
         srcs = native.glob([
             "**/*.h",
@@ -258,7 +243,6 @@ def define_oplus_local_modules():
         module_list = [
             "oplus_bsp_dfr_combkey_monitor",
             "oplus_bsp_dfr_keyevent_handler",
-            "oplus_bsp_dfr_fdleak_check",
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_ubt",
             "oplus_bsp_dfr_theia",
