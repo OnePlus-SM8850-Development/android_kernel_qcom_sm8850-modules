@@ -5,9 +5,6 @@
 source "drivers/soc/oplus/dfr/qcom/qcom_pmic_monitor/Kconfig"
 #endif /* OPLUS_FEATURE_PMIC_MONITOR */
 
-#ifdef OPLUS_FEATURE_FORCE_SHUTDOWN
-source "drivers/soc/oplus/dfr/qcom/force_shutdown/Kconfig"
-#endif /* OPLUS_FEATURE_FORCE_SHUTDOWN */
 
 #ifdef OPLUS_FEATURE_QCOM_PMICWD
 source "drivers/soc/oplus/dfr/qcom/qcom_pmicwd/Kconfig"

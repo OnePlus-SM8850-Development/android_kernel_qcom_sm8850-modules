@@ -94,19 +94,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_force_shutdown",
-        srcs = native.glob([
-            "**/*.h",
-        ]),
-        conditional_srcs = {
-            "CONFIG_OPLUS_DDK_MTK": {
-                False: ["qcom/force_shutdown/force_shutdown.c"],
-            }
-        },
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_pmic_monitor",
         srcs = native.glob([
             "**/*.h",
@@ -233,7 +220,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_ubt",
             "oplus_bsp_dfr_theia",
-            "oplus_bsp_dfr_force_shutdown",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_bsp_dfr_dump_reason",

@@ -7,9 +7,6 @@
 obj-$(CONFIG_OPLUS_FEATURE_PMIC_MONITOR) += qcom/qcom_pmic_monitor/
 #endif /* OPLUS_FEATURE_PMIC_MONITOR */
 
-#ifdef OPLUS_FEATURE_FORCE_SHUTDOWN
-obj-$(CONFIG_OPLUS_FEATURE_FORCE_SHUTDOWN) += qcom/force_shutdown/
-#endif /* OPLUS_FEATURE_FORCE_SHUTDOWN */
 
 #ifdef OPLUS_FEATURE_QCOM_PMICWD
 obj-$(CONFIG_OPLUS_FEATURE_QCOM_PMICWD) += qcom/qcom_pmicwd/
