@@ -1,1 +1,1 @@
-../../../../../../../kernel_platform/soc-repo/drivers/ufs/host/ufs-qcom.h
+../../../../../../../kernel/drivers/ufs/host/ufs-qcom.h

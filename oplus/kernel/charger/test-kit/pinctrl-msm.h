@@ -1,1 +1,1 @@
-../../../../../kernel_platform/soc-repo/drivers/pinctrl/qcom/pinctrl-msm.h
+../../../../../kernel/drivers/pinctrl/qcom/pinctrl-msm.h
