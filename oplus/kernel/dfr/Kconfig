@@ -18,9 +18,6 @@ source "drivers/soc/oplus/dfr/qcom/qcom_watchdog/Kconfig"
 source "drivers/soc/oplus/dfr/qcom/dump_device_info/Kconfig"
 #endif /* OPLUS_FEATURE_DUMP_REASON */
 
-#ifdef OPLUS_FEATURE_DUMP_REASON
-source "drivers/soc/oplus/dfr/qcom/dump_reason/Kconfig"
-#endif /* OPLUS_FEATURE_DUMP_REASON */
 
 #ifdef OPLUS_FEATURE_FULLDUMP_BACK
 source "drivers/soc/oplus/dfr/qcom/oplus_ordump/Kconfig"

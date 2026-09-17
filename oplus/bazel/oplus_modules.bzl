@@ -53,7 +53,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/dfr:mtk_wdt"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_combkey_monitor"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info"),
-        modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_reason"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_kp_freeze_detect"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_ordump"),

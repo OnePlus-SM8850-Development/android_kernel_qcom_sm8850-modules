@@ -26,10 +26,7 @@ def define_oplus_local_modules():
             modules_label("oplus/kernel/boot:oplusboot"),
             soc_label("{}/drivers/soc/qcom/debug_symbol").format(kernel_build_variant),
         ]
-        dump_reason_ko_deps = [
-            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info"),
-            soc_label("{}/drivers/soc/qcom/smem").format(kernel_build_variant),
-        ]
+
         pmic_watchdog_ko_deps = [
             modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
             soc_label("{}/drivers/input/misc/qpnp-power-on").format(kernel_build_variant),
@@ -117,17 +114,6 @@ def define_oplus_local_modules():
             "qcom/dump_device_info/dump_device_info.c",
         ]),
         ko_deps = dump_device_info_ko_deps,
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_dump_reason",
-        srcs = native.glob([
-            "**/*.h",
-            "qcom/dump_reason/dump_reason.c",
-        ]),
-        ko_deps = dump_reason_ko_deps,
-        copts = ["-DCONFIG_QCOM_SMEM"],
         includes = ["."],
     )
 
@@ -222,7 +208,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_theia",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
-            "oplus_bsp_dfr_dump_reason",
             "oplus_bsp_dfr_pmic_watchdog",
             "oplus_inject",
             "oplus_inject_aw8692x",

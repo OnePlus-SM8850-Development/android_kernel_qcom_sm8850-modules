@@ -20,9 +20,6 @@ obj-$(CONFIG_OPLUS_FEATURE_QCOM_WATCHDOG) += qcom/qcom_watchdog/
 obj-$(CONFIG_OPLUS_FEATURE_DUMP_DEVICE_INFO)	+=  qcom/dump_device_info/
 #endif /* OPLUS_FEATURE_DUMP_DEVICE_INFO */
 
-#ifdef OPLUS_FEATURE_DUMP_REASON
-obj-$(CONFIG_OPLUS_FEATURE_DUMP_REASON)	+=  qcom/dump_reason/
-#endif /* OPLUS_FEATURE_DUMP_REASON */
 
 #ifdef OPLUS_FEATURE_FULLDUMP_BACK
 obj-$(CONFIG_OPLUS_FEATURE_FULLDUMP_BACK) += qcom/oplus_ordump/
