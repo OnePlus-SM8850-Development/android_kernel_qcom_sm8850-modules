@@ -1,15 +1,9 @@
-load(":repo_paths.bzl", "modules_label", "soc_label")
+load(":repo_paths.bzl", "modules_label")
 
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
-    target = oplus_ddk_get_target()
-    variant  = oplus_ddk_get_variant()
-    kernel_build_variant = "{}_{}".format(target, variant)
-
-    if bazel_support_platform == "qcom" :
-        zram_opt_ko_deps = [soc_label("{}/drivers/block/zram/zram").format(kernel_build_variant),modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),":oplus_bsp_mm_osvelte"]
 
 #    define_oplus_ddk_module(
 #        name = "oplus_bsp_memleak_detect_simple",
@@ -21,21 +15,6 @@ def define_oplus_local_modules():
 #        includes = ["."],
 #        )
 #
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_zram_opt",
-        srcs = native.glob([
-            "**/*.h",
-            "zram_opt/zram_opt.c",
-        ]),
-        includes = ["."],
-        ko_deps = zram_opt_ko_deps,
-        local_defines = ["CONFIG_DYNAMIC_TUNING_SWAPPINESS", "CONFIG_OPLUS_BALANCE_ANON_FILE_RECLAIM", "CONFIG_HYBRIDSWAP_SWAPD", "CONFIG_OPLUS_EXTRA_FREE_KBYTES"],
-#        copts = select({
-#            "//build/kernel/kleaf:kocov_is_true": ["-fprofile-arcs", "-ftest-coverage"],
-#            "//conditions:default": [],
-#        }),
-    )
 
     define_oplus_ddk_module(
         name = "oplus_bsp_proactive_compact",
@@ -234,7 +213,6 @@ def define_oplus_local_modules():
         name = "oplus_bsp_mm",
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
-            "oplus_bsp_zram_opt",
             "oplus_bsp_proactive_compact",
 #            "oplus_bsp_hybridswap_zram",
             "oplus_bsp_uxmem_opt",
