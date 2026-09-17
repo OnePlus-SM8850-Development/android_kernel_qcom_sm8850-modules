@@ -87,7 +87,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/multimedia/feedback/bazel:oplus_mm_kevent"),
         modules_label("oplus/kernel/multimedia/feedback/bazel:oplus_mm_kevent_fb"),
         modules_label("oplus/kernel/network:oplus_network_esim"),
-        modules_label("oplus/kernel/network:oplus_network_game_first"),
         modules_label("oplus/kernel/network:oplus_network_oem_qmi"),
         modules_label("oplus/kernel/network:oplus_network_qr_scan"),
         modules_label("oplus/kernel/network:oplus_network_rf_cable_monitor"),
