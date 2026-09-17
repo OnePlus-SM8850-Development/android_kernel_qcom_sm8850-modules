@@ -27,11 +27,6 @@ def define_oplus_local_modules():
             soc_label("{}/drivers/soc/qcom/debug_symbol").format(kernel_build_variant),
         ]
 
-        pmic_watchdog_ko_deps = [
-            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
-            soc_label("{}/drivers/input/misc/qpnp-power-on").format(kernel_build_variant),
-         ]
-
     define_oplus_ddk_module(
         name = "oplus_bsp_dfr_combkey_monitor",
         srcs = native.glob([
@@ -118,18 +113,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_pmic_watchdog",
-        srcs = native.glob([
-            "**/*.h",
-            "qcom/qcom_pmicwd/qcom_pmicwd.c",
-            "qcom/qcom_pmicwd/qcom_pwkpwr.c",
-	    "qcom/qcom_pmicwd/qcom_pmicwd_inject.c",
-        ]),
-        ko_deps = pmic_watchdog_ko_deps,
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_inject",
         srcs = native.glob([
             "**/*.h",
@@ -208,7 +191,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_theia",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
-            "oplus_bsp_dfr_pmic_watchdog",
             "oplus_inject",
             "oplus_inject_aw8692x",
             "oplus_bsp_dfr_ordump",

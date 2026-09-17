@@ -8,9 +8,6 @@ obj-$(CONFIG_OPLUS_FEATURE_PMIC_MONITOR) += qcom/qcom_pmic_monitor/
 #endif /* OPLUS_FEATURE_PMIC_MONITOR */
 
 
-#ifdef OPLUS_FEATURE_QCOM_PMICWD
-obj-$(CONFIG_OPLUS_FEATURE_QCOM_PMICWD) += qcom/qcom_pmicwd/
-#endif /* OPLUS_FEATURE_QCOM_PMICWD */
 
 #ifdef OPLUS_FEATURE_QCOM_WATCHDOG
 obj-$(CONFIG_OPLUS_FEATURE_QCOM_WATCHDOG) += qcom/qcom_watchdog/
