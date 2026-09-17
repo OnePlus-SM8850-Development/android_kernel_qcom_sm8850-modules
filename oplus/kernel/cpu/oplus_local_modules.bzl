@@ -11,7 +11,6 @@ load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
 
-load(":oplus_slc/oplus_slc_local_modules.bzl", "define_oplus_slc_local_modules")
 load(":smart_freq/oplus_smartfreq_local_modules.bzl", "define_oplus_smart_freq_local_modules")
 
 def define_oplus_sched_assist_local_modules():
@@ -127,7 +126,6 @@ def define_oplus_local_modules():
     elif (bazel_support_platform == "mtk") and (target == "k6993v1_64") :
         define_oplus_freq_qos_arbiter_local_modules()
 
-        define_oplus_slc_local_modules()
         define_oplus_smart_freq_local_modules()
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
@@ -140,7 +138,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_schedinfo",
                 "oplus_freq_qos_arbiter",
                 "oplus_bsp_task_sched",
-                "oplus_slc",
                 "oplus_bsp_smart_freq"
             ],
         )
