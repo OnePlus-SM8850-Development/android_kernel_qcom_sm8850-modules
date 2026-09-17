@@ -17,15 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_kshrink_slabd",
-        srcs = native.glob([
-            "**/*.h",
-            "async_reclaim_opt/kshrink_slabd/kshrink_slabd.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_uxmem_opt",
         srcs = native.glob([
             "**/*.h",
@@ -209,7 +200,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dynamic_readahead",
             "oplus_bsp_kswapd_opt",
             "oplus_bsp_pcppages_opt",
-            "oplus_bsp_kshrink_slabd",
             "oplus_bsp_memleak_detect",
             "oplus_bsp_zstdn",
             "oplus_bsp_mm_osvelte",
