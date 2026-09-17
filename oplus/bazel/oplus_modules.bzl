@@ -90,7 +90,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/network:oplus_network_oem_qmi"),
         modules_label("oplus/kernel/network:oplus_network_rf_cable_monitor"),
         modules_label("oplus/kernel/network:oplus_network_sim_detect"),
-        modules_label("oplus/kernel/network:oplus_network_stats_calc"),
         modules_label("oplus/kernel/network:oplus_network_tuning"),
         modules_label("oplus/kernel/network:oplus_network_vnet"),
         modules_label("oplus/kernel/power/power_hook:oplus_power_hook"),
