@@ -17,15 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_pcppages_opt",
-        srcs = native.glob([
-            "**/*.h",
-            "async_reclaim_opt/pcppages_opt/pcppages_opt.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_kswapd_opt",
         srcs = native.glob([
             "kswapd_opt/kswapd_opt.c",
@@ -164,7 +155,6 @@ def define_oplus_local_modules():
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
             "oplus_bsp_kswapd_opt",
-            "oplus_bsp_pcppages_opt",
             "oplus_bsp_memleak_detect",
             "oplus_bsp_zstdn",
             "oplus_bsp_mm_osvelte",
