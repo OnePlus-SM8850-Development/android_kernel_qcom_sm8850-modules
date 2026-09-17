@@ -126,20 +126,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_ordump",
-        srcs = native.glob([
-            "**/*.h",
-            "qcom/oplus_ordump/ordump.c",
-        ]),
-        copts = ["-DCONFIG_QCOM_SMEM"],
-        includes = ["."],
-        ko_deps = [
-            soc_label("{}/drivers/soc/qcom/smem").format(kernel_build_variant),
-        ],
-        local_defines = ["CONFIG_OPLUS_FEATURE_FULLDUMP_BACK"],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_kp_freeze_detect",
         srcs = native.glob([
             "**/*.h",
@@ -170,7 +156,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_inject",
-            "oplus_bsp_dfr_ordump",
             "oplus_bsp_dfr_kp_freeze_detect",
             "mtk_wdt",
         ],

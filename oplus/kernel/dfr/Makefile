@@ -18,9 +18,6 @@ obj-$(CONFIG_OPLUS_FEATURE_DUMP_DEVICE_INFO)	+=  qcom/dump_device_info/
 #endif /* OPLUS_FEATURE_DUMP_DEVICE_INFO */
 
 
-#ifdef OPLUS_FEATURE_FULLDUMP_BACK
-obj-$(CONFIG_OPLUS_FEATURE_FULLDUMP_BACK) += qcom/oplus_ordump/
-#endif /* OPLUS_FEATURE_FULLDUMP_BACK */
 
 # common feature
 #ifdef OPLUS_FEATURE_SHUTDOWN_DETECT

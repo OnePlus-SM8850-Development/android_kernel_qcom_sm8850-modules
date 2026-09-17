@@ -55,7 +55,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_kp_freeze_detect"),
-        modules_label("oplus/kernel/dfr:oplus_bsp_dfr_ordump"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_pmic_monitor"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_shutdown_detect"),
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
