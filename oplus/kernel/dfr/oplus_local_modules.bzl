@@ -126,16 +126,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_kp_freeze_detect",
-        srcs = native.glob([
-            "**/*.h",
-            "common/kp_freeze_detect/kp_freeze_detect.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_KP_FREEZE_DETECT"],
-    )
-
-    define_oplus_ddk_module(
         name = "mtk_wdt",
         srcs = native.glob([
             "**/**/*.h",
@@ -156,7 +146,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_inject",
-            "oplus_bsp_dfr_kp_freeze_detect",
             "mtk_wdt",
         ],
         conditional_builds = {"oplus_inject": {
