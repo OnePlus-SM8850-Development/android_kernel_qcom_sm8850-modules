@@ -48,7 +48,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/network:oplus_network_rf_cable_monitor"),
         modules_label("oplus/kernel/network:oplus_network_sim_detect"),
         modules_label("oplus/kernel/storage:ufs-oplus-dbg"),
-        modules_label("oplus/kernel/synchronize:oplus_lock_torture"),
         modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
         modules_label("oplus/kernel/touchpanel/kernelFwUpdate/bazel:oplus_bsp_fw_update"),
         modules_label("oplus/kernel/touchpanel/oplus_touchscreen_v2:oplus_bsp_tp_common"),

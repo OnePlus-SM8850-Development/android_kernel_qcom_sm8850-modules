@@ -1,4 +1,3 @@
-load(":repo_paths.bzl", "modules_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
@@ -45,32 +44,9 @@ def define_oplus_local_modules():
         includes = ["."],
     )
 
-    define_oplus_ddk_module(
-        name = "oplus_lock_torture",
-        srcs = native.glob([
-        "locktorture.c",
-        "*.h",
-        ]),
-        includes = ["."],
-        local_defines = [
-            "CONFIG_OPLUS_LOCKING_STRATEGY",
-            "CONFIG_OPLUS_LOCKING_OSQ",
-            "CONFIG_OPLUS_LOCKING_MONITOR",
-            "CONFIG_LOCKING_PROTECT",
-            "CONFIG_PCPU_RWSEM_LOCKING_PROTECT",
-        ],
-        conditional_defines = {
-            "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
-        },
-        ko_deps = [
-                            modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
-                        ],
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_locking_strategy",
         module_list = [
             "oplus_locking_strategy",
-            "oplus_lock_torture",
         ],
     )
