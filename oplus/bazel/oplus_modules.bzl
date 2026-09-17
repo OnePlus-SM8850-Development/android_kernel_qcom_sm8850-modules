@@ -134,7 +134,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/tp/hbp/hbp:oplus_hbp_core"),
         modules_label("oplus/kernel/vibrator/bazel:oplus_bsp_haptic"),
         modules_label("oplus/kernel/vibrator/bazel:oplus_bsp_haptic_feedback"),
-        modules_label("oplus/kernel/wifi:oplus_connectivity_routerboost"),
         modules_label("oplus/kernel/wifi:oplus_connectivity_sla"),
         modules_label("oplus/kernel/wifi:oplus_wifi_wsa"),
         modules_label("oplus/kernel/wifi:oplus_wificapcenter"),

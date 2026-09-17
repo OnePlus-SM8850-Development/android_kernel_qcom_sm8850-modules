@@ -1,5 +1,5 @@
 load(":repo_paths.bzl", "soc_label")
-load("//build/kernel/kleaf:kernel.bzl", "checkpatch", "ddk_headers", "ddk_module")
+load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 load(":oplus_modules_define.bzl", "oplus_ddk_get_target", "define_oplus_ddk_module",
  "oplus_ddk_get_kernel_version", "bazel_support_platform", "oplus_ddk_get_variant")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
@@ -10,16 +10,6 @@ def version_compare(v1, v2):
     return v1_parts >= v2_parts
 
 def define_oplus_local_modules():
-
-    define_oplus_ddk_module(
-        name = "oplus_connectivity_routerboost",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_connectivity_routerboost/oplus_routerboost.c",
-            "oplus_connectivity_routerboost/oplus_routerboost_game_monitor.c"
-        ]),
-        includes = ["."],
-    )
 
     define_oplus_ddk_module(
         name = "oplus_connectivity_sla",
@@ -91,7 +81,6 @@ def define_oplus_local_modules():
         )
 
         module_list = [
-            "oplus_connectivity_routerboost",
             "oplus_connectivity_sla",
             "oplus_wifi_wsa",
             "oplus_wificapcenter",
@@ -101,7 +90,6 @@ def define_oplus_local_modules():
 
     else :
         module_list = [
-            "oplus_connectivity_routerboost",
             "oplus_connectivity_sla",
             "oplus_wifi_wsa",
             "oplus_wificapcenter",
