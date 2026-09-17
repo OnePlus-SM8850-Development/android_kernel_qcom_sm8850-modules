@@ -17,17 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_memleak_detect",
-        srcs = native.glob([
-            "**/*.h",
-            "memleak_detect/slub_track.c",
-            "memleak_detect/vmalloc_track.c",
-            "memleak_detect/memleak_debug_stackdepot.c"
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_mm_osvelte",
         srcs = native.glob([
             "mm_osvelte/common.c",
@@ -101,7 +90,6 @@ def define_oplus_local_modules():
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
-            "oplus_bsp_memleak_detect",
             "oplus_bsp_mm_osvelte",
             "oplus_bsp_zstdn_o",
         ],
