@@ -125,18 +125,6 @@ def define_oplus_storage_modules():
             "include/storage.h",
         ]
 
-    define_oplus_ddk_module(
-        name = "oplus_f2fslog_storage",
-        srcs = native.glob([
-            "storage_feature_in_module/common/oplus_f2fslog_storage/*.c"
-        ]),
-        hdrs = hdrs,
-        includes = ["."],
-        copts = copts,
-        ko_deps = ko_deps,
-        out = "oplus_f2fslog_storage.ko",
-    )
-
     # add for oplus_wq_dynamic_priority
     if bazel_support_platform == "qcom":
         copts = []
