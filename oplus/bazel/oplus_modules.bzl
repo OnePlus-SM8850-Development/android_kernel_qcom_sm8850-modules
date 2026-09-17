@@ -56,7 +56,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/dfr:oplus_bsp_dfr_shutdown_detect"),
         modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb"),
         modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_olc"),
-        modules_label("oplus/kernel/framework_stability/oplus_stability_helper:oplus_sys_stability_helper"),
         modules_label("oplus/kernel/graphics:oplus_sync_fence"),
         modules_label("oplus/kernel/hans:oplus_sys_hans"),
         modules_label("oplus/kernel/multimedia/feedback/bazel:oplus_mm_kevent"),
