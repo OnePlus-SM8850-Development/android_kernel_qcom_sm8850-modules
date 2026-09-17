@@ -9,7 +9,6 @@ load(":thermal/oplus_thermal_local_modules.bzl", "define_oplus_thermal_local_mod
 load(":waker_identify/oplus_waker_identify_local_modules.bzl", "define_oplus_waker_identify_local_modules")
 load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
 load(":uad/oplus_uad_local_modules.bzl", "define_oplus_uad_local_modules")
-load(":cpufreq_bouncing/oplus_cpufreq_bouncing_local_modules.bzl", "define_oplus_cpufreq_bouncing_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
 
@@ -102,7 +101,7 @@ def define_oplus_local_modules():
     define_oplus_thermal_local_modules()
 
     define_oplus_waker_identify_local_modules()
-    define_oplus_cpufreq_bouncing_local_modules()
+
     define_oplus_sched_local_modules()
 
 #for platform only
@@ -120,7 +119,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_frame_boost",
                 "ua_cpu_ioctl",
                 "oplus_bsp_task_cpustats",
-                "cpufreq_bouncing",
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_schedinfo",
                 "oplus_bsp_task_load",
@@ -140,7 +138,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
-                "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_schedinfo",
                 "oplus_freq_qos_arbiter",
@@ -157,7 +154,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
-                "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_schedinfo",
                 "oplus_bsp_task_sched",
