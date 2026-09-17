@@ -10,7 +10,6 @@ load(":waker_identify/oplus_waker_identify_local_modules.bzl", "define_oplus_wak
 load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
 load(":uad/oplus_uad_local_modules.bzl", "define_oplus_uad_local_modules")
 load(":cpufreq_bouncing/oplus_cpufreq_bouncing_local_modules.bzl", "define_oplus_cpufreq_bouncing_local_modules")
-load(":midas/oplus_midas_local_modules.bzl", "define_oplus_midas_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
 
@@ -105,7 +104,6 @@ def define_oplus_local_modules():
     define_oplus_waker_identify_local_modules()
     define_oplus_cpufreq_bouncing_local_modules()
     define_oplus_sched_local_modules()
-    define_oplus_midas_local_modules()
 
 #for platform only
     target = oplus_ddk_get_target()
@@ -126,7 +124,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_schedinfo",
                 "oplus_bsp_task_load",
-                "oplus_bsp_midas",
                 "oplus_bsp_task_sched",
                 "osml_monitor",
             ],
@@ -146,7 +143,6 @@ def define_oplus_local_modules():
                 "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_schedinfo",
-                "oplus_bsp_midas",
                 "oplus_freq_qos_arbiter",
                 "oplus_bsp_task_sched",
                 "oplus_slc",
@@ -164,7 +160,6 @@ def define_oplus_local_modules():
                 "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_schedinfo",
-                "oplus_bsp_midas",
                 "oplus_bsp_task_sched",
             ],
         )
