@@ -48,49 +48,11 @@ def define_oplus_local_modules():
         local_defines = ["CONFIG_OPLUS_FEATURE_MM_BOOSTPOOL"],
     )
 
-    define_oplus_ddk_module(
-        name = "oplus_bsp_zstdn_o",
-        srcs = native.glob([
-            "**/*.h",
-            "zstd_o/include/*.h",
-            "zstd_o/common/*.h",
-            "zstd_o/compress/*.h",
-            "zstd_o/decompress/*.h",
-            "zstd_o/crypto_zstd.c",
-            "zstd_o/zstd_compress_module.c",
-            "zstd_o/xxhash.c",
-            "zstd_o/common/debug.c",
-            "zstd_o/common/entropy_common.c",
-            "zstd_o/common/error_private.c",
-            "zstd_o/common/fse_decompress.c",
-            "zstd_o/common/zstd_common.c",
-            "zstd_o/compress/fse_compress.c",
-            "zstd_o/compress/hist.c",
-            "zstd_o/compress/huf_compress.c",
-            "zstd_o/compress/zstd_compress.c",
-            "zstd_o/compress/zstd_compress_literals.c",
-            "zstd_o/compress/zstd_compress_sequences.c",
-            "zstd_o/compress/zstd_compress_superblock.c",
-            "zstd_o/compress/zstd_double_fast.c",
-            "zstd_o/compress/zstd_fast.c",
-            "zstd_o/compress/zstd_lazy.c",
-            "zstd_o/compress/zstd_ldm.c",
-            "zstd_o/compress/zstd_opt.c",
-            "zstd_o/zstd_decompress_module.c",
-            "zstd_o/decompress/huf_decompress.c",
-            "zstd_o/decompress/zstd_ddict.c",
-            "zstd_o/decompress/zstd_decompress.c",
-            "zstd_o/decompress/zstd_decompress_block.c"
-        ]),
-        includes = ["."],
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_mm",
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
 #            "oplus_bsp_hybridswap_zram",
             "oplus_bsp_mm_osvelte",
-            "oplus_bsp_zstdn_o",
         ],
     )
