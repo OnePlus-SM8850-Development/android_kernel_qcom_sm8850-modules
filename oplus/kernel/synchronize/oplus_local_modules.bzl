@@ -34,7 +34,7 @@ def define_oplus_local_modules():
         conditional_defines = {
             "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
         },
-        ko_deps = [modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist")],
+        ko_deps = [],
     )
 
     ddk_headers(
@@ -64,7 +64,6 @@ def define_oplus_local_modules():
         },
         ko_deps = [
                             modules_label("oplus/kernel/synchronize:oplus_locking_strategy"),
-                            modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
                         ],
     )
 

@@ -117,7 +117,6 @@ def define_oplus_storage_modules():
     if bazel_support_platform == "qcom":
         copts = []
         ko_deps = [
-            modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
         ]
         hdrs = [
             "storage_feature_in_module/common/wq_dynamic_priority/oplus_wq_dynamic_priority.h"
@@ -125,7 +124,6 @@ def define_oplus_storage_modules():
     else:
         copts = []
         ko_deps = [
-            modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
         ]
         hdrs = [
             "storage_feature_in_module/common/wq_dynamic_priority/oplus_wq_dynamic_priority.h",
