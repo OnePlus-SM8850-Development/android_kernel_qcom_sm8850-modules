@@ -17,15 +17,6 @@ def define_oplus_local_modules():
 #
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_proactive_compact",
-        srcs = native.glob([
-            "**/*.h",
-            "proactive_compact/proactive_compact.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_kshrink_slabd",
         srcs = native.glob([
             "**/*.h",
@@ -213,7 +204,6 @@ def define_oplus_local_modules():
         name = "oplus_bsp_mm",
         module_list = [
 #            "oplus_bsp_memleak_detect_simple",
-            "oplus_bsp_proactive_compact",
 #            "oplus_bsp_hybridswap_zram",
             "oplus_bsp_uxmem_opt",
             "oplus_bsp_dynamic_readahead",
