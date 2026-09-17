@@ -26,9 +26,6 @@ obj-$(CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT) += common/shutdown_detect/
 
 
 
-#ifdef OPLUS_FEATURE_THEIA
-obj-$(CONFIG_OPLUS_FEATURE_THEIA) += common/theia/
-#endif /* OPLUS_FEATURE_THEIA */
 
 
 #ifdef OPLUS_FEATURE_KEYEVENT_HANDLER

@@ -11,16 +11,13 @@ def define_oplus_local_modules():
     if bazel_support_platform == "qcom" :
         combkey_monitor_ko_deps = [
             modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
-            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
             modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb"),
         ]
 
         shutdown_detect_ko_deps = [
             modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
         ]
-        theia_ko_deps = [
-            soc_label("{}/drivers/soc/qcom/panel_event_notifier").format(kernel_build_variant)
-        ]
+
         dump_device_info_ko_deps = [
             modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
             modules_label("oplus/kernel/boot:oplusboot"),
@@ -35,7 +32,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         ko_deps = combkey_monitor_ko_deps,
-        local_defines = ["CONFIG_OPLUS_FEATURE_THEIA","CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER"],
+        local_defines = ["CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER"],
     )
 
     define_oplus_ddk_module(
@@ -56,24 +53,6 @@ def define_oplus_local_modules():
         includes = ["."],
         ko_deps = shutdown_detect_ko_deps,
         local_defines = ["CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT"],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_theia",
-        srcs = native.glob([
-            "**/*.h",
-            "common/theia/black_screen_check.c",
-            "common/theia/bright_screen_check.c",
-            "common/theia/theia_kevent_kernel.c",
-            "common/theia/powerkey_monitor.c",
-            "common/theia/theia_send_event.c",
-        ]),
-        conditional_defines = {
-            "qcom": ["CONFIG_QCOM_PANEL_EVENT_NOTIFIER"],
-        },
-        includes = ["."],
-        ko_deps = theia_ko_deps,
-        local_defines = ["CONFIG_OPLUS_FEATURE_THEIA_MODULE"],
     )
 
     define_oplus_ddk_module(
@@ -122,7 +101,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_combkey_monitor",
             "oplus_bsp_dfr_keyevent_handler",
             "oplus_bsp_dfr_shutdown_detect",
-            "oplus_bsp_dfr_theia",
             "oplus_bsp_dfr_pmic_monitor",
             "oplus_bsp_dfr_dump_device_info",
             "oplus_inject",

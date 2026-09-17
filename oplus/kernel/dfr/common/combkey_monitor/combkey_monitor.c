@@ -16,10 +16,6 @@
 #if IS_ENABLED(CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER)
 #include "../../include/keyevent_handler.h"
 #endif
-#if IS_ENABLED(CONFIG_OPLUS_FEATURE_THEIA)
-#include "../../include/theia_send_event.h"
-#include "../../include/theia_bright_black_check.h"
-#endif
 
 #define CREATE_TRACE_POINTS
 #include "combkey_trace.h"
@@ -207,9 +203,7 @@ static int record_combkey_long_press_flag(unsigned int flag)
 
 static void combkey_long_press_callback(struct work_struct *work)
 {
-	pr_info("called. send pwr_resin_bark to theia.\n");
-	theia_send_event(THEIA_EVENT_KPDPWR_RESIN_BARK, THEIA_LOGINFO_KERNEL_LOG | THEIA_LOGINFO_ANDROID_LOG,
-		0, "kpdpwr_resin_bark happen");
+	pr_info("Combination key long press detected.\n");
 	record_combkey_long_press_flag(1);
 }
 
@@ -232,12 +226,7 @@ static long get_timestamp_ms(void)
 
 static void pwrkey_long_press_callback(struct work_struct *work)
 {
-	pr_info("called. send long press pwrkey to theia.\n");
-	/*
-	theia_send_event(THEIA_EVENT_PWK_LONGPRESS, THEIA_LOGINFO_KERNEL_LOG
-		 | THEIA_LOGINFO_ANDROID_LOG | THEIA_LOGINFO_DUMPSYS_SF | THEIA_LOGINFO_BINDER_INFO,
-		0, "pwrkey long press happen");
-	*/
+	pr_info("Power key long press detected.\n");
 	trace_combkey_monitor(get_timestamp_ms(), SYSTEM_ID, COMBKEY_DCS_TAG, COMBKEY_DCS_EVENTID, PWRKEY_LONG_PRESS);
 }
 
