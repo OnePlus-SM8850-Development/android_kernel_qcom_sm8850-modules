@@ -71,5 +71,4 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_pmic_monitor",
         ],
-        conditional_builds = {},
     )

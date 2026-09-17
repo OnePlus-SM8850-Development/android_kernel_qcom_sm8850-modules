@@ -91,10 +91,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/patch:oplus_patch"),
     ]
 
-    if "canoe" in str(target) :
-        oplus_ddk_targets += [
-        ]
-
     #conditional_build modules
     oplus_feature_list = oplus_ddk_get_oplus_features()
     if str(oplus_feature_list.get("OPLUS_FEATURE_BSP_DRV_INJECT_TEST", 'foo')).upper() == "1":
