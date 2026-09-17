@@ -47,19 +47,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_init_watchdog",
-        srcs = native.glob([
-            "**/*.h",
-            "common/init_watchdog/init_watchdog.c",
-        ]),
-        includes = ["."],
-        ko_deps = [
-            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
-        ],
-        local_defines = ["CONFIG_OPLUS_FEATURE_THEIA"],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_keyevent_handler",
         srcs = native.glob([
             "**/*.h",
@@ -280,7 +267,6 @@ def define_oplus_local_modules():
         name = "oplus_bsp_dfr",
         module_list = [
             "oplus_bsp_dfr_combkey_monitor",
-            "oplus_bsp_dfr_init_watchdog",
             "oplus_bsp_dfr_keyevent_handler",
             "oplus_bsp_dfr_last_boot_reason",
             "oplus_bsp_dfr_fdleak_check",

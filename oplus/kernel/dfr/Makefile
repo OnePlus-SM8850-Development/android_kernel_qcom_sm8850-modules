@@ -45,9 +45,6 @@ obj-$(CONFIG_OPLUS_FEATURE_SAUPWK) += common/oplus_saupwk/
 obj-$(CONFIG_OPLUS_FEATURE_THEIA) += common/theia/
 #endif /* OPLUS_FEATURE_THEIA */
 
-#ifdef OPLUS_FEATURE_INIT_WATCHDOG
-obj-$(CONFIG_OPLUS_FEATURE_INIT_WATCHDOG) += common/init_watchdog/
-#endif /* OPLUS_FEATURE_INIT_WATCHDOG */
 
 #ifdef OPLUS_FEATURE_KEYEVENT_HANDLER
 obj-$(CONFIG_OPLUS_FEATURE_KEYEVENT_HANDLER) += common/keyevent_handler/
