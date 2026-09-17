@@ -17,15 +17,6 @@ def define_oplus_local_modules():
         ko_oem_qmi_deps = []
 
     define_oplus_ddk_module(
-        name = "oplus_network_score",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_score/oplus_score.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_network_stats_calc",
         srcs = native.glob([
             "**/*.h",
@@ -124,7 +115,6 @@ def define_oplus_local_modules():
         name = "oplus_network",
         module_list = [
             "oplus_network_vnet",
-            "oplus_network_score",
             "oplus_network_stats_calc",
             "oplus_network_rf_cable_monitor",
             "oplus_network_oem_qmi",
