@@ -1,5 +1,5 @@
-load(":repo_paths.bzl", "modules_label", "soc_label")
-load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
+load(":repo_paths.bzl", "soc_label")
+
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
@@ -14,18 +14,11 @@ def define_oplus_local_modules():
            ":oplus_bsp_bootmode",
            ":oplus_bsp_boot_projectinfo",
         ]
-        kmsg_wb_ko_deps = [
-            ":oplus_bsp_dfr_phoenix",
-            ":oplus_bsp_boot_projectinfo",
-        ]
+
     else :
         phoenix_ko_deps = [
             "//kernel_device_modules-{}/drivers/soc/oplus/boot:oplus_bsp_boot_projectinfo".format(kernel_version),
             "//kernel_device_modules-{}/drivers/misc/mediatek/boot_common:mtk_boot_common".format(kernel_version),
-        ]
-        kmsg_wb_ko_deps = [
-            modules_label("oplus/kernel/boot:oplus_bsp_dfr_phoenix"),
-            "//kernel_device_modules-{}/drivers/soc/oplus/boot:oplus_bsp_boot_projectinfo".format(kernel_version),
         ]
 
     define_oplus_ddk_module(
@@ -141,16 +134,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-         name = "oplus_bsp_dfr_kmsg_wb",
-         srcs = native.glob([
-            "**/*.h",
-            "oplus_phoenix/oplus_kmsg_wb.c",
-         ]),
-         ko_deps = kmsg_wb_ko_deps,
-         includes = ["."],
-     )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_reboot_speed",
         srcs = native.glob([
             "**/*.h",
@@ -214,7 +197,6 @@ def define_oplus_local_modules():
             "oplus_bsp_dfr_phoenix",
             "oplus_bsp_dfr_shutdown_speed",
             "oplus_bsp_dfr_qcom_enhance_watchdog",
-            "oplus_bsp_dfr_kmsg_wb",
             "tango32",
         ],
     )
