@@ -56,16 +56,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_last_boot_reason",
-        srcs = native.glob([
-            "**/*.h",
-            "common/last_boot_reason/last_boot_reason.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT"],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_fdleak_check",
         srcs = native.glob([
             "**/*.h",
@@ -268,7 +258,6 @@ def define_oplus_local_modules():
         module_list = [
             "oplus_bsp_dfr_combkey_monitor",
             "oplus_bsp_dfr_keyevent_handler",
-            "oplus_bsp_dfr_last_boot_reason",
             "oplus_bsp_dfr_fdleak_check",
             "oplus_bsp_dfr_shutdown_detect",
             "oplus_bsp_dfr_ubt",
