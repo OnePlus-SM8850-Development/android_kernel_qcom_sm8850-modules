@@ -5,7 +5,6 @@ load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 load(":geas/oplus_geas_local_modules.bzl", "define_oplus_geas_local_modules")
 load(":thermal/oplus_thermal_local_modules.bzl", "define_oplus_thermal_local_modules")
 
-load(":waker_identify/oplus_waker_identify_local_modules.bzl", "define_oplus_waker_identify_local_modules")
 load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
@@ -28,8 +27,6 @@ def define_oplus_local_modules():
     define_oplus_geas_local_modules()
     define_oplus_thermal_local_modules()
 
-    define_oplus_waker_identify_local_modules()
-
     define_oplus_sched_local_modules()
 
 #for platform only
@@ -40,7 +37,6 @@ def define_oplus_local_modules():
             name = "oplus_bsp_cpu",
             module_list = [
                 "horae_shell_temp",
-                "oplus_bsp_waker_identify",
             ],
         )
     elif (bazel_support_platform == "mtk") and (target == "k6993v1_64") :
@@ -50,7 +46,6 @@ def define_oplus_local_modules():
             name = "oplus_bsp_cpu",
             module_list = [
                 "horae_shell_temp",
-                "oplus_bsp_waker_identify",
                 "oplus_freq_qos_arbiter",
             ],
         )
@@ -59,6 +54,5 @@ def define_oplus_local_modules():
             name = "oplus_bsp_cpu",
             module_list = [
                 "horae_shell_temp",
-                "oplus_bsp_waker_identify",
             ],
         )
