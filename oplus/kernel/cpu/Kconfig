@@ -10,4 +10,3 @@ config OPLUS_FEATURE_CPU
 source "$(KCONFIG_EXT_PREFIX)kernel/oplus_cpu/cpufreq_health/Kconfig"
 source "$(KCONFIG_EXT_PREFIX)kernel/oplus_cpu/sched/Kconfig"
 source "$(KCONFIG_EXT_PREFIX)kernel/oplus_cpu/oplus_game/Kconfig"
-source "$(KCONFIG_EXT_PREFIX)kernel/oplus_cpu/freq_tune_policy/Kconfig"
