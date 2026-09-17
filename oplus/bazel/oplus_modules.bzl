@@ -35,7 +35,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/cpu:oplus_bsp_task_load"),
         modules_label("oplus/kernel/cpu:oplus_bsp_task_sched"),
         modules_label("oplus/kernel/cpu:oplus_bsp_waker_identify"),
-        modules_label("oplus/kernel/cpu:osml_monitor"),
         modules_label("oplus/kernel/device_info/device_info/bazel:device_info"),
         modules_label("oplus/kernel/device_info/magnetic_cover:oplus_magcvr_ak09973"),
         modules_label("oplus/kernel/device_info/magnetic_cover:oplus_magcvr_mkh100a"),
