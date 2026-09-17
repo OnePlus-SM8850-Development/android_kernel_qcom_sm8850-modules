@@ -2170,6 +2170,26 @@ static int wcd_mbhc_usbc_ana_event_handler(struct notifier_block *nb,
 }
 #endif
 
+#ifdef OPLUS_ARCH_EXTENDS
+static void wcd_mbhc_update_cross_conn(struct wcd_mbhc *mbhc)
+{
+	/* Preserve the board's oplus,mbhc-check-cross-conn setting. */
+	if (mbhc->need_cross_conn)
+		return;
+
+	/*
+	 * The Qualcomm FSA4480 driver has no vendor-detection API. Keep its
+	 * board setting; dynamic DIO4480/DIO4483 detection belongs to the
+	 * Oplus switch backend, which also handles FSA4480 devices.
+	 */
+#if IS_ENABLED(CONFIG_OPLUS_TYPEC_SWITCH_I2C)
+	if (mbhc->oplus_aatc_dev_np)
+		mbhc->need_cross_conn =
+			typec_switch_check_cross_conn(mbhc->oplus_aatc_dev_np);
+#endif
+}
+#endif /* OPLUS_ARCH_EXTENDS */
+
 int wcd_mbhc_start(struct wcd_mbhc *mbhc, struct wcd_mbhc_config *mbhc_cfg)
 {
 	int rc = 0;
@@ -2332,12 +2352,6 @@ int wcd_mbhc_start(struct wcd_mbhc *mbhc, struct wcd_mbhc_config *mbhc_cfg)
 				pr_info("%s fsa4480_reg_notifier fail, rc = %d", __func__, rc);
 				rc = 0;
 			}
-			/* if dts not enable, check switch config */
-			if (!mbhc->need_cross_conn) {
-				/* Add for dynamic check cross */
-				mbhc->need_cross_conn = fsa4480_check_cross_conn(mbhc->fsa_aatc_dev_np);
-				pr_info("%s: after switch check, need_cross_conn(%d)\n", __func__, mbhc->need_cross_conn);
-			}
 		}
 #endif /* OPLUS_ARCH_EXTENDS */
 #endif
@@ -2349,13 +2363,11 @@ int wcd_mbhc_start(struct wcd_mbhc *mbhc, struct wcd_mbhc_config *mbhc_cfg)
 				pr_info("%s typec_switch_reg_notifier fail, rc = %d", __func__, rc);
 				rc = 0;
 			}
-			/* if dts not enable, check switch config */
-			if (!mbhc->need_cross_conn) {
-				/* Add for dynamic check cross */
-				mbhc->need_cross_conn = typec_switch_check_cross_conn(mbhc->oplus_aatc_dev_np);
-				pr_info("%s: after switch check, oplus need_cross_conn(%d)\n", __func__, mbhc->need_cross_conn);
-			}
 		}
+#endif
+
+#ifdef OPLUS_ARCH_EXTENDS
+		wcd_mbhc_update_cross_conn(mbhc);
 #endif
 
 
