@@ -17,15 +17,6 @@ def define_oplus_local_modules():
         ko_oem_qmi_deps = []
 
     define_oplus_ddk_module(
-        name = "oplus_network_dns_hook",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_dns_hook/oplus_dns_hook.c",
-        ]),
-        includes = ["."],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_network_game_first",
         srcs = native.glob([
             "**/*.h",
@@ -150,7 +141,6 @@ def define_oplus_local_modules():
     ddk_copy_to_dist_dir(
         name = "oplus_network",
         module_list = [
-            "oplus_network_dns_hook",
             "oplus_network_vnet",
             "oplus_network_game_first",
             "oplus_network_qr_scan",
