@@ -2,7 +2,7 @@ load(":repo_paths.bzl", "soc_label")
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load(":game_opt/oplus_game_opt_local_modules.bzl", "define_oplus_game_opt_local_modules")
+
 load(":geas/oplus_geas_local_modules.bzl", "define_oplus_geas_local_modules")
 load(":thermal/oplus_thermal_local_modules.bzl", "define_oplus_thermal_local_modules")
 
@@ -92,7 +92,7 @@ def define_oplus_sched_assist_local_modules():
 
 def define_oplus_local_modules():
     define_oplus_sched_assist_local_modules()
-    define_oplus_game_opt_local_modules()
+
     define_oplus_geas_local_modules()
     define_oplus_thermal_local_modules()
 
@@ -107,7 +107,6 @@ def define_oplus_local_modules():
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
             module_list = [
-                "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_frame_boost",
@@ -120,7 +119,6 @@ def define_oplus_local_modules():
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
             module_list = [
-                "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
@@ -131,7 +129,6 @@ def define_oplus_local_modules():
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
             module_list = [
-                "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_waker_identify",
