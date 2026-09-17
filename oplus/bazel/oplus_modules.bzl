@@ -65,7 +65,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/network:oplus_network_oem_qmi"),
         modules_label("oplus/kernel/network:oplus_network_rf_cable_monitor"),
         modules_label("oplus/kernel/network:oplus_network_sim_detect"),
-        modules_label("oplus/kernel/power/standby_netlink:oplus_standby_netlink"),
         modules_label("oplus/kernel/secureguard/gki2.0/rootguard_new:oplus_secure_guard_new"),
         modules_label("oplus/kernel/storage:ufs-oplus-dbg"),
         modules_label("oplus/kernel/synchronize:oplus_lock_torture"),
