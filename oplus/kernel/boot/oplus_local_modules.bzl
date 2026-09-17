@@ -1,25 +1,12 @@
 load(":repo_paths.bzl", "soc_label")
 
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
     target = oplus_ddk_get_target()
     variant  = oplus_ddk_get_variant()
     kernel_build_variant = "{}_{}".format(target, variant)
-    kernel_version = oplus_ddk_get_kernel_version()
-
-    if bazel_support_platform == "qcom" :
-        phoenix_ko_deps = [
-           ":oplus_bsp_bootmode",
-           ":oplus_bsp_boot_projectinfo",
-        ]
-
-    else :
-        phoenix_ko_deps = [
-            "//kernel_device_modules-{}/drivers/soc/oplus/boot:oplus_bsp_boot_projectinfo".format(kernel_version),
-            "//kernel_device_modules-{}/drivers/misc/mediatek/boot_common:mtk_boot_common".format(kernel_version),
-        ]
 
     define_oplus_ddk_module(
         name = "saupwk",
@@ -146,22 +133,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_phoenix",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_phoenix/op_bootprof.c",
-            "oplus_phoenix/phoenix_dump.c",
-            "oplus_phoenix/phoenix_watchdog.c",
-            "oplus_phoenix/phoenix_base.c",
-        ]),
-        ko_deps = phoenix_ko_deps,
-        includes = ["."],
-        conditional_defines = {
-            "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
-        },
-        local_defines = ["TRACK_TASK_COMM","CONFIG_OPLUS_FEATURE_PHOENIX_MODULE"],
-    )
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_qcom_enhance_watchdog",
         srcs = native.glob([
             "**/*.h",
@@ -194,7 +165,6 @@ def define_oplus_local_modules():
             "oplus_bsp_bootloader_log",
             "oplus_bsp_boot_projectinfo",
             "oplus_bsp_dfr_reboot_speed",
-            "oplus_bsp_dfr_phoenix",
             "oplus_bsp_dfr_shutdown_speed",
             "oplus_bsp_dfr_qcom_enhance_watchdog",
             "tango32",
