@@ -12,7 +12,3 @@ source "drivers/soc/oplus/dfr/common/shutdown_detect/Kconfig"
 #ifdef OPLUS_FEATURE_KEYEVENT_HANDLER
 source "drivers/soc/oplus/dfr/common/keyevent_handler/Kconfig"
 #endif /* OPLUS_FEATURE_KEYEVENT_HANDLER */
-
-#ifdef OPLUS_FEATURE_COMBKEY_MONITOR
-source "drivers/soc/oplus/dfr/common/combkey_monitor/Kconfig"
-#endif /* OPLUS_FEATURE_COMBKEY_MONITOR */
