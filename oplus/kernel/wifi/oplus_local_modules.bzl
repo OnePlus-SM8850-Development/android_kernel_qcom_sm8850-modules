@@ -18,24 +18,6 @@ def define_oplus_local_modules():
 
         kernel_version = oplus_ddk_get_kernel_version()
         print("kernel version: " + kernel_version)
-        if version_compare(kernel_version, "6.12") :
-            copts = [
-                 "-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/eccci/port/",
-            ]
-        else :
-            copts = [
-                "-I$(ROOT_DIR)/kernel_device_modules-{}/drivers/misc/mediatek/eccci/port/".format(kernel_version),
-            ]
-
-        define_oplus_ddk_module(
-            name = "oplus_wifi_swtp",
-            srcs = native.glob([
-                "**/*.h",
-                "oplus_wifi_swtp/oplus_wifi_swtp.c"
-            ]),
-            includes = ["."],
-            copts = copts,
-        )
 
         define_oplus_ddk_module(
             name = "wonder",
@@ -55,7 +37,6 @@ def define_oplus_local_modules():
         )
 
         module_list = [
-            "oplus_wifi_swtp",
             "wonder",
         ]
 
