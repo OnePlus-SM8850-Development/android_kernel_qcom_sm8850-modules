@@ -83,7 +83,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/sensor/kernel/qcom:oplus_sensor_kookong_ir_spi"),
         modules_label("oplus/kernel/nfc:oplus_nfc"),
         modules_label("oplus/kernel/nfc:oplus_network_nfc_thn31"),
-        modules_label("oplus/kernel/patch:oplus_patch"),
     ]
 
     #conditional_build modules
