@@ -1,6 +1,7 @@
+load(":repo_paths.bzl", "modules_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load("//build/kernel/oplus:oplus_modules_define.bzl", "define_oplus_ddk_module")
-load("//build/kernel/oplus:oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module")
+load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
 
@@ -19,7 +20,7 @@ def define_oplus_local_modules():
 	    "CONFIG_OPLUS_FEATURE_SECURE_SRGUARD",
 	    "CONFIG_OPLUS_FEATURE_SECURE_SOCKETGUARD",
 	],
-        ko_deps = ["//vendor/oplus/kernel/boot:oplusboot"],
+        ko_deps = [modules_label("oplus/kernel/boot:oplusboot")],
         conditional_defines = {
             "qcom":  ["QCOM_PLATFORM"],
             "mtk":   ["MTK_PLATFORM"],

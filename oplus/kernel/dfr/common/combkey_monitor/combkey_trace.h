@@ -42,7 +42,7 @@ TRACE_EVENT(combkey_monitor,
 #endif /* _COMBKEY_TRACE_H */
 
 #undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH ../../../vendor/oplus/kernel/dfr/common/combkey_monitor
+#define TRACE_INCLUDE_PATH ../../../vendor/qcom/sm8850-modules/oplus/kernel/dfr/common/combkey_monitor
 
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE combkey_trace

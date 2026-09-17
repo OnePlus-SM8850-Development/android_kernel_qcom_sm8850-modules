@@ -7,7 +7,7 @@
 
 #undef TRACE_INCLUDE_PATH
 #ifdef CONFIG_OPLUS_SYSTEM_KERNEL_QCOM
-#define TRACE_INCLUDE_PATH ../../vendor/oplus/kernel/cpu/sched/sched_assist
+#define TRACE_INCLUDE_PATH ../../vendor/qcom/sm8850-modules/oplus/kernel/cpu/sched/sched_assist
 #else
 #define TRACE_INCLUDE_PATH ../../kernel_device_modules-6.12/kernel/oplus_cpu/sched/sched_assist
 #endif

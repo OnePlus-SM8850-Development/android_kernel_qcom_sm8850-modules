@@ -1,6 +1,7 @@
+load(":repo_paths.bzl", "modules_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load("//build/kernel/oplus:oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target")
-load("//build/kernel/oplus:oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target")
+load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_geas_cpu_local_modules():
     target = oplus_ddk_get_target()
@@ -44,6 +45,6 @@ def define_oplus_geas_cpu_local_modules():
             },
         },
         ko_deps = [
-            "//vendor/oplus/kernel/cpu:oplus_bsp_game_opt",
+            modules_label("oplus/kernel/cpu:oplus_bsp_game_opt"),
     ],
     )

@@ -391,7 +391,7 @@ TRACE_EVENT(geas_cpu_update_base_info,
 #endif /* _TRACE_GEAS_CPU_H */
 
 #undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH ../../vendor/oplus/kernel/cpu/geas/cpu
+#define TRACE_INCLUDE_PATH ../../vendor/qcom/sm8850-modules/oplus/kernel/cpu/geas/cpu
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace_geas
 

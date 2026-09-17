@@ -36,7 +36,7 @@ TRACE_EVENT(system_server_hang,
 #endif /* _HANG_WATCHER_TRACE_H_ */
 
 #undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH ../../../vendor/oplus/kernel/framework_stability/oplus_stability_helper
+#define TRACE_INCLUDE_PATH ../../../vendor/qcom/sm8850-modules/oplus/kernel/framework_stability/oplus_stability_helper
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hang_watcher_trace
 

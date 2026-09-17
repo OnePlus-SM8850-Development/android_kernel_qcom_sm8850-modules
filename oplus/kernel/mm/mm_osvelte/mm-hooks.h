@@ -15,13 +15,13 @@ DECLARE_HOOK(oplus_mm_vh_set_or_clear_scene,
 
 #undef TRACE_INCLUDE_PATH
 #if IS_ENABLED(CONFIG_OPLUS_VENDOR_QCOM)
-#define TRACE_INCLUDE_PATH ../../vendor/oplus/kernel/mm/mm_osvelte
+#define TRACE_INCLUDE_PATH ../../vendor/qcom/sm8850-modules/oplus/kernel/mm/mm_osvelte
 #elif IS_ENABLED(CONFIG_OPLUS_VENDOR_MTK)
 /*
  * ugly code, mtk now use mm_osvelte under driver/dma-buf/heaps/mm_osvelte, but
  * compile this
  */
-#define TRACE_INCLUDE_PATH ../../vendor/oplus/kernel/mm/mm_osvelte
+#define TRACE_INCLUDE_PATH ../../vendor/qcom/sm8850-modules/oplus/kernel/mm/mm_osvelte
 #else
 #define TRACE_INCLUDE_PATH ../../kernel_device_modules-6.12/drivers/dma-buf/heaps/mm_osvelte
 #endif

@@ -45,7 +45,7 @@ TRACE_EVENT(oplus_fdleak,
 #endif /* _TRACE_FDLEAK_H */
 
 #undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH ../../../vendor/oplus/kernel/dfr/common/oplus_fdleak
+#define TRACE_INCLUDE_PATH ../../../vendor/qcom/sm8850-modules/oplus/kernel/dfr/common/oplus_fdleak
 
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE fdleak_trace

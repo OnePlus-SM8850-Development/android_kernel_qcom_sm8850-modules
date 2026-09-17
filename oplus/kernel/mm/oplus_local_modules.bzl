@@ -1,6 +1,7 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load("//build/kernel/oplus:oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
-load("//build/kernel/oplus:oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
     target = oplus_ddk_get_target()
@@ -8,7 +9,7 @@ def define_oplus_local_modules():
     kernel_build_variant = "{}_{}".format(target, variant)
 
     if bazel_support_platform == "qcom" :
-        zram_opt_ko_deps = ["//soc-repo:{}/drivers/block/zram/zram".format(kernel_build_variant),"//vendor/oplus/kernel/cpu:oplus_bsp_sched_assist",":oplus_bsp_mm_osvelte"]
+        zram_opt_ko_deps = [soc_label("{}/drivers/block/zram/zram").format(kernel_build_variant),modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),":oplus_bsp_mm_osvelte"]
         hybridswap_zram_ko_deps = []
 
 #    define_oplus_ddk_module(
@@ -71,7 +72,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         local_defines = ["CONFIG_OPLUS_FEATURE_UXMEM_OPT"],
-        ko_deps = [":oplus_bsp_mm_osvelte", "//vendor/oplus/kernel/cpu:oplus_bsp_sched_assist"],
+        ko_deps = [":oplus_bsp_mm_osvelte", modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist")],
     )
 
     define_oplus_ddk_module(
@@ -82,7 +83,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         local_defines = ["CONFIG_OPLUS_FEATURE_MGLRU_OPT"],
-        ko_deps = ["//vendor/oplus/kernel/mm:oplus_bsp_mm_osvelte"],
+        ko_deps = [modules_label("oplus/kernel/mm:oplus_bsp_mm_osvelte")],
     )
 
     define_oplus_ddk_module(
@@ -93,7 +94,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         local_defines = ["CONFIG_OPLUS_FEATURE_DYNAMIC_READAHEAD"],
-        ko_deps = ["//vendor/oplus/kernel/cpu:oplus_bsp_sched_assist"],
+        ko_deps = [modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist")],
     )
 
     define_oplus_ddk_module(

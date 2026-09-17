@@ -36,7 +36,7 @@
 #endif
 
 #if IS_ENABLED(CONFIG_OPLUS_FEATURE_FRAME_BOOST)
-#include <../../vendor/oplus/kernel/cpu/sched/frame_boost/frame_group.h>
+#include <../../vendor/qcom/sm8850-modules/oplus/kernel/cpu/sched/frame_boost/frame_group.h>
 #endif
 
 #if IS_ENABLED(CONFIG_OPLUS_SCHED_GROUP_OPT)

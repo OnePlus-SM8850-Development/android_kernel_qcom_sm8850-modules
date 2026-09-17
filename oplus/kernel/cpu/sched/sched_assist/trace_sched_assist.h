@@ -93,7 +93,7 @@ DEFINE_EVENT(inherit_ux_template, inherit_ux_unset,
 
 #undef TRACE_INCLUDE_PATH
 #ifdef CONFIG_OPLUS_SYSTEM_KERNEL_QCOM
-#define TRACE_INCLUDE_PATH ../../vendor/oplus/kernel/cpu/sched/sched_assist
+#define TRACE_INCLUDE_PATH ../../vendor/qcom/sm8850-modules/oplus/kernel/cpu/sched/sched_assist
 #else
 #define TRACE_INCLUDE_PATH sched/sched_assist
 #endif

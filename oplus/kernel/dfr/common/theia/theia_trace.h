@@ -96,7 +96,7 @@ TRACE_EVENT(bright_screen_monitor,
 #endif /* _TRACE_THEIA_H */
 
 #undef TRACE_INCLUDE_PATH
-#define TRACE_INCLUDE_PATH ../../../vendor/oplus/kernel/dfr/common/theia
+#define TRACE_INCLUDE_PATH ../../../vendor/qcom/sm8850-modules/oplus/kernel/dfr/common/theia
 
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE theia_trace

@@ -1,5 +1,6 @@
-load("//build/kernel/oplus:oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
-load("//build/kernel/oplus:oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
+load(":repo_paths.bzl", "modules_label", "soc_label")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 
 def define_oplus_task_load_local_modules():
@@ -9,7 +10,7 @@ def define_oplus_task_load_local_modules():
     kernel_version = oplus_ddk_get_kernel_version()
 
     if bazel_support_platform == "qcom" :
-        ko_deps = ["//soc-repo:{}/kernel/sched/walt/sched-walt".format(kernel_build_variant)]
+        ko_deps = [soc_label("{}/kernel/sched/walt/sched-walt").format(kernel_build_variant)]
         copts = ["-DCONFIG_SCHED_WALT"]
     else :
         ko_deps = [
@@ -29,6 +30,6 @@ def define_oplus_task_load_local_modules():
             "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM","CONFIG_SCHED_WALT"],
         },
         copts = copts,
-        ko_deps = ["//vendor/oplus/kernel/cpu:oplus_bsp_sched_assist",
-            "//soc-repo:{}/kernel/sched/walt/sched-walt".format(kernel_build_variant)],
+        ko_deps = [modules_label("oplus/kernel/cpu:oplus_bsp_sched_assist"),
+            soc_label("{}/kernel/sched/walt/sched-walt").format(kernel_build_variant)],
     )

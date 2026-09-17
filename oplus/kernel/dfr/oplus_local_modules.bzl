@@ -1,6 +1,7 @@
+load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load("//build/kernel/oplus:oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
-load("//build/kernel/oplus:oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
     target = oplus_ddk_get_target()
@@ -10,32 +11,32 @@ def define_oplus_local_modules():
 
     if bazel_support_platform == "qcom" :
         combkey_monitor_ko_deps = [
-            "//vendor/oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler",
-            "//vendor/oplus/kernel/dfr:oplus_bsp_dfr_theia",
-            "//vendor/oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb",
+            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_keyevent_handler"),
+            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
+            modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb"),
         ]
         hung_task_enhance_ko_deps = [
-            "//vendor/oplus/kernel/dfr:oplus_bsp_dfr_theia",
-            "//vendor/oplus/kernel/boot:oplus_bsp_boot_projectinfo",
+            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
+            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
         ]
         shutdown_detect_ko_deps = [
-            "//vendor/oplus/kernel/boot:oplus_bsp_boot_projectinfo",
+            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
         ]
         theia_ko_deps = [
-            "//soc-repo:{}/drivers/soc/qcom/panel_event_notifier".format(kernel_build_variant)
+            soc_label("{}/drivers/soc/qcom/panel_event_notifier").format(kernel_build_variant)
         ]
         dump_device_info_ko_deps = [
-            "//vendor/oplus/kernel/boot:oplus_bsp_boot_projectinfo",
-            "//vendor/oplus/kernel/boot:oplusboot",
-            "//soc-repo:{}/drivers/soc/qcom/debug_symbol".format(kernel_build_variant),
+            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
+            modules_label("oplus/kernel/boot:oplusboot"),
+            soc_label("{}/drivers/soc/qcom/debug_symbol").format(kernel_build_variant),
         ]
         dump_reason_ko_deps = [
-            "//vendor/oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info",
-            "//soc-repo:{}/drivers/soc/qcom/smem".format(kernel_build_variant),
+            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_dump_device_info"),
+            soc_label("{}/drivers/soc/qcom/smem").format(kernel_build_variant),
         ]
         pmic_watchdog_ko_deps = [
-            "//vendor/oplus/kernel/boot:oplus_bsp_boot_projectinfo",
-            "//soc-repo:{}/drivers/input/misc/qpnp-power-on".format(kernel_build_variant),
+            modules_label("oplus/kernel/boot:oplus_bsp_boot_projectinfo"),
+            soc_label("{}/drivers/input/misc/qpnp-power-on").format(kernel_build_variant),
          ]
 
     define_oplus_ddk_module(
@@ -74,7 +75,7 @@ def define_oplus_local_modules():
         ]),
         includes = ["."],
         ko_deps = [
-            "//vendor/oplus/kernel/dfr:oplus_bsp_dfr_theia",
+            modules_label("oplus/kernel/dfr:oplus_bsp_dfr_theia"),
         ],
         local_defines = ["CONFIG_OPLUS_FEATURE_THEIA"],
     )
@@ -108,7 +109,7 @@ def define_oplus_local_modules():
             "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
         },
 #        header_deps = [
-#            "//vendor/oplus/kernel/cpu:config_headers",
+#            modules_label("oplus/kernel/cpu:config_headers"),
 #        ],
         includes = ["."],
     )
@@ -253,8 +254,8 @@ def define_oplus_local_modules():
             },
         },
         ko_deps = [
-            "//vendor/oplus/kernel/dfr:oplus_inject",
-            "//vendor/oplus/kernel/vibrator/bazel:oplus_bsp_haptic_feedback",
+            modules_label("oplus/kernel/dfr:oplus_inject"),
+            modules_label("oplus/kernel/vibrator/bazel:oplus_bsp_haptic_feedback"),
         ],
         includes = ["."],
         conditional_build = {
@@ -272,7 +273,7 @@ def define_oplus_local_modules():
         copts = ["-DCONFIG_QCOM_SMEM"],
         includes = ["."],
         ko_deps = [
-            "//soc-repo:{}/drivers/soc/qcom/smem".format(kernel_build_variant),
+            soc_label("{}/drivers/soc/qcom/smem").format(kernel_build_variant),
         ],
         local_defines = ["CONFIG_OPLUS_FEATURE_FULLDUMP_BACK"],
     )
