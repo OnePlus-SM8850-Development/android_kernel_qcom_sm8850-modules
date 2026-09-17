@@ -69,22 +69,10 @@ def define_oplus_storage_modules():
         ko_deps = []
         hdrs = ["include/storage.h",]
 
-    define_oplus_ddk_module(
-        name = "storage_log",
-        srcs = native.glob([
-            "storage_feature_in_module/common/storage_log/*.c"
-        ]),
-        hdrs = hdrs,
-        includes = ["."],
-        copts = copts,
-        ko_deps = ko_deps,
-        out = "storage_log.ko",
-    )
-
     # add for oplus_uprobe
     if bazel_support_platform == "qcom":
         copts = []
-        ko_deps = [modules_label("oplus/kernel/storage:storage_log")]
+        ko_deps = []
         hdrs = ["storage_feature_in_module/common/oplus_uprobe/kernel/trace/trace_probe.h",
                 "storage_feature_in_module/common/oplus_uprobe/kernel/trace/trace.h",
                 "storage_feature_in_module/common/oplus_uprobe/kernel/trace/pid_list.h",
@@ -147,6 +135,5 @@ def define_oplus_storage_modules():
         name = "oplus_storage",
         module_list = [
             "ufs-oplus-dbg",
-            "storage_log",
         ],
     )
