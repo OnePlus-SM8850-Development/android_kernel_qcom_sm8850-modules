@@ -36,7 +36,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_kernel_fb"),
         modules_label("oplus/kernel/dft/bazel:oplus_bsp_dft_olc"),
         modules_label("oplus/kernel/graphics:oplus_sync_fence"),
-        modules_label("oplus/kernel/hans:oplus_sys_hans"),
         modules_label("oplus/kernel/multimedia/feedback/bazel:oplus_mm_kevent"),
         modules_label("oplus/kernel/multimedia/feedback/bazel:oplus_mm_kevent_fb"),
         modules_label("oplus/kernel/network:oplus_network_esim"),
