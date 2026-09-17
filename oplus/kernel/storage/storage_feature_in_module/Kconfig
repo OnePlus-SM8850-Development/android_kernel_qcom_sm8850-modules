@@ -1,3 +1,2 @@
 source "drivers/soc/oplus/storage/common/storage_log/Kconfig"
 source "drivers/soc/oplus/storage/common/ufs_oplus_dbg/Kconfig"
-source "drivers/soc/oplus/storage/common/wq_dynamic_priority/Kconfig"

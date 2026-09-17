@@ -142,23 +142,11 @@ def define_oplus_storage_modules():
         hdrs = [
             "storage_feature_in_module/common/wq_dynamic_priority/oplus_wq_dynamic_priority.h",
         ]
-    define_oplus_ddk_module(
-        name = "oplus_wq_dynamic_priority",
-        srcs = native.glob([
-            "storage_feature_in_module/common/wq_dynamic_priority/*.c"
-        ]),
-        hdrs = hdrs,
-        includes = ["."],
-        copts = copts,
-        ko_deps = ko_deps,
-        out = "oplus_wq_dynamic_priority.ko",
-    )
 
     ddk_copy_to_dist_dir(
         name = "oplus_storage",
         module_list = [
             "ufs-oplus-dbg",
             "storage_log",
-            "oplus_wq_dynamic_priority",
         ],
     )
