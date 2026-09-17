@@ -11,15 +11,6 @@ def version_compare(v1, v2):
 
 def define_oplus_local_modules():
 
-    define_oplus_ddk_module(
-        name = "oplus_wificapcenter",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_wificapcenter/oplus_wificapcenter.c"
-        ]),
-        includes = ["."],
-    )
-
     #only for MTK platform, and kernel >= 6.10
     #compiling of version will be failed without mentioned rule
     #for lower kernel version of MTK, use Makefile instead
@@ -64,14 +55,12 @@ def define_oplus_local_modules():
         )
 
         module_list = [
-            "oplus_wificapcenter",
             "oplus_wifi_swtp",
             "wonder",
         ]
 
     else :
         module_list = [
-            "oplus_wificapcenter",
         ]
 
         # QCOM only: used to form labels in the configured SoC repository.
