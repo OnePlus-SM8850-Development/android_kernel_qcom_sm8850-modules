@@ -1,5 +1,5 @@
 load(":repo_paths.bzl", "modules_label", "soc_label")
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 load(":game_opt/oplus_game_opt_local_modules.bzl", "define_oplus_game_opt_local_modules")
@@ -21,7 +21,6 @@ def define_oplus_sched_assist_local_modules():
     target = oplus_ddk_get_target()
     variant  = oplus_ddk_get_variant()
     kernel_build_variant = "{}_{}".format(target, variant)
-    kernel_version = oplus_ddk_get_kernel_version()
 
     ddk_headers(
         name = "config_headers",
@@ -30,15 +29,6 @@ def define_oplus_sched_assist_local_modules():
             "**/**/*.h",
         ]),
         includes = [".","sched/sched_assist", "sched/frame_boost", "sched_ext"],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_afs_config",
-        srcs = native.glob([
-            "**/*.h",
-            "sched/afs_config/afs_config.c",
-        ]),
-        includes = ["."],
     )
 
     if bazel_support_platform == "qcom" :
@@ -201,7 +191,6 @@ def define_oplus_local_modules():
                 "oplus_freq_qos_arbiter",
                 "oplus_bsp_task_sched",
                 "oplus_slc",
-                "oplus_bsp_afs_config",
                 "oplus_bsp_task_overload",
                 "oplus_bsp_smart_freq"
             ],
@@ -221,6 +210,5 @@ def define_oplus_local_modules():
                 "oplus_bsp_midas",
                 "oplus_bsp_task_sched",
                 "oplus_bsp_sched_ext",
-                "oplus_bsp_afs_config",
             ],
         )
