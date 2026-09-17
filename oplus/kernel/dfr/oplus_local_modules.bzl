@@ -56,19 +56,6 @@ def define_oplus_local_modules():
     )
 
     define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_oplus_saupwk",
-        srcs = native.glob([
-            "**/*.h",
-            "common/oplus_saupwk/oplus_saupwk.c",
-        ]),
-        conditional_defines = {
-            "qcom": ["CONFIG_OPLUS_SYSTEM_KERNEL_QCOM"],
-        },
-        includes = ["."],
-        local_defines = ["CONFIG_OPLUS_FEATURE_SAUPWK"],
-    )
-
-    define_oplus_ddk_module(
         name = "oplus_bsp_dfr_shutdown_detect",
         srcs = native.glob([
             "**/*.h",

@@ -34,9 +34,6 @@ source "drivers/soc/oplus/dfr/common/shutdown_detect/Kconfig"
 #endif /* OPLUS_FEATURE_SHUTDOWN_DETECT */
 
 
-#ifdef OPLUS_FEATURE_SAUPWK
-source "drivers/soc/oplus/dfr/common/oplus_saupwk/Kconfig"
-#endif /* OPLUS_FEATURE_SAUPWK */
 
 #ifdef OPLUS_FEATURE_THEIA
 source "drivers/soc/oplus/dfr/common/theia/Kconfig"

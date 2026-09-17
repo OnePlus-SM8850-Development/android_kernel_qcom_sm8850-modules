@@ -37,9 +37,6 @@ obj-$(CONFIG_OPLUS_FEATURE_SHUTDOWN_DETECT) += common/shutdown_detect/
 #endif /* OPLUS_FEATURE_SHUTDOWN_DETECT */
 
 
-#ifdef OPLUS_FEATURE_SAUPWK
-obj-$(CONFIG_OPLUS_FEATURE_SAUPWK) += common/oplus_saupwk/
-#endif /* OPLUS_FEATURE_SAUPWK */
 
 #ifdef OPLUS_FEATURE_THEIA
 obj-$(CONFIG_OPLUS_FEATURE_THEIA) += common/theia/
