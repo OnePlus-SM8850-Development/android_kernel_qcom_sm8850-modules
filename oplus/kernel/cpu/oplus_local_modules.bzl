@@ -5,7 +5,7 @@ load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
 load(":game_opt/oplus_game_opt_local_modules.bzl", "define_oplus_game_opt_local_modules")
 load(":geas/oplus_geas_local_modules.bzl", "define_oplus_geas_local_modules")
 load(":thermal/oplus_thermal_local_modules.bzl", "define_oplus_thermal_local_modules")
-load(":freqqos_monitor/oplus_freqqos_monitor_local_modules.bzl", "define_oplus_freqqos_monitor_local_modules")
+
 load(":waker_identify/oplus_waker_identify_local_modules.bzl", "define_oplus_waker_identify_local_modules")
 load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
 load(":uad/oplus_uad_local_modules.bzl", "define_oplus_uad_local_modules")
@@ -101,7 +101,7 @@ def define_oplus_local_modules():
     define_oplus_game_opt_local_modules()
     define_oplus_geas_local_modules()
     define_oplus_thermal_local_modules()
-    define_oplus_freqqos_monitor_local_modules()
+
     define_oplus_waker_identify_local_modules()
     define_oplus_cpufreq_bouncing_local_modules()
     define_oplus_sched_local_modules()
@@ -119,7 +119,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
-                "oplus_freqqos_monitor",
                 "oplus_bsp_frame_boost",
                 "ua_cpu_ioctl",
                 "oplus_bsp_task_cpustats",
@@ -144,7 +143,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
-                "oplus_freqqos_monitor",
                 "oplus_bsp_waker_identify",
                 "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",
@@ -164,7 +162,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_game_opt",
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
-                "oplus_freqqos_monitor",
                 "oplus_bsp_waker_identify",
                 "cpufreq_bouncing",
                 "oplus_bsp_task_cpustats",

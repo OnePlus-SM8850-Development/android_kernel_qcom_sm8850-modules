@@ -40,7 +40,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/cpu:oplus_bsp_task_overload"),
         modules_label("oplus/kernel/cpu:oplus_bsp_task_sched"),
         modules_label("oplus/kernel/cpu:oplus_bsp_waker_identify"),
-        modules_label("oplus/kernel/cpu:oplus_freqqos_monitor"),
         modules_label("oplus/kernel/cpu:osml_monitor"),
         modules_label("oplus/kernel/cpu:ua_cpu_ioctl"),
         modules_label("oplus/kernel/device_info/device_info/bazel:device_info"),
