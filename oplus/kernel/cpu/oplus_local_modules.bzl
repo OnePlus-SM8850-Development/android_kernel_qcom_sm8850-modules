@@ -8,7 +8,6 @@ load(":thermal/oplus_thermal_local_modules.bzl", "define_oplus_thermal_local_mod
 
 load(":waker_identify/oplus_waker_identify_local_modules.bzl", "define_oplus_waker_identify_local_modules")
 load(":sched/oplus_sched_local_modules.bzl", "define_oplus_sched_local_modules")
-load(":uad/oplus_uad_local_modules.bzl", "define_oplus_uad_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
 
@@ -107,7 +106,7 @@ def define_oplus_local_modules():
 #for platform only
     target = oplus_ddk_get_target()
     if bazel_support_platform == "qcom" :
-        define_oplus_uad_local_modules()
+
         ddk_copy_to_dist_dir(
             name = "oplus_bsp_cpu",
             module_list = [
@@ -117,7 +116,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_sched_assist",
                 "horae_shell_temp",
                 "oplus_bsp_frame_boost",
-                "ua_cpu_ioctl",
                 "oplus_bsp_task_cpustats",
                 "oplus_bsp_waker_identify",
                 "oplus_bsp_schedinfo",

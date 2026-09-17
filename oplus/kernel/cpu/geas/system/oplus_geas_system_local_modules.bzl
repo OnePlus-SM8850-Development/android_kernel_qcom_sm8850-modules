@@ -1,7 +1,6 @@
 load(":repo_paths.bzl", "modules_label", "soc_label")
-load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
+
 load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant", "bazel_support_platform", "oplus_ddk_get_kernel_version")
-load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_geas_system_local_modules():
     target = oplus_ddk_get_target()
@@ -20,7 +19,6 @@ def define_oplus_geas_system_local_modules():
         deps = [
             modules_label("oplus/kernel/cpu:oplus_bsp_frame_boost"),
             modules_label("oplus/kernel/cpu:oplus_bsp_game_opt"),
-            modules_label("oplus/kernel/cpu:ua_cpu_ioctl"),
             modules_label("qcom/opensource/graphics-kernel:{}_msm_kgsl").format(tv),
             soc_label("{}/drivers/soc/qcom/dcvs/bwmon").format(tv),
             soc_label("{}/drivers/soc/qcom/dcvs/memlat").format(tv),
