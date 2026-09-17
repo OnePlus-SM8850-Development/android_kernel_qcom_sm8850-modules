@@ -4,5 +4,3 @@ config OPLUS_FEATURE_STORAGE_IO_METRICS
 	default y
 	help
 	  The function of this module is to collect various metrics on the IO path
-
-source "drivers/soc/oplus/storage/common/fmonitor/Kconfig"
