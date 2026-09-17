@@ -112,25 +112,6 @@ def define_oplus_local_modules():
         copts = copts,
         includes = ["include"],
     )
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_shutdown_speed",
-        srcs = native.glob([
-            "oplus_phoenix/shutdown_speed.c",
-        ]),
-        includes = ["include"],
-    )
-
-    define_oplus_ddk_module(
-        name = "oplus_bsp_dfr_reboot_speed",
-        srcs = native.glob([
-            "**/*.h",
-            "oplus_phoenix/phoenix_reboot_speed.c",
-        ]),
-        ko_deps = [
-           ":oplus_bsp_dfr_shutdown_speed",
-        ],
-        includes = ["."],
-    )
 
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_boot",
@@ -144,7 +125,5 @@ def define_oplus_local_modules():
             "oplus_bsp_bootmode",
             "oplus_bsp_bootloader_log",
             "oplus_bsp_boot_projectinfo",
-            "oplus_bsp_dfr_reboot_speed",
-            "oplus_bsp_dfr_shutdown_speed",
         ],
     )
