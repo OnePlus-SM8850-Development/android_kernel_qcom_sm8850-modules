@@ -13,7 +13,7 @@ load(":cpufreq_bouncing/oplus_cpufreq_bouncing_local_modules.bzl", "define_oplus
 load(":midas/oplus_midas_local_modules.bzl", "define_oplus_midas_local_modules")
 
 load(":freq_qos_arbiter/oplus_freq_qos_arbiter_local_modules.bzl", "define_oplus_freq_qos_arbiter_local_modules")
-load(":oplus_overload/oplus_oplus_task_overload_modules.bzl", "define_oplus_task_overload_local_modules")
+
 load(":oplus_slc/oplus_slc_local_modules.bzl", "define_oplus_slc_local_modules")
 load(":smart_freq/oplus_smartfreq_local_modules.bzl", "define_oplus_smart_freq_local_modules")
 
@@ -106,7 +106,7 @@ def define_oplus_local_modules():
     define_oplus_cpufreq_bouncing_local_modules()
     define_oplus_sched_local_modules()
     define_oplus_midas_local_modules()
-    define_oplus_task_overload_local_modules()
+
 #for platform only
     target = oplus_ddk_get_target()
     if bazel_support_platform == "qcom" :
@@ -127,7 +127,6 @@ def define_oplus_local_modules():
                 "oplus_bsp_schedinfo",
                 "oplus_bsp_task_load",
                 "oplus_bsp_midas",
-                "oplus_bsp_task_overload",
                 "oplus_bsp_task_sched",
                 "osml_monitor",
             ],
@@ -151,7 +150,6 @@ def define_oplus_local_modules():
                 "oplus_freq_qos_arbiter",
                 "oplus_bsp_task_sched",
                 "oplus_slc",
-                "oplus_bsp_task_overload",
                 "oplus_bsp_smart_freq"
             ],
         )
