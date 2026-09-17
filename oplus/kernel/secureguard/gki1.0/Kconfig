@@ -4,5 +4,4 @@ config OPLUS_KERNEL_SECURE_FEATURE
 	help
 		sdefine this config to add oplus kernel secure guard feature
 
-source "arch/arm64/kernel/secureguard/keventupload/Kconfig"
 source "arch/arm64/kernel/secureguard/rootguard/Kconfig"
