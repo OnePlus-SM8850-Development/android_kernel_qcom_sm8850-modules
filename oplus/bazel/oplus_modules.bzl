@@ -148,7 +148,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
 
     if "canoe" in str(target) :
         oplus_ddk_targets += [
-            modules_label("oplus/kernel/wifi:wonder"),
         ]
 
     #conditional_build modules
