@@ -1,12 +1,12 @@
 load(":repo_paths.bzl", "modules_label", "soc_label")
 load("//build/kernel/kleaf:kernel.bzl", "ddk_headers")
-load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_kernel_version", "oplus_ddk_get_target", "oplus_ddk_get_variant")
+load(":oplus_modules_define.bzl", "define_oplus_ddk_module", "oplus_ddk_get_target", "oplus_ddk_get_variant")
 load(":oplus_modules_dist.bzl", "ddk_copy_to_dist_dir")
 
 def define_oplus_local_modules():
     target = oplus_ddk_get_target()
     variant  = oplus_ddk_get_variant()
-    kernel_version = oplus_ddk_get_kernel_version()
+
     kernel_build_variant = "{}_{}".format(target, variant)
 
     if target == "canoe" :
@@ -15,28 +15,6 @@ def define_oplus_local_modules():
         ]
     else :
         ko_oem_qmi_deps = []
-
-    define_oplus_ddk_module(
-        name = "oplus_network_data_module",
-        srcs = native.glob([
-            "**/*.h",
-            "data_module/data_main.c",
-            "data_module/comm_netlink/comm_netlink.c",
-            "data_module/comm_netlink/protobuf-c.c",
-            "data_module/proto-src/netlink_msg.pb-c.c",
-            "data_module/dpi/dpi_core.c",
-            "data_module/dpi/log_stream.c",
-            "data_module/dpi/tmgp_sgame.c",
-            "data_module/dpi/heytap_market.c",
-            "data_module/cls_dpi/cls_dpi.c",
-            "data_module/dpi/zoom.c",
-            "data_module/dpi/tencent_meeting.c",
-            "data_module/dpi/wechat.c",
-            "data_module/oplus_game_main_stream_monitor/oplus_game_main_stream_monitor.c",
-            "tmgp_sgame/wzry_stats.c",
-        ]),
-        includes = ["."],
-    )
 
     define_oplus_ddk_module(
         name = "oplus_network_linkpower_module",
@@ -212,7 +190,6 @@ def define_oplus_local_modules():
     ddk_copy_to_dist_dir(
         name = "oplus_network",
         module_list = [
-            "oplus_network_data_module",
             "oplus_network_linkpower_module",
             "oplus_network_app_monitor",
             "oplus_network_dns_hook",
