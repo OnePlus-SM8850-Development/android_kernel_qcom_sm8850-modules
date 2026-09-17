@@ -21,7 +21,6 @@ def get_oplus_ddk_modules(target, msm_target, variant):
         modules_label("oplus/kernel/boot:oplus_ftm_mode"),
         modules_label("oplus/kernel/boot:oplusboot"),
         modules_label("oplus/kernel/boot:saupwk"),
-        modules_label("oplus/kernel/boot:tango32"),
         modules_label("oplus/kernel/camera:{}_camera_extension").format(target),
         modules_label("oplus/kernel/charger/bazel:{}_oplus_cfg").format(target),
         modules_label("oplus/kernel/charger/bazel:{}_oplus_chg_v2").format(target),

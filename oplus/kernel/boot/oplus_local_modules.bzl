@@ -132,16 +132,6 @@ def define_oplus_local_modules():
         includes = ["."],
     )
 
-    define_oplus_ddk_module(
-        name = "tango32",
-        srcs = native.glob([
-            "htb/*.h",
-            "htb/*.c",
-        ]),
-        includes = ["."],
-        local_defines = ["CONFIG_TANGO32"],
-    )
-
     ddk_copy_to_dist_dir(
         name = "oplus_bsp_boot",
         module_list = [
@@ -156,6 +146,5 @@ def define_oplus_local_modules():
             "oplus_bsp_boot_projectinfo",
             "oplus_bsp_dfr_reboot_speed",
             "oplus_bsp_dfr_shutdown_speed",
-            "tango32",
         ],
     )
