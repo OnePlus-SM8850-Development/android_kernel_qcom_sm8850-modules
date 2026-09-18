@@ -1,13 +1,5 @@
-load(":oplus_modules.bzl", "define_oplus_ddk_modules")
-
 package(
     default_visibility = [
         "//visibility:public",
     ],
-)
-
-define_oplus_ddk_modules(
-    target = "canoe_perf",
-    msm_target = "canoe",
-    variant = "perf",
 )

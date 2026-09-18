@@ -97,15 +97,9 @@ def get_oplus_ddk_modules(target, msm_target, variant):
 def define_oplus_ddk_modules(target, msm_target, variant):
     oplus_ddk_targets = get_oplus_ddk_modules(target, msm_target, variant)
 
-    native.filegroup(
-        name = "{}_oplus_modules".format(target),
-        srcs = oplus_ddk_targets,
-        visibility = ["//visibility:public"],
-    )
-
     pkg_files(
         name = "{}_all_oplus_ddk_modules_files".format(target),
-        srcs = [":{}_oplus_modules".format(target)],
+        srcs = oplus_ddk_targets,
         strip_prefix = strip_prefix.files_only(),
         visibility = ["//visibility:private"],
     )
