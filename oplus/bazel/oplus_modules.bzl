@@ -3,10 +3,7 @@ load("@rules_pkg//pkg:install.bzl", "pkg_install")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
 load(":oplus_modules_define.bzl", "oplus_ddk_get_oplus_features")
 
-def get_oplus_ddk_modules(target, msm_target, variant):
-    if msm_target != "canoe" or variant != "perf":
-        return []
-
+def define_oplus_ddk_modules(target, msm_target, variant):
     oplus_ddk_targets = [
         modules_label("oplus/hardware/radio/kernel:oplus_mdmfeature"),
         modules_label("oplus/hardware/radio/mdmrst/bazel:oplus_mdmrst"),
@@ -92,21 +89,17 @@ def get_oplus_ddk_modules(target, msm_target, variant):
             modules_label("oplus/sensor/kernel/qcom:pseudo_sensor"),
         ]
 
-    return oplus_ddk_targets
-
-def define_oplus_ddk_modules(target, msm_target, variant):
-    oplus_ddk_targets = get_oplus_ddk_modules(target, msm_target, variant)
-
     pkg_files(
         name = "{}_all_oplus_ddk_modules_files".format(target),
         srcs = oplus_ddk_targets,
         strip_prefix = strip_prefix.files_only(),
         visibility = ["//visibility:private"],
     )
+
     pkg_install(
         name = "{}_all_oplus_ddk_modules_dist".format(target),
         srcs = [":{}_all_oplus_ddk_modules_files".format(target)],
-        destdir = "out/msm-kernel-{}/techpack".format(target),
+        destdir = "out/msm-kernel-{}/techpack",
     )
 
     return oplus_ddk_targets

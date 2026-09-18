@@ -53,13 +53,22 @@ def ddk_copy_to_dist_dir(
 
     for target in bazel_support_target:
         for variant in bazel_support_variant:
-            kernel_build_variant = "{}_{}".format(target, variant)
+            stem = "{}_{}_{}".format(target, variant, name)
+
             copy_to_dist_dir(
-                name = "{}_{}_dist".format(kernel_build_variant,name),
+                name = "{}_dist".format(stem),
                 data = data,
-                dist_dir = "out/target/product/{}/obj/DLKM_OBJ".format(kernel_build_variant),
+                dist_dir = "out/msm-kernel-{}-{}/dist".format(target, variant),
                 flat = True,
-                wipe_dist_dir = False,
-                allow_duplicate_filenames = False,
-                mode_overrides = {"**/*": "644"},
+                log = "info",
+                allow_duplicate_filenames = True,
+                mode_overrides = {
+                    # do not sort
+                    "**/*.elf": "755",
+                    "**/vmlinux": "755",
+                    "**/Image": "755",
+                    "**/*.dtb*": "755",
+                    "**/LinuxLoader*": "755",
+                    "**/*": "644",
+                },
             )
