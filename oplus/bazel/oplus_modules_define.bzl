@@ -122,15 +122,9 @@ def define_oplus_ddk_module(
         for variant in bazel_support_variant:
             kernel_build_variant = "{}_{}".format(target, variant)
 
-            deps_all_headers = select({
-                "//build/kernel/kleaf:socrepo_true": [soc_label("all_headers")],
-                "//build/kernel/kleaf:socrepo_false": [soc_label("all_headers")],
-            })
+            deps_all_headers = [soc_label("all_headers")]
 
-            kernel_build = select({
-                "//build/kernel/kleaf:socrepo_true": soc_label("{}_base_kernel").format(kernel_build_variant),
-                "//build/kernel/kleaf:socrepo_false": soc_label("{}").format(kernel_build_variant),
-            })
+            kernel_build = soc_label("{}_base_kernel").format(kernel_build_variant)
             ddk_module(
                 name = "{}".format(name),
                 srcs = srcs,
