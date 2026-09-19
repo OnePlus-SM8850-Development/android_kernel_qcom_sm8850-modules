@@ -50,6 +50,8 @@
 #define MAX_PARAMS_FOR_IRQ_INJECT     5
 #define IRQ_INJECT_DISPLAY_BUF_LEN    4096
 
+#define CAM_IFE_MGR_DUMP_STREAM_INFO_NUM_WORDS  10
+
 typedef int (*cam_isp_irq_inject_cmd_parse_handler)(
 	struct cam_isp_irq_inject_param *irq_inject_param,
 	uint32_t param_index, char *token, bool *is_query);
@@ -2886,6 +2888,17 @@ static int cam_ife_hw_mgr_acquire_res_ife_out_rdi(
 	uint32_t  i, vfe_in_res_id;
 	uint32_t  res_id = max_ife_out_res;
 
+	if (!ife_ctx->vfe_bus_comp_grp || !ife_ctx->res_list_ife_out ||
+		!ife_ctx->vfe_out_map) {
+		CAM_ERR(CAM_ISP,
+			"IFE out ctx NULL in RDI acquire [bus:%s res:%s map:%s] ctx_idx:%u",
+			ife_ctx->vfe_bus_comp_grp ? "valid" : "NULL",
+			ife_ctx->res_list_ife_out ? "valid" : "NULL",
+			ife_ctx->vfe_out_map ? "valid" : "NULL",
+			ife_ctx->ctx_index);
+		return -EINVAL;
+	}
+
 	/* take left resource */
 	vfe_in_res_id = ife_src_res->hw_res[0]->res_id;
 
@@ -2968,6 +2981,17 @@ static int cam_ife_hw_mgr_acquire_res_ife_out_pixel(
 	struct cam_hw_intf                       *hw_intf;
 	struct cam_isp_context_comp_record       *comp_grp = NULL;
 	bool                                      is_ife_out_in_list, is_single_ctxt_except;
+
+	if (!ife_ctx->vfe_bus_comp_grp || !ife_ctx->res_list_ife_out ||
+		!ife_ctx->vfe_out_map) {
+		CAM_ERR(CAM_ISP,
+			"IFE out ctx NULL in pixel acquire [bus:%s res:%s map:%s] ctx_idx:%u",
+			ife_ctx->vfe_bus_comp_grp ? "valid" : "NULL",
+			ife_ctx->res_list_ife_out ? "valid" : "NULL",
+			ife_ctx->vfe_out_map ? "valid" : "NULL",
+			ife_ctx->ctx_index);
+		return -EINVAL;
+	}
 
 	for (i = 0; i < in_port->num_out_res; i++) {
 		is_ife_out_in_list = false;
@@ -12920,6 +12944,15 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 		bw_config_size = sizeof(struct cam_isp_bw_config) + ((bw_config_u->num_rdi-1)*
 					sizeof(struct cam_isp_bw_vote));
 
+		if (blob_size < bw_config_size) {
+			CAM_ERR(CAM_ISP,
+				"Invalid blob size: %u expected %zu, num_rdi: %u, bw_cfg size: %zu, bw_vote size: %zu, ctx_idx: %u",
+				blob_size, bw_config_size, bw_config_u->num_rdi,
+				sizeof(struct cam_isp_bw_config),
+				sizeof(struct cam_isp_bw_vote), ife_mgr_ctx->ctx_index);
+			return -EINVAL;
+		}
+
 		rc = cam_common_mem_kdup((void **)&bw_config, bw_config_u, bw_config_size);
 		if (rc) {
 			CAM_ERR(CAM_ISP, "Alloc and copy request bw_config failed");
@@ -12946,17 +12979,6 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 			}
 		}
 
-		if ((bw_config->num_rdi != 0) && (blob_size <
-			(sizeof(struct cam_isp_bw_config) +
-			(bw_config->num_rdi - 1) *
-			sizeof(struct cam_isp_bw_vote)))) {
-			CAM_ERR(CAM_ISP, "Invalid blob size %u expected %lu ctx_idx: %u",
-				blob_size, sizeof(struct cam_isp_bw_config) +
-				(bw_config->num_rdi - 1) *
-				sizeof(struct cam_isp_bw_vote), ife_mgr_ctx->ctx_index);
-			cam_common_mem_free(bw_config);
-			return -EINVAL;
-		}
 
 		if (!prepare || !prepare->priv ||
 			(bw_config->usage_type >= CAM_ISP_HW_USAGE_TYPE_MAX)) {
@@ -13001,6 +13023,15 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 		bw_config_size = sizeof(struct cam_isp_bw_config_v2) + ((bw_config_u->num_paths-1)*
 					sizeof(struct cam_axi_per_path_bw_vote));
 
+		if (blob_size < bw_config_size) {
+			CAM_ERR(CAM_ISP,
+				"Invalid blob size: %u expected %zu, num_paths: %u, bw_cfg_v2 size: %zu, per_path_vote size: %zu, ctx_idx: %u",
+				blob_size, bw_config_size, bw_config_u->num_paths,
+				sizeof(struct cam_isp_bw_config_v2),
+				sizeof(struct cam_axi_per_path_bw_vote), ife_mgr_ctx->ctx_index);
+			return -EINVAL;
+		}
+
 		rc = cam_common_mem_kdup((void **)&bw_config, bw_config_u, bw_config_size);
 		if (rc) {
 			CAM_ERR(CAM_ISP, "Alloc and copy request bw_config failed");
@@ -13030,18 +13061,6 @@ static int cam_isp_packet_generic_blob_handler(void *user_data,
 			}
 		}
 
-		if ((bw_config->num_paths != 0) && (blob_size <
-			(sizeof(struct cam_isp_bw_config_v2) +
-			(bw_config->num_paths - 1) *
-			sizeof(struct cam_axi_per_path_bw_vote)))) {
-			CAM_ERR(CAM_ISP,
-				"Invalid blob size: %u, num_paths: %u, bw_config size: %lu, per_path_vote size: %lu, ctx_idx: %u",
-				blob_size, bw_config->num_paths,
-				sizeof(struct cam_isp_bw_config_v2),
-				sizeof(struct cam_axi_per_path_bw_vote), ife_mgr_ctx->ctx_index);
-			cam_common_mem_free(bw_config);
-			return -EINVAL;
-		}
 
 		if (!prepare || !prepare->priv ||
 			(bw_config->usage_type >= CAM_ISP_HW_USAGE_TYPE_MAX)) {
@@ -16582,6 +16601,8 @@ static int cam_ife_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
 	struct cam_isp_prepare_hw_update_data *hw_update_data;
 	struct cam_isp_hw_per_req_info *per_req_info = NULL;
 	struct cam_isp_hw_drv_info *drv_info = NULL;
+	struct cam_common_hw_dump_args *ife_dump_args;
+	size_t min_len, remain_len;
 
 	if (!hw_mgr_priv || !cmd_args) {
 		CAM_ERR(CAM_ISP, "Invalid arguments");
@@ -16675,6 +16696,28 @@ static int cam_ife_mgr_cmd(void *hw_mgr_priv, void *cmd_args)
 				&isp_hw_cmd_args->u.sof_ts.prev, true);
 			break;
 		case CAM_ISP_HW_MGR_DUMP_STREAM_INFO:
+			ife_dump_args =
+				(struct cam_common_hw_dump_args *)isp_hw_cmd_args->cmd_data;
+
+			if (ife_dump_args->buf_len <= ife_dump_args->offset) {
+				CAM_WARN(CAM_ISP,
+					"IFE stream info: Dump buffer overshoot len %zu offset %zu",
+					ife_dump_args->buf_len, ife_dump_args->offset);
+				rc = -ENOSPC;
+				break;
+			}
+
+			min_len = sizeof(struct cam_common_hw_dump_header) +
+				CAM_IFE_MGR_DUMP_STREAM_INFO_NUM_WORDS * sizeof(int32_t);
+			remain_len = ife_dump_args->buf_len - ife_dump_args->offset;
+			if (remain_len < min_len) {
+				CAM_WARN(CAM_ISP,
+					"IFE stream info: Dump buffer exhaust remain %zu min %zu",
+					remain_len, min_len);
+				rc = -ENOSPC;
+				break;
+			}
+
 			rc = cam_common_user_dump_helper(
 				(void *)(isp_hw_cmd_args->cmd_data),
 				cam_ife_mgr_user_dump_stream_info, ctx,
