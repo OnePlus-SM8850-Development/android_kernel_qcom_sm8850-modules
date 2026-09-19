@@ -813,12 +813,15 @@ static ssize_t qbt_read(struct file *filp, char __user *ubuf, size_t cnt, loff_t
 		mutex_unlock(&drvdata->fd_events_mutex);
 	} else if (minor_no == MINOR_NUM_IPC) {
 		mutex_lock(&drvdata->ipc_events_mutex);
-		if (!kfifo_get(&drvdata->ipc_events, &fw_event))
+		if (!kfifo_get(&drvdata->ipc_events, &fw_event)) {
 			qbt_err("IPC events fifo: error removing item\n");
-
-		qbt_info("IPC event %d at minor no %d read at time %lu uS\n", (int)fw_event.ev,
-			minor_no, (unsigned long)ktime_to_us(ktime_get()));
-		num_bytes = copy_to_user(ubuf, &fw_event.ev, sizeof(fw_event.ev));
+			num_bytes = -EIO;
+		} else {
+			qbt_info("IPC event %d at minor no %d read at time %lu uS\n",
+				 (int)fw_event.ev, minor_no,
+				 (unsigned long)ktime_to_us(ktime_get()));
+			num_bytes = copy_to_user(ubuf, &fw_event.ev, sizeof(fw_event.ev));
+		}
 		mutex_unlock(&drvdata->ipc_events_mutex);
 	} else {
 		qbt_err("Invalid minor number\n");
@@ -1510,10 +1513,17 @@ static int qbt_suspend(struct platform_device *pdev, pm_message_t state)
 	} else {
 		qbt_info("Driver currently available\n");
 
-		if (drvdata->is_wuhb_connected)
-			enable_irq_wake(drvdata->fd_gpio.irq);
+		if (drvdata->is_wuhb_connected && drvdata->fd_gpio.irq_enabled) {
+			rc = enable_irq_wake(drvdata->fd_gpio.irq);
+			if (rc < 0)
+				qbt_warn("Failed to enable IRQ wake for FD GPIO: %d\n", rc);
+		}
 
-		enable_irq_wake(drvdata->fw_ipc.irq);
+		if (drvdata->fw_ipc.irq_enabled) {
+			rc = enable_irq_wake(drvdata->fw_ipc.irq);
+			if (rc < 0)
+				qbt_warn("Failed to enable IRQ wake for FW IPC: %d\n", rc);
+		}
 	}
 
 	mutex_unlock(&drvdata->mutex);
@@ -1527,12 +1537,20 @@ static int qbt_resume(struct platform_device *pdev)
 	qbt_info("Entry\n");
 	struct qbt_drvdata *drvdata = platform_get_drvdata(pdev);
 
-	if (drvdata->is_wuhb_connected) {
+	if (drvdata->is_wuhb_connected && drvdata->fd_gpio.irq_enabled) {
+		int rc;
 		qbt_info("wuhb connected\n");
-		disable_irq_wake(drvdata->fd_gpio.irq);
+		rc = disable_irq_wake(drvdata->fd_gpio.irq);
+		if (rc < 0)
+			qbt_warn("Failed to disable IRQ wake for FD GPIO: %d\n", rc);
 	}
+	if (drvdata->fw_ipc.irq_enabled) {
+		int rc;
 
-	disable_irq_wake(drvdata->fw_ipc.irq);
+		rc = disable_irq_wake(drvdata->fw_ipc.irq);
+		if (rc < 0)
+			qbt_warn("Failed to disable IRQ wake for FW IPC: %d\n", rc);
+	}
 
 	qbt_debug("Exit\n");
 	return 0;
