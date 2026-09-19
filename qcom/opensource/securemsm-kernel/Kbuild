@@ -44,7 +44,6 @@ ifneq ($(filter y m,$(CONFIG_QCOM_SI_CORE)),)
 else
     smcinvoke_dlkm-objs := smcinvoke/compat/smcinvoke_kernel.o
     smcinvoke_dlkm-objs += smcinvoke/compat/smcinvoke.o
-    smcinvoke_dlkm-objs += smcinvoke/compat/smci_kernel.o
 endif
 
 obj-$(CONFIG_QTI_TZ_LOG) += tz_log_dlkm.o
