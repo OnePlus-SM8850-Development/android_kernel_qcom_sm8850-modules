@@ -324,9 +324,14 @@ typedef enum {
 #define WIFI_FEATURE_SET_TX_POWER_LIMIT 0x4000000
 /* Support changing MAC address without iface reset(down and up) */
 #define WIFI_FEATURE_DYNAMIC_SET_MAC    0x10000000
+/* Support P2P MAC randomization */
+#define WIFI_FEATURE_P2P_RAND_MAC	0x80000000
 #define WIFI_FEATURE_SET_LATENCY_MODE   0x40000000 /* Set latency mode */
 /* Support for configuring roaming mode */
 #define WIFI_FEATURE_ROAMING_MODE_CONTROL 0x800000000
+
+/* Support for configuring VOIP */
+#define WIFI_FEATURE_SET_VOIP_MODE	 0x1000000000
 
 #define WIFI_FEATURE_CACHED_SCAN_RESULTS 0x2000000000
 /* Support MLO SoftAp */
@@ -618,7 +623,7 @@ void wlan_hdd_rso_cmd_status_cb(hdd_handle_t hdd_handle,
 /**
  * wlan_hdd_cfg80211_acs_ch_select_evt: Callback function for ACS evt
  * @link_info: Link info pointer in HDD adapter
- * @store_acs_freq: Store current ACS frequecy flag
+ * @store_acs_freq: Store current ACS frequency flag
  *
  * This is a callback function on ACS procedure is completed.
  * This function send the ACS selected channel information to hostapd

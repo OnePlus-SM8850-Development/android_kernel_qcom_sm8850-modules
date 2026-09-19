@@ -254,7 +254,7 @@ QDF_STATUS tdls_vdev_obj_create_notification(struct wlan_objmgr_vdev *vdev,
 	tdls_feature_flags = tdls_soc_obj->tdls_configs.tdls_feature_flags;
 	if (!TDLS_IS_ENABLED(tdls_feature_flags)) {
 		tdls_debug("disabled in ini");
-		return QDF_STATUS_E_NOSUPPORT;
+		return QDF_STATUS_SUCCESS;
 	}
 
 	if (tdls_soc_obj->tdls_osif_init_cb) {
@@ -343,7 +343,7 @@ QDF_STATUS tdls_vdev_obj_destroy_notification(struct wlan_objmgr_vdev *vdev,
 	tdls_feature_flags = tdls_soc_obj->tdls_configs.tdls_feature_flags;
 	if (!TDLS_IS_ENABLED(tdls_feature_flags)) {
 		tdls_debug("disabled in ini");
-		return QDF_STATUS_E_NOSUPPORT;
+		return QDF_STATUS_SUCCESS;
 	}
 
 	tdls_vdev_obj = wlan_objmgr_vdev_get_comp_private_obj(vdev,
@@ -489,7 +489,7 @@ static void tdls_get_all_peers_from_list(
  * @vdev: vdev object
  *
  * This function is called to reset all tdls peers and
- * notify upper layers of teardown inidcation
+ * notify upper layers of teardown indication
  *
  * Return: QDF_STATUS
  */
@@ -560,7 +560,7 @@ static QDF_STATUS tdls_process_reset_all_peers(struct wlan_objmgr_vdev *vdev)
  * @delete_all_peers_ind: Delete all peers indication
  *
  * This function is called to reset all tdls peers and
- * notify upper layers of teardown inidcation
+ * notify upper layers of teardown indication
  *
  * Return: QDF_STATUS
  */
@@ -1268,6 +1268,12 @@ bool tdls_check_if_offchannel_allowed(struct wlan_objmgr_vdev *vdev)
 {
 	struct wlan_objmgr_psoc *psoc = wlan_vdev_get_psoc(vdev);
 	uint32_t mac_id = wlan_mlme_get_vdev_mac_id(vdev);
+
+	if (policy_mgr_mode_specific_connection_count(psoc, PM_PASSTHRU_MODE,
+						      NULL)) {
+		tdls_debug("TDLS offchannel disallowed: wondertap concurrency");
+		return false;
+	}
 
 	if (policy_mgr_is_hw_dbs_capable(psoc))
 		return true;

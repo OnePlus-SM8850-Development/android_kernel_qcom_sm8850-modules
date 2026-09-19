@@ -1007,7 +1007,7 @@ struct wlan_mlme_vht_caps {
  * @vht_txops: TXOP power save
  * @htc_vhtcap: HTC VHT capability
  * @max_ampdu_lenexp: AMPDU length
- * @vht_link_adapt: VHT link adapatation capable
+ * @vht_link_adapt: VHT link adaptation capable
  * @rx_antpattern: RX antenna pattern
  * @tx_antpattern: TX antenna pattern
  * @extended_nss_bw_supp:
@@ -1540,6 +1540,11 @@ struct wlan_mlme_aux_dev_caps {
  * @bt_profile_con: Bluetooth connection profile
  * @relaxed_lpi_conn_policy: Relaxed LPI connection policy flag
  * @edca_txop_limit: EDCA TXOP limit in milliseconds.
+ * @sap_perf_tuning_enable: Enable/Disable SAP performance tuning.
+ * @sap_perf_data_threshold: data_threshold in Kbps corresponds to the total
+ * TX/RX bytes.
+ * @sap_traffic_monitoring_time_s: Duration of traffic monitoring
+ * in unit of sec
  */
 struct wlan_mlme_generic {
 	uint32_t band_capability;
@@ -1573,7 +1578,7 @@ struct wlan_mlme_generic {
 	uint8_t mgmt_retry_max;
 	bool enable_he_mcs0_for_6ghz_mgmt;
 	bool bmiss_skip_full_scan;
-	bool enable_ring_buffer;
+	uint32_t enable_ring_buffer;
 	bool enable_peer_unmap_conf_support;
 	uint8_t dfs_chan_ageout_time;
 	bool bigtk_support;
@@ -1615,6 +1620,9 @@ struct wlan_mlme_generic {
 	bool bt_profile_con;
 	bool relaxed_lpi_conn_policy;
 	uint32_t edca_txop_limit;
+	bool sap_perf_tuning_enable;
+	uint32_t sap_perf_data_threshold;
+	uint32_t sap_traffic_monitoring_time_s;
 };
 
 /**
@@ -1914,6 +1922,9 @@ enum station_prefer_bw {
  * @epcs_capability:                epcs capability enable or disable flag
  * @usr_disable_eht:                user disable the eht for STA
  * @eht_disable_punct_in_us_lpi:    Disable eht puncture in us lpi mode
+ * @enable_high_band_roaming:       Enable/disable high band roaming
+ * @high_band_roaming_threshold_time_ms: High band roaming threshold time in ms
+ * @high_band_roaming_data_threshold: High band roaming data threshold in KBps
  */
 struct wlan_mlme_sta_cfg {
 	uint32_t sta_keep_alive_period;
@@ -1957,6 +1968,9 @@ struct wlan_mlme_sta_cfg {
 	bool usr_disable_eht;
 	bool eht_disable_punct_in_us_lpi;
 #endif
+	bool enable_high_band_roaming;
+	uint32_t high_band_roaming_threshold_time_ms;
+	uint32_t high_band_roaming_data_threshold;
 };
 
 /**
@@ -1966,6 +1980,7 @@ struct wlan_mlme_sta_cfg {
  * @stats_link_speed_rssi_med: medium rssi link speed
  * @stats_link_speed_rssi_low: rssi link speed, low
  * @stats_report_max_link_speed_rssi: report speed limit
+ * @stats_chain_signal_in_signal_row: report per-chain RSSI on signal row
  */
 struct wlan_mlme_stats_cfg {
 	uint32_t stats_periodic_display_time;
@@ -1973,6 +1988,7 @@ struct wlan_mlme_stats_cfg {
 	int stats_link_speed_rssi_med;
 	int stats_link_speed_rssi_low;
 	uint32_t stats_report_max_link_speed_rssi;
+	bool stats_chain_signal_in_signal_row;
 };
 
 /**
@@ -2966,13 +2982,13 @@ struct wlan_mlme_iot {
  * @wep_params:  WEP related config items
  * @wifi_pos_cfg: WIFI POS config
  * @wmm_params: WMM related CFG & INI Items
- * @wps_params: WPS related CFG itmes
- * @btm: BTM related CFG itmes
+ * @wps_params: WPS related CFG items
+ * @btm: BTM related CFG items
  * @wlm_config: WLM related CFG items
  * @rrm_config: RRM related CFG items
  * @mwc: MWC related CFG items
  * @dot11_mode: dot11 mode supported
- * @reg: REG related CFG itmes
+ * @reg: REG related CFG items
  * @trig_score_delta: Roam score delta value for various roam triggers
  * @trig_min_rssi: Expected minimum RSSI value of candidate AP for
  * various roam triggers

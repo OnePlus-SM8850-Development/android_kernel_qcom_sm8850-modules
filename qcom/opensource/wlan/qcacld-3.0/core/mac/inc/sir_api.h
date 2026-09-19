@@ -475,17 +475,17 @@ const char *lim_bss_type_to_string(const uint16_t bss_type);
  *                      This value is derived from "Supported MCS Set field"
  *                      inside the HT capability element.
  * @vhtRxMCSMap: Indicates the Maximum MCS(VHT) that can be received for each
- *                number of spacial streams
+ *                number of spatial streams
  * @vhtRxHighestDataRate: Indicate the highest VHT data rate that the STA is
  *                         able to receive
  * @vhtTxMCSMap: Indicates the Maximum MCS(VHT) that can be transmitted for
- *                each number of spacial streams
+ *                each number of spatial streams
  * @vhtTxHighestDataRate: Indicate the highest VHT data rate that the STA is
  *                         able to transmit
  * @he_rx_mcs: Indicates the Maximum MCS(HE) that can be received for each
- *              number of spacial streams
+ *              number of spatial streams
  * @he_tx_mcs: Indicates the Maximum MCS(HE) that can be transmitted for each
- *              number of spacial streams
+ *              number of spatial streams
  * @bw_20_rx_max_nss_for_mcs_0_to_7: Indicates MAX RX NSS for MCS from 0 to 7
  * @bw_20_tx_max_nss_for_mcs_0_to_7: Indicates MAX TX NSS for MCS from 0 to 7
  * @bw_20_rx_max_nss_for_mcs_8_and_9: Indicates MAX RX NSS for MCS from 8 9
@@ -3560,7 +3560,7 @@ struct sir_rx_threshold {
  * struct sir_wifi_ll_ext_stats_threshold - Threshold for stats update
  * @period: MAC counter indication period (unit in ms)
  * @enable: if threshold mechanism is enabled or disabled
- * @enable_bitmap: whether dedicated threshold is enabed.
+ * @enable_bitmap: whether dedicated threshold is enabled.
  *     Every MAC counter has a dedicated threshold. If the dedicated
  *     threshold is not set in the bitmap, global threshold will take
  *     effect.
@@ -4328,13 +4328,13 @@ QDF_STATUS umac_send_mb_message_to_mac(void *msg);
 
 /**
  * struct scan_chan_info - channel info
- * @freq: radio frequence
+ * @freq: radio frequency
  * @cmd flag: cmd flag
  * @noise_floor: noise floor
  * @cycle_count: cycle count
  * @rx_clear_count: rx clear count
  * @tx_frame_count: TX frame count
- * @clock_freq: clock frequence MHZ
+ * @clock_freq: clock frequency MHZ
  * @cca_busy_subband_info: CCA busy for each possible 20Mhz subbands
  * of the wideband scan channel
  */
@@ -4490,7 +4490,7 @@ struct ppet_hdr {
 #define HE_6G_TX_ANT_PATTERN_BIT_POS 13
 
 /*
- * Following formuala has been arrived at using karnaugh map and unit tested
+ * Following formula has been arrived at using karnaugh map and unit tested
  * with sample code. Take MCS for each NSS as 2 bit value first and solve for
  * 2 bit intersection of NSS. Use following table/Matrix as guide for solving
  * K-Maps
@@ -4537,7 +4537,7 @@ struct ppet_hdr {
 		HE_GET_MCS_FOR_NSS(mcs_2, 8)) << HE_MCS_NSS_SHIFT(8))
 
 /*
- * Following formuala has been arrived at using karnaugh map and unit tested
+ * Following formula has been arrived at using karnaugh map and unit tested
  * with sample code. Take MCS for each NSS as 2 bit value first and solve for
  * 2 bit intersection of NSS. Use following table/Matrix as guide for solving
  * K-Maps
@@ -5036,4 +5036,111 @@ struct start_bss_config {
 	uint8_t curr_conn_count;
 };
 
+/**
+ * struct wlan_passthru_htcap - HT Capabilities element body (IEEE 802.11n)
+ * @cap_info:      HT capability info (2 bytes)
+ * @ampdu_params:  A-MPDU parameters (1 byte)
+ * @mcs_set:       Supported MCS set (16 bytes)
+ * @ext_cap:       Extended HT capability info (2 bytes)
+ * @txbf_cap:      Transmit beamforming capabilities (4 bytes)
+ * @antenna:       Antenna selection capabilities (1 byte)
+ *
+ * Byte-identical to struct ieee80211_ht_cap (26 bytes packed).
+ * HDD fills this via qdf_mem_copy from sta_info.ht_capa in peer_assoc().
+ */
+struct wlan_passthru_htcap {
+	uint16_t cap_info;
+	uint8_t  ampdu_params;
+	uint8_t  mcs_set[16];
+	uint16_t ext_cap;
+	uint32_t txbf_cap;
+	uint8_t  antenna;
+} qdf_packed;
+
+/**
+ * struct wlan_passthru_vhtcap - VHT Capabilities element body (IEEE 802.11ac)
+ * @cap_info:      VHT capability info (4 bytes)
+ * @rx_mcs_map:    RX MCS map (2 bytes)
+ * @rx_highest:    Max RX data rate (2 bytes)
+ * @tx_mcs_map:    TX MCS map (2 bytes)
+ * @tx_highest:    Max TX data rate (2 bytes)
+ *
+ * Byte-identical to struct ieee80211_vht_cap (12 bytes packed).
+ * HDD fills this via qdf_mem_copy from sta_info.vht_capa in peer_assoc().
+ */
+struct wlan_passthru_vhtcap {
+	uint32_t cap_info;
+	uint16_t rx_mcs_map;
+	uint16_t rx_highest;
+	uint16_t tx_mcs_map;
+	uint16_t tx_highest;
+} qdf_packed;
+
+/**
+ * struct wlan_passthru_hecap - HE Capabilities element body (IEEE 802.11ax)
+ * @mac_cap_info: MAC capability info (6 bytes)
+ * @phycap_info:  PHY capability info (11 bytes)
+ *
+ * Byte-identical to struct ieee80211_he_cap_elem (17 bytes packed).
+ * Contains MAC/PHY capability fields but no MCS/NSS maps.
+ */
+struct wlan_passthru_hecap {
+	uint8_t mac_cap_info[6];
+	uint8_t phycap_info[11];
+} qdf_packed;
+
+/**
+ * struct sir_passthru_peer_setup_msg - msg for passthru peer setup/update
+ * @message_type: WNI_SME_PASSTHRU_PEER_SETUP
+ * @vdev_id: vdev id of the passthru interface
+ * @peer_mac_addr: peer MAC address
+ * @peer_aid: AID provided by WONDER in set_station_info NEW; used as the
+ *            DPH and WMI peer_associd for this peer (NEW only)
+ * @ch_width: channel width (derived from peer caps in HDD for UPDATE;
+ *            from tx_rate_cfg for NEW)
+ * @dot11mode: 802.11 mode (derived from peer capability_mask in HDD for
+ *             UPDATE; from tx_rate_cfg for NEW)
+ * @gi_val: guard interval value from tx_rate_cfg
+ * @nss: number of spatial streams from tx_rate_cfg
+ * @max_mcs: max MCS index
+ * @create_only: 1 = NEW (WMI_PEER_CREATE only); 0 = UPDATE (WMI_PEER_ASSOC)
+ * @htcap_present: 1 if peer_ht_cap is valid (UPDATE only)
+ * @peer_ht_cap: peer HT caps; byte-copy of sta_info.ht_capa in HDD
+ * @vhtcap_present: 1 if peer_vht_cap is valid (UPDATE only)
+ * @peer_vht_cap: peer VHT caps; byte-copy of sta_info.vht_capa in HDD
+ * @hecap_present: 1 if peer_he_cap is valid (UPDATE only)
+ * @peer_he_cap: peer HE MAC/PHY caps; byte-copy of sta_info.he_capa in HDD.
+ *               MCS/NSS maps are absent (ieee80211_he_cap_elem carries none);
+ *               LIM uses self caps for MCS maps, peer caps for MAC/PHY
+ */
+struct sir_passthru_peer_setup_msg {
+	uint16_t                    message_type;
+	uint16_t                    vdev_id;
+	uint16_t                    peer_aid;
+	struct qdf_mac_addr         peer_mac_addr;
+	enum phy_ch_width           ch_width;
+	uint32_t                    dot11mode;
+	uint8_t                     gi_val;
+	uint8_t                     nss;
+	uint8_t                     max_mcs;
+	uint8_t                     create_only;
+	uint8_t                     htcap_present;
+	struct wlan_passthru_htcap  peer_ht_cap;
+	uint8_t                     vhtcap_present;
+	struct wlan_passthru_vhtcap peer_vht_cap;
+	uint8_t                     hecap_present;
+	struct wlan_passthru_hecap  peer_he_cap;
+};
+
+/**
+ * struct sir_passthru_peer_del_msg - msg for passthru peer deletion
+ * @message_type: WNI_SME_PASSTHRU_PEER_DEL
+ * @vdev_id: vdev id of the passthru interface
+ * @peer_mac_addr: MAC address of the peer to delete
+ */
+struct sir_passthru_peer_del_msg {
+	uint16_t            message_type;
+	uint16_t            vdev_id;
+	struct qdf_mac_addr peer_mac_addr;
+};
 #endif /* __SIR_API_H */

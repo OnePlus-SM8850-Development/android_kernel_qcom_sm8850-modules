@@ -27,7 +27,7 @@
  * QoS (QoS here refers to a TSPEC). The setup QoS comes in two flavors: an
  * explicit application invoked and an internal HDD invoked.  The implicit QoS
  * is for applications that do NOT call the custom QCT WLAN OIDs for QoS but
- * which DO mark their traffic for priortization. It also has logic to start,
+ * which DO mark their traffic for prioritization. It also has logic to start,
  * update and stop the U-APSD trigger frame generation. It also has logic to
  * read WMM related config parameters from the registry.
  *
@@ -2264,6 +2264,8 @@ uint16_t hdd_get_queue_index(uint16_t up, bool is_critical)
 static
 uint16_t hdd_get_queue_index(uint16_t up, bool is_critical)
 {
+	if (qdf_unlikely(is_critical))
+		return HDD_LINUX_AC_VO;
 	return __hdd_get_queue_index(up);
 }
 #endif

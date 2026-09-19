@@ -48,6 +48,7 @@
 #define IS_24G_CH(__chNum) ((__chNum > 0) && (__chNum < 15))
 #define IS_5G_CH(__chNum) ((__chNum >= 36) && (__chNum <= 165))
 #define IS_2X2_CHAIN(__chain) ((__chain & 0x3) == 0x3)
+#define VHT_MCS_0_7 0x0
 #define VHT_MCS_0_8 0x1
 #define VHT_MCS_0_9 0x2
 #define VHT_MCS_DISABLE 0x3
@@ -179,7 +180,7 @@ struct fils_realm_identifier {
  * @is_fils_sk_auth_supported: if fils sk suppprted
  * @is_fils_sk_auth_pfs_supported: if fils sk with pfs supported
  * @is_pk_auth_supported: if fils public key supported
- * @cache_identifier: fils cache idenfier info
+ * @cache_identifier: fils cache identifier info
  * @hessid: fils hessid info
  * @realm_identifier: fils realm info
  * @key_identifier: fils key identifier info
@@ -204,11 +205,13 @@ enum operating_class_num {
 	OP_CLASS_134,
 	OP_CLASS_135,
 	OP_CLASS_136,
+	OP_CLASS_137,
 };
 
 enum operating_extension_identifier {
 	OP_CLASS_ID_200 = 200,
 	OP_CLASS_ID_201,
+	OP_CLASS_ID_202,
 };
 
 #ifdef WLAN_FEATURE_11BE_MLO

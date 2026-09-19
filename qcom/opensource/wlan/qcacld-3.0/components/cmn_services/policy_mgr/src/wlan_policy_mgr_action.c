@@ -48,6 +48,7 @@
 #include "wlan_cm_roam_api.h"
 #include "wlan_ll_sap_api.h"
 #include "target_if_cm_roam_offload.h"
+#include "wlan_p2p_ucfg_api.h"
 
 enum policy_mgr_conc_next_action (*policy_mgr_get_current_pref_hw_mode_ptr)
 	(struct wlan_objmgr_psoc *psoc);
@@ -2215,7 +2216,7 @@ user_freq_check:
 	policy_mgr_store_and_del_conn_info_by_vdev_id(psoc, cur_sap_vdev_id,
 						      &info, &num_cxn_del);
 
-	/* Add the user config ch as first condidate */
+	/* Add the user config ch as first candidate */
 	pcl_channels[0] = user_config_freq;
 	pcl_weight[0] = 0;
 	status = policy_mgr_get_pcl(psoc, mode, &pcl_channels[1], &pcl_len,
@@ -3651,6 +3652,17 @@ static void __policy_mgr_check_sta_ap_concurrent_ch_intf(
 		goto end;
 	}
 
+	for (i = 0; i < cc_count; i++) {
+		if (ucfg_p2p_is_p2p_go_noa_in_progress(pm_ctx->pdev,
+						       vdev_id[i])) {
+			policy_mgr_debug("defer sap conc check, P2P GO vdev %d NOA in progress",
+					 vdev_id[i]);
+			qdf_delayed_work_start(&pm_ctx->sta_ap_intf_check_work,
+					       SAP_CONC_CHECK_DEFER_TIMEOUT_MS);
+			goto end;
+		}
+	}
+
 	/* When any STA/CLI is transition state, such as roaming or
 	 * disconnecting, skip force scc for this time.
 	 */
@@ -4368,7 +4380,7 @@ policy_mgr_sta_sap_dfs_scc_conc_check(struct wlan_objmgr_psoc *psoc,
 	/* If the new channel is DFS or indoor, then select another channel
 	 * and switch the SAP / GO to avoid CAC. This will resume traffic on
 	 * SAP / GO interface immediately. Once STA moves to this new channel
-	 * and receives the very first beacon, then it will enforece SCC
+	 * and receives the very first beacon, then it will enforce SCC
 	 */
 	if (wlan_reg_is_dfs_for_freq(pdev, new_freq) ||
 	    wlan_reg_is_freq_indoor(pdev, new_freq) ||

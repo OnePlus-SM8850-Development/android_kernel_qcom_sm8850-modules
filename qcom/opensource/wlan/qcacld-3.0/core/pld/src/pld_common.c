@@ -2458,6 +2458,7 @@ int pld_qmi_indication(struct device *dev, void *cb_ctx,
 	case PLD_BUS_TYPE_PCIE:
 		return pld_pcie_register_qmi_ind(dev, cb_ctx, cb);
 	case PLD_BUS_TYPE_SNOC:
+		return pld_snoc_register_qmi_ind(dev, cb_ctx, cb);
 	case PLD_BUS_TYPE_SDIO:
 	case PLD_BUS_TYPE_USB:
 		return -EINVAL;
@@ -3027,7 +3028,7 @@ int pld_oem_event_smem_write(struct device *dev, int flags, const __u8 *data,
 }
 #endif
 
-#ifdef CONFIG_DT_CPU_MASK_DP_INTR
+#ifdef FEATURE_DT_CPU_MASK_DP_INTR
 void pld_get_cpumask_for_wlan_rx_interrupts(struct device *dev,
 					    unsigned int *cpumask)
 {

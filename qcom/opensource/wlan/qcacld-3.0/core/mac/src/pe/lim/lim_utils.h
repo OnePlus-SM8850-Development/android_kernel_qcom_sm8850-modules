@@ -1188,7 +1188,7 @@ lim_get_mld_info_sta(struct cm_peer_create_req *req,
  * @vdev_id: vdev id
  * @cfg: config setting
  *
- * Preapres the vendor action frame and send action frame in HE TB PPDU
+ * Prepares the vendor action frame and send action frame in HE TB PPDU
  * configuration to FW.
  *
  * Return: QDF_STATUS
@@ -1276,6 +1276,7 @@ lim_add_bssid_to_reject_list(struct wlan_objmgr_pdev *pdev,
  * @addn_ie: Additional IE buffer
  * @addn_ielen: Length of additional IE
  * @dst: Supp operating class IE structure to be updated
+ * @eht_capable: eht capable or not
  *
  * This function is used to strip supp op class IE from IE buffer and
  * update the passed structure.
@@ -1284,7 +1285,7 @@ lim_add_bssid_to_reject_list(struct wlan_objmgr_pdev *pdev,
  */
 QDF_STATUS lim_strip_supp_op_class_update_struct(struct mac_context *mac_ctx,
 		uint8_t *addn_ie, uint16_t *addn_ielen,
-		tDot11fIESuppOperatingClasses *dst);
+		tDot11fIESuppOperatingClasses *dst, bool eht_capable);
 
 uint8_t lim_get_80Mhz_center_channel(uint8_t primary_channel);
 void lim_update_obss_scanparams(struct pe_session *session,
@@ -1332,6 +1333,10 @@ void lim_update_caps_info_for_bss(struct mac_context *mac_ctx,
 			uint16_t *caps, uint16_t bss_caps);
 void lim_send_set_dtim_period(struct mac_context *mac_ctx, uint8_t dtim_period,
 			      struct pe_session *session);
+void lim_update_vdev_bss_param_dtim(struct pe_session *session,
+				    uint8_t dtim_period);
+void lim_update_vdev_bss_param_use_prot(struct pe_session *session,
+					bool use_prot);
 
 QDF_STATUS lim_strip_ie(struct mac_context *mac_ctx,
 		uint8_t *addn_ie, uint16_t *addn_ielen,
@@ -2157,6 +2162,50 @@ void lim_update_sta_eht_capable(struct mac_context *mac,
 				tpAddStaParams add_sta_params,
 				tpDphHashNode sta_ds,
 				struct pe_session *session_entry);
+
+#ifdef DRIVER_PASSTHRU_MODE
+/**
+ * lim_update_passthru_config(): Update passthru caps in add sta params
+ * @mac: pointer to MAC context
+ * @add_sta_params: pointer to add sta params
+ * @sta_ds: pointer to dph hash table entry
+ * @session_entry: pointer to PE session
+ *
+ * Return: None
+ */
+void lim_update_passthru_config(struct mac_context *mac,
+				tpAddStaParams add_sta_params,
+				tpDphHashNode sta_ds,
+				struct pe_session *session_entry);
+/**
+ * lim_passthru_mlme_vdev_disconnect_peers() - delete passthru peers
+ * @vdev_mlme:  VDEV MLME comp object
+ * @data_len: data size
+ * @data: event data
+ *
+ * API invokes passthru peer deletion.
+ *
+ * Return: SUCCESS on successful peer deletion
+ *         FAILURE, if it fails due to any
+ */
+QDF_STATUS
+lim_passthru_mlme_vdev_disconnect_peers(struct vdev_mlme_obj *vdev_mlme,
+					uint16_t data_len, void *data);
+#else
+static inline void lim_update_passthru_config(struct mac_context *mac,
+					      tpAddStaParams add_sta_params,
+					      tpDphHashNode sta_ds,
+					      struct pe_session *session_entry)
+{
+}
+
+static inline QDF_STATUS
+lim_passthru_mlme_vdev_disconnect_peers(struct vdev_mlme_obj *vdev_mlme,
+					uint16_t data_len, void *data)
+{
+	return QDF_STATUS_E_INVAL;
+}
+#endif
 
 #ifdef FEATURE_WLAN_TDLS
 /**
@@ -3157,7 +3206,7 @@ QDF_STATUS lim_get_capability_info(struct mac_context *mac, uint16_t *pCap,
  * @mac_ctx: mac context
  * @channel_freq: channel frequency MHz
  * @ch_bandwidth: channel bandwidth
- * @offset: second channel offfset
+ * @offset: second channel offset
  *
  * This API can get the operating class based on channel freq,
  * bandwidth and second channel offset.
@@ -3510,12 +3559,15 @@ lim_skip_tpc_update_for_sta(struct mac_context *mac,
  * @session: Pointer to PE session
  * @chan_freq: Channel frequency in MHz
  * @power_type_6g: Pointer to store the best 6 GHz power type
+ * @bw_update_allowed: Allow to update bandwidth of pe session
  *
  * This function determines the best 6 GHz power type (LPI/SP/VLP) based on
  * the session's channel width and center frequency. For 320 MHz bandwidth,
  * it uses the center frequency from ch_center_freq_seg1. The function calls
  * the regulatory module to get the best power type considering the AP's
  * defined power type and current bandwidth.
+ * Retry with progressively narrower bandwidths (160/80/40/20 MHz) when the
+ * full BW check fails and update pe session BW if bw_update_allowed is true.
  *
  * Return: QDF_STATUS_SUCCESS on success, error code otherwise
  */
@@ -3523,7 +3575,8 @@ QDF_STATUS lim_get_6g_power_type_with_bw(
 	struct mac_context *mac,
 	struct pe_session *session,
 	qdf_freq_t chan_freq,
-	enum reg_6g_ap_type *power_type_6g);
+	enum reg_6g_ap_type *power_type_6g,
+	bool bw_update_allowed);
 
 #ifdef FEATURE_WLAN_GC_SKIP_JOIN
 static inline bool

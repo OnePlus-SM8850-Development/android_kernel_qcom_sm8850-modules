@@ -559,7 +559,8 @@ static QDF_STATUS lim_fill_session_power_info(
 						mac,
 						ft_session,
 						pbssDescription->chan_freq,
-						&power_type_6g);
+						&power_type_6g,
+						false);
 		if (QDF_IS_STATUS_ERROR(status))
 			return status;
 
@@ -1106,7 +1107,7 @@ QDF_STATUS lim_process_ft_aggr_qos_req(struct mac_context *mac,
 #ifdef WLAN_FEATURE_ROAM_OFFLOAD
 	else {
 		/* Implies it is a LFR3.0 based 11r connection
-		 * so donot send add ts request to firmware since it
+		 * so do not send add ts request to firmware since it
 		 * already has the RIC IEs */
 
 		/* Send the Aggr QoS response to SME */

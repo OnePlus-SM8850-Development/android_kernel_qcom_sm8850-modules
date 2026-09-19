@@ -660,6 +660,7 @@ struct hdd_peer_stats {
  * @signal: Signal strength of last received PPDU
  * @signal_avg: Average signal strength
  * @chains: valid chains bitmap
+ * @chain_signal: Per-chain signal strength of last PPDU
  * @chain_signal_avg: Per-chain signal strength average
  * @rxrate: Last unicast data frame rx rate
  * @txrate: Current unicasr tx rate
@@ -671,6 +672,8 @@ struct hdd_peer_stats {
  * @tx_failed: Number of failed transmissions (MPDUs)
  * @rx_mpdu_count: Number of MPDUs received from this station
  * @fcs_err_count: Number of MPDUs received from this station with an FCS error
+ * @rx_dropped_misc: RX packets dropped for unspecified reasons
+ * @bss_param: BSS parameters (dtim, beacon interval, flags)
  * @filled: bitflag of flags using the bits of &enum nl80211_sta_info to
  *  indicate the relevant values in this struct for them
  */
@@ -678,6 +681,7 @@ struct wlan_hdd_station_stats_info {
 	int8_t signal;
 	int8_t signal_avg;
 	uint8_t chains;
+	int8_t chain_signal[IEEE80211_MAX_CHAINS];
 	int8_t chain_signal_avg[IEEE80211_MAX_CHAINS];
 	struct rate_info txrate;
 	struct rate_info rxrate;
@@ -689,6 +693,8 @@ struct wlan_hdd_station_stats_info {
 	uint32_t tx_failed;
 	uint32_t rx_mpdu_count;
 	uint32_t fcs_err_count;
+	uint64_t rx_dropped_misc;
+	struct sta_bss_parameters bss_param;
 	uint64_t filled;
 };
 
@@ -943,7 +949,7 @@ struct hdd_fw_txrx_stats {
 /**
  * struct hdd_ap_ctx - SAP/P2PGO specific information
  * @hostapd_state: state control information
- * @dfs_cac_block_tx: Is data tramsmission blocked due to DFS CAC?
+ * @dfs_cac_block_tx: Is data transmission blocked due to DFS CAC?
  * @ap_active: Are any stations active?
  * @disable_intrabss_fwd: Prevent forwarding between stations
  * @broadcast_sta_id: Station ID assigned after BSS starts
@@ -2099,6 +2105,11 @@ struct hdd_tx_powerboost {
 };
 #endif
 
+#ifdef DRIVER_PASSTHRU_MODE
+#define WLAN_HDD_PASSTHRU_CHAN_HOP_CAP_BIT BIT(0)
+#define WLAN_HDD_PASSTHRU_AMPDU_RA_CAP_BIT BIT(1)
+#endif
+
 /**
  * struct hdd_context - hdd shared driver and psoc/device context
  * @psoc: object manager psoc context
@@ -2310,6 +2321,9 @@ struct hdd_tx_powerboost {
  *			userspace application close/abort
  * @usd_adapter: adapter on which USD frames to be forwarded to userspace
  * @tx_pb: Tx powerboost context
+ * @tas_enabled: Indicate if TAS has enabled
+ * @tas_send_to_fw: Indicate if TAS has sent to FW
+ * @passthru_cap_bitmap: passthru capability bitmap
  */
 struct hdd_context {
 	struct wlan_objmgr_psoc *psoc;
@@ -2623,6 +2637,9 @@ struct hdd_context {
 #if defined(WLAN_SYSFS) && defined(WLAN_TAS_SYSFS)
 	bool tas_enabled;
 	bool tas_send_to_fw;
+#endif
+#ifdef DRIVER_PASSTHRU_MODE
+	uint64_t passthru_cap_bitmap;
 #endif
 };
 
@@ -3681,7 +3698,7 @@ void hdd_wlan_exit(struct hdd_context *hdd_ctx);
 QDF_STATUS hdd_psoc_create_vdevs(struct hdd_context *hdd_ctx);
 
 /*
- * hdd_context_create() - Allocate and inialize HDD context.
+ * hdd_context_create() - Allocate and initialize HDD context.
  * @dev: Device Pointer to the underlying device
  *
  * Allocate and initialize HDD context. HDD context is allocated as part of
@@ -4052,7 +4069,7 @@ hdd_store_nss_chains_cfg_in_vdev(struct hdd_context *hdd_ctx,
  * wlan_hdd_set_roaming_state() - Enable or disable roaming
  * on all STAs except the input one
  * @cur_link_info: Current link info pointer in HDD adapter
- * @rso_op_requestor: roam disable requestor
+ * @rso_op_requestor: roam disable requester
  * @enab_roam: Set to true to enable roaming or else set false
  *
  * This function loops through all adapters and enables or
@@ -5602,7 +5619,7 @@ hdd_monitor_mode_qdf_create_event(struct hdd_adapter *adapter,
 #endif
 
 /**
- * hdd_cleanup_conn_info() - Cleanup connectin info
+ * hdd_cleanup_conn_info() - Cleanup connection info
  * @link_info: pointer to link_info struct in adapter
  *
  * This function frees the memory allocated for the connection
@@ -5845,15 +5862,16 @@ hdd_link_switch_vdev_mac_addr_update(int32_t ieee_old_link_id,
 
 /**
  * hdd_roam_vdev_mac_addr_update() - API to update OSIF/HDD on VDEV
- * mac addr update due to roaming.
+ * mac addr during roaming.
  * @primary_vdev: VDEV undergoing roaming
  * @vdev_id: vdev ID for which the HDD MAC address needs to be updated
  * @old_self_mac: Current self link mac of VDEV
- * @new_self_mac: New self link mac of VDEV
+ * @new_self_mac: New self link mac of VDEV (may equal @old_self_mac)
  *
- * Check if both @old_self_mac and @new_self_mac are part of adapter
- * corresponding to @vdev_id. Then take necessary actions to support
- * MAC update and update DP to change link MAC address to new link's address.
+ * Always called for every link during roam sync, including links whose
+ * MAC address has not changed. Syncs vdev_mlme macaddr/linkaddr to the
+ * FW-assigned per-link MAC. When @old_self_mac != @new_self_mac, also
+ * updates DP with the new link MAC address.
  *
  * Return: QDF_STATUS
  */

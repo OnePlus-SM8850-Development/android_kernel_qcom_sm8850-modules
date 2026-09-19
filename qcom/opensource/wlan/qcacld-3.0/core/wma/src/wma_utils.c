@@ -817,8 +817,9 @@ int wma_stats_ext_event_handler(void *handle, uint8_t *event_buf,
 	QDF_STATUS status;
 	struct scheduler_msg cds_msg = {0};
 	uint8_t *buf_ptr;
-	uint32_t alloc_len = 0, i, partner_links_data_len = 0;
+	uint32_t alloc_len = 0, i;
 	struct cdp_txrx_ext_stats ext_stats = {0};
+	size_t event_data_capacity = 0;
 	struct cdp_soc_t *soc_hdl = cds_get_context(QDF_MODULE_ID_SOC);
 	wmi_partner_link_stats *link_stats;
 	wmi_stats_ext_event_vdev_ext_t *vdev_ext_stats;
@@ -843,15 +844,41 @@ int wma_stats_ext_event_handler(void *handle, uint8_t *event_buf,
 	alloc_len += sizeof(struct cdp_txrx_ext_stats);
 
 	if (param_buf->num_partner_link_stats) {
+		uint32_t total_data_len = 0;
+
 		link_stats = param_buf->partner_link_stats;
 		if (link_stats) {
 			for (i = 0; i < param_buf->num_partner_link_stats; i++) {
-				partner_links_data_len += link_stats->data_length;
+				uint32_t data_len = link_stats->offset +
+					       link_stats->data_length;
+
+				if (data_len > total_data_len)
+					total_data_len = data_len;
+
 				link_stats++;
 			}
-		alloc_len += partner_links_data_len;
-		alloc_len += param_buf->num_partner_link_stats *
-			     sizeof(struct cdp_txrx_ext_stats);
+
+			/* Validate partner_link_data buffer existence and
+			 * size
+			 */
+			if (!param_buf->partner_link_data) {
+				wma_err("partner_link_data is NULL while partner_link_stats present");
+				return -EINVAL;
+			}
+
+			/* If the TLV provides partner data length, ensure
+			 * bounds
+			 */
+			if (total_data_len > param_buf->num_partner_link_data) {
+				wma_err("partner_link_data out of bounds: required %u available %u",
+					total_data_len,
+					param_buf->num_partner_link_data);
+				return -EINVAL;
+			}
+
+			alloc_len += total_data_len;
+			alloc_len += param_buf->num_partner_link_stats *
+				     sizeof(struct cdp_txrx_ext_stats);
 		}
 	}
 
@@ -875,14 +902,39 @@ int wma_stats_ext_event_handler(void *handle, uint8_t *event_buf,
 	if (!stats_ext_event)
 		return -ENOMEM;
 
+	if (!param_buf->data) {
+		wma_err("stats ext event data TLV is NULL");
+		qdf_mem_free(stats_ext_event);
+		return -EINVAL;
+	}
 	buf_ptr = (uint8_t *)param_buf->data;
 
 	stats_ext_event->vdev_id = stats_ext_info->vdev_id;
 	stats_ext_event->event_data_len = stats_ext_info->data_len;
+	event_data_capacity = alloc_len - sizeof(*stats_ext_event);
+
+	if (stats_ext_event->event_data_len > event_data_capacity) {
+		wma_err("Initial event_data_len:%u exceeds capacity:%zu",
+			stats_ext_event->event_data_len, event_data_capacity);
+		qdf_mem_free(stats_ext_event);
+		return -EINVAL;
+	}
+
 	qdf_mem_copy(stats_ext_event->event_data,
 		     buf_ptr, stats_ext_event->event_data_len);
 
 	cdp_txrx_ext_stats_request(soc_hdl, OL_TXRX_PDEV_ID, &ext_stats);
+
+	if (stats_ext_event->event_data_len + sizeof(struct cdp_txrx_ext_stats) >
+	    event_data_capacity) {
+		wma_err("Ext stats copy overflow: used:%u add:%zu cap:%zu",
+			stats_ext_event->event_data_len,
+			sizeof(struct cdp_txrx_ext_stats),
+			event_data_capacity);
+		qdf_mem_free(stats_ext_event);
+		return -EINVAL;
+	}
+
 	qdf_mem_copy(stats_ext_event->event_data +
 		     stats_ext_event->event_data_len,
 		     &ext_stats, sizeof(struct cdp_txrx_ext_stats));
@@ -892,7 +944,39 @@ int wma_stats_ext_event_handler(void *handle, uint8_t *event_buf,
 	if (param_buf->num_partner_link_stats) {
 		link_stats = param_buf->partner_link_stats;
 		if (link_stats) {
+			if (!param_buf->partner_link_data) {
+				wma_err("partner_link_data is NULL");
+				qdf_mem_free(stats_ext_event);
+				return -EINVAL;
+			}
 			for (i = 0; i < param_buf->num_partner_link_stats; i++) {
+				/* Per-entry bounds check before copy */
+				if (link_stats->offset >
+				    param_buf->num_partner_link_data ||
+				    link_stats->data_length >
+				    (param_buf->num_partner_link_data -
+				     link_stats->offset)) {
+					wma_err("Invalid partner_link_data bounds: offset %u len %u avail %u",
+						link_stats->offset,
+						link_stats->data_length,
+						param_buf->num_partner_link_data);
+					qdf_mem_free(stats_ext_event);
+					return -EINVAL;
+				}
+
+				/* Ensure partner data + ext_stats fits into event_data buffer */
+				if (stats_ext_event->event_data_len +
+				    link_stats->data_length +
+				    sizeof(struct cdp_txrx_ext_stats) > event_data_capacity) {
+					wma_err("partner_link copy overflow: used:%u link:%u ext:%zu cap:%zu",
+						stats_ext_event->event_data_len,
+						link_stats->data_length,
+						sizeof(struct cdp_txrx_ext_stats),
+						event_data_capacity);
+					qdf_mem_free(stats_ext_event);
+					return -EINVAL;
+				}
+
 				qdf_mem_copy(((uint8_t *)stats_ext_event->event_data) +
 					     stats_ext_event->event_data_len,
 					     param_buf->partner_link_data +
@@ -921,11 +1005,25 @@ int wma_stats_ext_event_handler(void *handle, uint8_t *event_buf,
 		link_stats = param_buf->partner_link_stats;
 		if (param_buf->num_partner_link_stats && link_stats) {
 			for (i = 0; i < param_buf->num_partner_link_stats; i++) {
-				vdev_ext_stats =
+				/* Guard partner_link_data dereference */
+				if (!param_buf->partner_link_data) {
+					wma_err("partner_link_data is NULL, skip partner link vdev ext print");
+				} else if (link_stats->offset >
+					   param_buf->num_partner_link_data ||
+					   link_stats->data_length >
+					   (param_buf->num_partner_link_data -
+					    link_stats->offset)) {
+					wma_err("partner_link_data print out of bounds: offset %u len %u avail %u",
+						link_stats->offset,
+						link_stats->data_length,
+						param_buf->num_partner_link_data);
+				} else {
+					vdev_ext_stats =
 					(wmi_stats_ext_event_vdev_ext_t *)
 					(param_buf->partner_link_data +
-					link_stats->offset);
-				wma_stats_ext_print(vdev_ext_stats);
+					 link_stats->offset);
+					wma_stats_ext_print(vdev_ext_stats);
+				}
 				link_stats++;
 			}
 		}
@@ -2371,6 +2469,37 @@ static int wma_copy_chan_stats(uint32_t num_chan,
  */
 #define WMI_MAX_RADIO_SINGLE_STATS_LEN 72
 
+static void wma_log_chan_stats(char *info, uint32_t *stats_len,
+			       wmi_channel_stats *cs)
+{
+	int ret;
+
+	ret = qdf_scnprintf(info + *stats_len,
+			    WMI_MAX_RADIO_STATS_LOGS - *stats_len,
+			    " %d[%d][%d][%d]",
+			    cs->center_freq, cs->channel_width,
+			    cs->center_freq0, cs->center_freq1);
+	if (ret <= 0)
+		return;
+	*stats_len += ret;
+
+	ret = qdf_scnprintf(info + *stats_len,
+			    WMI_MAX_RADIO_STATS_LOGS - *stats_len,
+			    "[%d][%d][%d][%d]",
+			    cs->radio_awake_time, cs->cca_busy_time,
+			    cs->tx_time, cs->rx_time);
+	if (ret <= 0)
+		return;
+	*stats_len += ret;
+
+	if (*stats_len >= (WMI_MAX_RADIO_STATS_LOGS -
+			   WMI_MAX_RADIO_SINGLE_STATS_LEN)) {
+		wmi_nofl_debug("freq[width][freq0][freq1][awake][cca busy][tx][rx] :%s",
+			       info);
+		*stats_len = 0;
+	}
+}
+
 static int
 __wma_unified_link_radio_stats_event_handler(tp_wma_handle wma_handle,
 					     uint8_t *cmd_param_info,
@@ -2393,7 +2522,6 @@ __wma_unified_link_radio_stats_event_handler(tp_wma_handle wma_handle,
 	int32_t status;
 	uint8_t *info;
 	uint32_t stats_len = 0;
-	int ret;
 	struct mac_context *mac = cds_get_context(QDF_MODULE_ID_PE);
 
 	if (!mac) {
@@ -2548,8 +2676,11 @@ __wma_unified_link_radio_stats_event_handler(tp_wma_handle wma_handle,
 		channels_in_this_event = qdf_mem_malloc(
 					radio_stats->num_channels *
 					chan_stats_size);
-		if (!channels_in_this_event)
-			return -ENOMEM;
+		if (!channels_in_this_event) {
+			wma_warn("radio %d: chan stats alloc failed, skipping channel data",
+				 radio_stats->radio_id);
+			goto link_radio_stats_cb;
+		}
 
 		chn_results =
 			(struct wifi_channel_stats *)&channels_in_this_event[0];
@@ -2558,40 +2689,14 @@ __wma_unified_link_radio_stats_event_handler(tp_wma_handle wma_handle,
 			  radio_stats->radio_id, radio_stats->num_channels);
 
 		info = qdf_mem_malloc(WMI_MAX_RADIO_STATS_LOGS);
-		if (!info) {
-			qdf_mem_free(channels_in_this_event);
-			return -ENOMEM;
-		}
+		if (!info)
+			wma_warn("radio %d: debug log buffer alloc failed, skipping channel log",
+				 radio_stats->radio_id);
 
 		for (count = 0; count < radio_stats->num_channels; count++) {
-			ret = qdf_scnprintf(info + stats_len,
-					WMI_MAX_RADIO_STATS_LOGS - stats_len,
-					" %d[%d][%d][%d]",
-					channel_stats->center_freq,
-					channel_stats->channel_width,
-					channel_stats->center_freq0,
-					channel_stats->center_freq1);
-			if (ret <= 0)
-				break;
-			stats_len += ret;
-
-			ret = qdf_scnprintf(info + stats_len,
-					WMI_MAX_RADIO_STATS_LOGS - stats_len,
-					"[%d][%d][%d][%d]",
-					channel_stats->radio_awake_time,
-					channel_stats->cca_busy_time,
-					channel_stats->tx_time,
-					channel_stats->rx_time);
-			if (ret <= 0)
-				break;
-			stats_len += ret;
-
-			if (stats_len >= (WMI_MAX_RADIO_STATS_LOGS -
-					WMI_MAX_RADIO_SINGLE_STATS_LEN)) {
-				wmi_nofl_debug("freq[width][freq0][freq1][awake time][cca busy time][tx time][rx time] :%s",
-					       info);
-				stats_len = 0;
-			}
+			if (info)
+				wma_log_chan_stats(info, &stats_len,
+						   channel_stats);
 
 			channel_stats++;
 
@@ -2603,18 +2708,20 @@ __wma_unified_link_radio_stats_event_handler(tp_wma_handle wma_handle,
 			next_chan_offset += sizeof(*channel_stats);
 		}
 
-		if (stats_len)
-			wmi_nofl_debug("freq[width][freq0][freq1][awake time][cca busy time][tx time][rx time] :%s",
-				       info);
-
-		qdf_mem_free(info);
+		if (info) {
+			if (stats_len)
+				wmi_nofl_debug("freq[width][freq0][freq1][awake][cca busy][tx][rx] :%s",
+					       info);
+			qdf_mem_free(info);
+		}
 
 		status = wma_copy_chan_stats(num_chan_in_this_event,
 					     channels_in_this_event,
 					     rs_results);
 		if (status) {
-			wma_err("Failed to copy channel stats");
-			return status;
+			wma_warn("radio %d: chan stats copy failed, skipping channel data",
+				 radio_stats->radio_id);
+			goto link_radio_stats_cb;
 		}
 	}
 

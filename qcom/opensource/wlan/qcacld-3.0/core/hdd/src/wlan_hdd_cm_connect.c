@@ -167,6 +167,19 @@ bool hdd_cm_is_vdev_roaming(struct wlan_hdd_link_info *link_info)
 	struct wlan_objmgr_vdev *vdev;
 	bool is_vdev_roaming;
 	enum QDF_OPMODE opmode;
+	bool is_host_4way_hs_supported = false;
+	bool key_exchng_in_prog = false;
+	struct hdd_adapter *adapter = link_info->adapter;
+	mac_handle_t mac_handle;
+
+	if (hdd_validate_adapter(adapter))
+		return false;
+
+	mac_handle = hdd_adapter_get_mac_handle(adapter);
+	if (!mac_handle) {
+		hdd_err_rl("null mac_handle pointer");
+		return false;
+	}
 
 	vdev = hdd_objmgr_get_vdev_by_user(link_info, WLAN_OSIF_CM_ID);
 	if (!vdev)
@@ -178,6 +191,16 @@ bool hdd_cm_is_vdev_roaming(struct wlan_hdd_link_info *link_info)
 		return false;
 	}
 	is_vdev_roaming = ucfg_cm_is_vdev_roaming(vdev);
+	is_host_4way_hs_supported =
+			wlan_psoc_nif_fw_ext2_cap_get(wlan_vdev_get_psoc(vdev),
+						      WLAN_ROAM_4WAY_HS_OFFLOAD_DISABLE);
+	key_exchng_in_prog =
+			sme_is_sta_key_exchange_in_progress(mac_handle,
+							    link_info->vdev_id);
+	if (!is_vdev_roaming &&
+	    is_host_4way_hs_supported &&
+	    key_exchng_in_prog)
+		is_vdev_roaming = true;
 
 	hdd_objmgr_put_vdev_by_user(vdev, WLAN_OSIF_CM_ID);
 
@@ -1973,8 +1996,15 @@ hdd_cm_connect_success_post_user_update(struct wlan_objmgr_vdev *vdev,
 	ucfg_dp_periodic_sta_stats_start(vdev);
 	wlan_twt_concurrency_update(hdd_ctx);
 
-	if (wlan_vdev_mlme_is_mlo_link_switch_in_progress(vdev))
-		hdd_send_ps_config_to_fw(adapter);
+	/* Set MLO power save configuration after connection complete */
+	if (wlan_hdd_is_mlo_connection(link_info) &&
+	    !wlan_vdev_mlme_is_mlo_link_vdev(vdev)) {
+		hdd_debug("MLO assoc link connected, setting power save to %d",
+			  adapter->allow_power_save);
+		wlan_hdd_set_mlo_ps(adapter, adapter->allow_power_save,
+				    0, -1);
+	}
+
 	hdd_clear_disconnect_receive(adapter);
 }
 
