@@ -2015,23 +2015,66 @@ static int cvp_drain_fence_sched_list(struct msm_cvp_inst *inst)
 	int rc = 0;
 	int count = 0, max_count = 0;
 	u64 ktid;
+	bool soc_in_wait;
 
 	q = &inst->fence_cmd_queue;
 
 	if (!q)
 		return -EINVAL;
 
-	if (list_empty(&q->sched_list))
-		return rc;
-
+	/*
+	 * For SOC fence path (signature 0xB0BABABE), the HFI packet is sent
+	 * to firmware inside cvp_populate_fences() BEFORE the item is added
+	 * to wait_list. cvp_clean_fence_queue() intentionally leaves these
+	 * items in wait_list (since HFI is already in-flight). The fence
+	 * thread will move them from wait_list to sched_list.
+	 *
+	 * Race condition without this fix:
+	 *   1. sched_list momentarily empty (fence thread just removed last item)
+	 *   2. count = 0 ? max_count = 0
+	 *   3. Fence thread moves SOC fence item from wait_list to sched_list
+	 *   4. retry loop: sched_list non-empty, but max_count=0 ? ETIMEDOUT
+	 *
+	 * Fix: also count SOC fence items in wait_list so that max_count is
+	 * non-zero, and check wait_list in the retry loop exit condition.
+	 */
 	mutex_lock(&q->lock);
+	if (list_empty(&q->sched_list)) {
+		soc_in_wait = false;
+		list_for_each_entry(f, &q->wait_list, list) {
+			if (f->signature == 0xB0BABABE) {
+				soc_in_wait = true;
+				break;
+			}
+		}
+		if (!soc_in_wait) {
+			mutex_unlock(&q->lock);
+			return rc;
+		}
+	}
+
 	list_for_each_entry(f, &q->sched_list, list) {
 		ktid = f->pkt->header.client_data.kdata & (FENCE_BIT - 1);
 		dprintk(CVP_SYNX, "%s: frame %llu %llu is in sched_list\n",
 			__func__, ktid, f->frame_id);
 		++count;
 	}
+	/*
+	 * Count SOC fence items in wait_list: they have HFI already sent to
+	 * FW and will be moved to sched_list by the fence thread. Including
+	 * them ensures max_count is non-zero even when sched_list is
+	 * momentarily empty due to the race described above.
+	 */
+	list_for_each_entry(f, &q->wait_list, list) {
+		if (f->signature == 0xB0BABABE) {
+			ktid = f->pkt->header.client_data.kdata & (FENCE_BIT - 1);
+			dprintk(CVP_SYNX, "%s: frame %llu %llu is in wait_list (SOC fence)\n",
+				__func__, ktid, f->frame_id);
+			++count;
+		}
+	}
 	mutex_unlock(&q->lock);
+
 	wait_time = count * 1000;
 	wait_time *= inst->core->resources.msm_cvp_hw_rsp_timeout;
 
@@ -2044,10 +2087,23 @@ static int cvp_drain_fence_sched_list(struct msm_cvp_inst *inst)
 retry:
 	mutex_lock(&q->lock);
 	if (list_empty(&q->sched_list)) {
-		mutex_unlock(&q->lock);
-		return rc;
+		/*
+		 * sched_list is empty. Also check if any SOC fence items
+		 * remain in wait_list (they will be moved to sched_list by
+		 * the fence thread). If none remain, all items are done.
+		 */
+		soc_in_wait = false;
+		list_for_each_entry(f, &q->wait_list, list) {
+			if (f->signature == 0xB0BABABE) {
+				soc_in_wait = true;
+				break;
+			}
+		}
+		if (!soc_in_wait) {
+			mutex_unlock(&q->lock);
+			return rc;
+		}
 	}
-
 	mutex_unlock(&q->lock);
 	usleep_range(100, 200);
 	++count;
@@ -2365,7 +2421,7 @@ int msm_cvp_session_deinit(struct msm_cvp_inst *inst)
 	if (rc)
 		dprintk(CVP_ERR, "%s: close failed\n", __func__);
 
-	rc = msm_cvp_session_deinit_buffers(inst);
+	msm_cvp_session_deinit_buffers(inst);
 	return rc;
 }
 

@@ -566,6 +566,7 @@ static int msm_cvp_pm_suspend(struct device *dev)
 		dprintk(CVP_ERR, "%s invalid core\n", __func__);
 		return -EINVAL;
 	}
+	core->pm_resume = true;
 
 	rc = msm_cvp_suspend();
 	if (rc == -ENOTSUPP)

@@ -475,7 +475,13 @@ int msm_cvp_close(void *instance)
 				__func__, inst, inst->sess_id, rc);
 			return -EINVAL;
 		}
-		msm_cvp_session_deinit(inst);
+		rc = msm_cvp_session_deinit(inst);
+		if (rc) {
+			dprintk(CVP_ERR, "session_deinit failed for inst %pK with rc %d\n",
+					inst, rc);
+			rc = msm_cvp_deinit_core(inst);
+			goto exit;
+		}
 	}
 
 	rc = msm_cvp_comm_try_state(inst, MSM_CVP_CORE_UNINIT);

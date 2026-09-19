@@ -321,6 +321,7 @@ struct msm_cvp_core {
 
 	struct idr sess_idr;
 	struct mutex idr_lock;
+	bool pm_resume;
 };
 
 struct msm_cvp_inst {

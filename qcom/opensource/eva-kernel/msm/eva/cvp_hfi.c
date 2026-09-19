@@ -5145,6 +5145,19 @@ int __resume(struct iris_hfi_device *device)
 	}
 
 	core = cvp_driver->cvp_core;
+	if (core) {
+		if (core->pm_resume) {
+			/* Sleeping for 100ms to allow other
+			 * subsystem to get up, in case
+			 * suspend is from PM
+			 */
+			usleep_range(100000, 120000);
+			core->pm_resume = false;
+		}
+	} else {
+		dprintk(CVP_ERR, "%s: core is not valid\n", __func__);
+		return -EINVAL;
+	}
 
 	dprintk(CVP_PWR, "Resuming from power collapse\n");
 	rc = __iris_power_on(device);
