@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved
- * Copyright (c) 2023-2025, Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include "perf_static_model.h"
@@ -37,7 +37,7 @@ static u32 apv_encoder_ppc[2][4] = {
 	// ubwc  422, 422+rot (NA for K-T), 420, 420 + rot ; UBWC 420 includes both p010, tp10
 	{800, 800, 681, 648 },
 	// linear 422, 422+rot (NA for K-T), 420, 420 + rot ; linear 420 includes p010
-	{800, 800, 604, 341 },
+	{640, 800, 604, 341 },
 };
 
 static u32 sw_overhead_iris4_v1[7] = {47200, 37170, 31447, 26196, 24780, 19942, 14160 };
@@ -692,9 +692,9 @@ static int calculate_vpp_min_freq(struct api_calculation_input codec_input,
 		codec_encoder_gop_complexity_table_fp[hier_layer][CODEC_ENCODER_GOP_FACTORY_ENTRY];
 		if (hq_mode)
 			vpp_target_clk_per_mb = vpp_target_clk_per_mb << 1;
-		else
-			vpp_target_clk_per_mb =
-				(vpp_target_clk_per_mb * gop_complexity + 99) / 100;
+
+		vpp_target_clk_per_mb =
+			(vpp_target_clk_per_mb * gop_complexity + 99) / 100;
 
 		vpp_hw_min_frequency =
 			(vpp_target_clk_per_mb * codec_mbspersession +
@@ -702,7 +702,8 @@ static int calculate_vpp_min_freq(struct api_calculation_input codec_input,
 		if (codec_input.video_adv_feature == FEATURE_LOOKAHEAD_ENCODE) {
 			if (codec_input.hierachical_layer == CODEC_GOP_IPP)
 				vpp_hw_min_frequency = vpp_hw_min_frequency << 1;
-			else /* for IBP, IBBP, IBBBP, IBBBBP etc cases */
+			else if (codec_input.hierachical_layer != CODEC_GOP_IONLY)
+				/* for IBP, IBBP, IBBBP, IBBBBP etc cases */
 				vpp_hw_min_frequency = (vpp_hw_min_frequency * 3) >> 1;
 		}
 	}

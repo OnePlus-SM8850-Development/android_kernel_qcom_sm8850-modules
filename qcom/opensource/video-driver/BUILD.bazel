@@ -30,6 +30,22 @@ ddk_headers(
 )
 
 ddk_headers(
+    name = "mahua_headers",
+    hdrs = glob([
+      "driver/platform/mahua/inc/*.h",
+    ]),
+    includes = ["driver/platform/mahua/inc"]
+)
+
+ddk_headers(
+    name = "purwa_headers",
+    hdrs = glob([
+      "driver/platform/purwa/inc/*.h",
+    ]),
+    includes = ["driver/platform/purwa/inc"]
+)
+
+ddk_headers(
     name = "chora_headers",
     hdrs = glob([
       "driver/platform/chora/inc/*.h",
@@ -177,7 +193,7 @@ ddk_headers(
 
 ddk_headers(
     name = "video_driver_headers",
-    hdrs = [":uapi_headers", "hamoa_headers", "hamoa_la_headers", "niobe_headers", "pineapple_headers", "ravelin_headers", "bourtzi_headers", "sun_headers", "canoe_headers", "seraph_headers", "alor_headers", "chora_headers", "malabar_headers", "shikra_headers", "ar50lt_headers", "iris2_headers", "iris3_headers", "iris33_headers", "iris35_headers", "iris4_headers", "vidc_headers"]
+    hdrs = [":uapi_headers", "hamoa_headers", "hamoa_la_headers", "mahua_headers", "niobe_headers", "pineapple_headers", "ravelin_headers", "bourtzi_headers", "sun_headers", "canoe_headers", "seraph_headers", "alor_headers", "chora_headers", "malabar_headers", "shikra_headers", "ar50lt_headers", "iris2_headers", "iris3_headers", "iris33_headers", "iris35_headers", "iris4_headers", "vidc_headers", "purwa_headers"]
 )
 
 load(":target.bzl", "define_target_modules")

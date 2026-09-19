@@ -2424,6 +2424,12 @@ int handle_system_response(struct msm_vidc_core *core,
 		pkt = start_pkt;
 		for (j = 0; j < hdr->num_packets; j++) {
 			packet = (struct hfi_packet *)pkt;
+
+                        if (!packet) {
+                            d_vpr_e("%s: invalid packet\n", __func__);
+                            return -EINVAL;
+                        }
+
 			/* handle system error */
 			if (packet->flags & HFI_FW_FLAGS_SYSTEM_ERROR) {
 				d_vpr_e("%s: received system error %#x\n",
@@ -2473,6 +2479,12 @@ static int __handle_session_response(struct msm_vidc_inst *inst,
 		pkt = start_pkt;
 		for (j = 0; j < hdr->num_packets; j++) {
 			packet = (struct hfi_packet *)pkt;
+
+                        if (!packet) {
+                            i_vpr_e(inst, "%s: invalid packet\n", __func__);
+                            return -EINVAL;
+                        }
+
 			/* handle session error */
 			if (packet->flags & HFI_FW_FLAGS_SESSION_ERROR) {
 				i_vpr_e(inst, "%s: received session error %#x\n",
@@ -2511,6 +2523,12 @@ int handle_session_response(struct msm_vidc_inst *inst,
 	pkt = (u8 *)((u8 *)hdr + sizeof(struct hfi_header));
 	for (i = 0; i < hdr->num_packets; i++) {
 		packet = (struct hfi_packet *)pkt;
+
+                if (!packet) {
+                    i_vpr_e(inst, "%s: invalid packet\n", __func__);
+                    return -EINVAL;
+                }
+
 		if (packet->type == HFI_CMD_SETTINGS_CHANGE) {
 			if (packet->port == HFI_PORT_BITSTREAM) {
 				found_ipsc = true;

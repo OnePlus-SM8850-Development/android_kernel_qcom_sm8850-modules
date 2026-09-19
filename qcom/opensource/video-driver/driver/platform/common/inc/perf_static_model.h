@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #ifndef _PERF_STATIC_MODEL_H_
@@ -171,6 +171,7 @@ struct api_calculation_input {
 	u32 vpu_ver;
 	/* one of enum video_adv_feature { .. } */
 	u32 video_adv_feature;
+	u32 ref_frame_complexity_factor;
 };
 
 struct corner_voting {

@@ -10,7 +10,7 @@
 struct msm_vidc_core;
 struct v4l2_ctrl;
 
-#if defined(CONFIG_MSM_VIDC_PINEAPPLE)
+#if defined(CONFIG_MSM_VIDC_PINEAPPLE) || defined(CONFIG_MSM_VIDC_MAHUA)
 int msm_vidc_init_iris33(struct msm_vidc_core *core);
 int msm_vidc_adjust_bitrate_boost_iris33(void *instance, struct v4l2_ctrl *ctrl);
 #else

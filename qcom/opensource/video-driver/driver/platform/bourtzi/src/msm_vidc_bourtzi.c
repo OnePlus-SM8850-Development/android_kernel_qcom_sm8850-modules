@@ -1987,7 +1987,7 @@ static struct msm_platform_inst_cap_dependency instance_cap_dependency_data_bour
 		NULL, msm_vidc_set_deblock_mode},
 
 	{SLICE_MODE, ENC, H264|HEVC|HEIC,
-		{0},
+		{STAGE},
 		msm_vidc_adjust_slice_count, msm_vidc_set_slice_count},
 
 	{TRANSFORM_8X8, ENC, H264,
@@ -2251,6 +2251,7 @@ static const u32 bourtzi_vdec_output_properties_vp9[] = {
 static const u32 bourtzi_venc_input_prop[] = {
 	HFI_PROP_COLOR_FORMAT,
 	HFI_PROP_RAW_RESOLUTION,
+	HFI_PROP_CROP_OFFSETS,
 	HFI_PROP_LINEAR_STRIDE_SCANLINE,
 	HFI_PROP_SIGNAL_COLOR_INFO,
 };

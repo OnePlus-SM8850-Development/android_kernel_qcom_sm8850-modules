@@ -387,6 +387,7 @@ static int __power_off_iris3_hardware(struct msm_vidc_core *core)
 	int rc = 0, i;
 	u32 value = 0;
 	bool pwr_collapsed = false;
+	struct clock_info *cl;
 
 	/*
 	 * Incase hw power control is enabled, for both CPU WD, video
@@ -480,6 +481,17 @@ disable_power:
 	if (rc) {
 		d_vpr_e("%s: disable unprepare vcodec_clk failed\n", __func__);
 		rc = 0;
+	}
+
+	venus_hfi_for_each_clock(core, cl) {
+		if (!strcmp(cl->name, "vcodec0_bse")) {
+			rc = call_res_op(core, clk_disable, core, "vcodec0_bse");
+			if (rc) {
+				d_vpr_e("%s: disable unprepare vcodec0_bse failed\n", __func__);
+				rc = 0;
+			}
+			break;
+		}
 	}
 
 	if (gdsc_hw_ctrl_flag) {
@@ -657,6 +669,7 @@ static int __power_on_iris3_hardware(struct msm_vidc_core *core)
 {
 	unsigned int gdsc_hw_ctrl_flag = core->platform->data.gdsc_hw_ctrl_by_default;
 	int rc = 0;
+	struct clock_info *cl;
 
 	/*
 	 * When the vcodec GDSC is powered on and then moves into HW control. As it moves into HW
@@ -683,8 +696,25 @@ static int __power_on_iris3_hardware(struct msm_vidc_core *core)
 	if (rc)
 		goto fail_clk_controller;
 
+	/* few chipsets may not have vcodec0_bse clock and hence check and call */
+	venus_hfi_for_each_clock(core, cl) {
+		if (!strcmp(cl->name, "vcodec0_bse")) {
+			rc = call_res_op(core, clk_enable, core, "vcodec0_bse");
+			if (rc)
+				goto fail_clk_bse;
+			break;
+		}
+	}
+
 	return 0;
 
+fail_clk_bse:
+	venus_hfi_for_each_clock(core, cl) {
+		if (!strcmp(cl->name, "vcodec0_bse")) {
+			call_res_op(core, clk_disable, core, "vcodec0_core");
+			break;
+		}
+	}
 fail_clk_controller:
 	call_res_op(core, gdsc_hw_ctrl, core);
 fail_sw_ctrl:

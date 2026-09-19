@@ -3,14 +3,14 @@
  * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
-#include <dt-bindings/clock/qcom,x1e80100-gcc.h>
-#include <dt-bindings/clock/qcom,sm8650-videocc.h>
+#include <dt-bindings/clock/qcom,x1p42100-gcc.h>
+#include <dt-bindings/clock/qcom,x1p42100-videocc.h>
 
 #include <linux/soc/qcom/llcc-qcom.h>
 #include <soc/qcom/of_common.h>
 #include <media/v4l2_vidc_extensions.h>
 
-#include "msm_vidc_hamoa.h"
+#include "msm_vidc_purwa.h"
 #include "msm_vidc_platform.h"
 #include "msm_vidc_debug.h"
 #include "msm_vidc_internal.h"
@@ -50,7 +50,7 @@
 #define CODECS_ALL     (H264 | HEVC | VP9 | HEIC | AV1)
 #define MAXIMUM_OVERRIDE_VP9_FPS 200
 
-static struct codec_info codec_data_hamoa[] = {
+static struct codec_info codec_data_purwa[] = {
 	{
 		.v4l2_codec  = V4L2_PIX_FMT_H264,
 		.vidc_codec  = MSM_VIDC_H264,
@@ -78,7 +78,7 @@ static struct codec_info codec_data_hamoa[] = {
 	},
 };
 
-static struct color_format_info color_format_data_hamoa[] = {
+static struct color_format_info color_format_data_purwa[] = {
 	{
 		.v4l2_color_format = V4L2_PIX_FMT_NV12,
 		.vidc_color_format = MSM_VIDC_FMT_NV12,
@@ -116,7 +116,7 @@ static struct color_format_info color_format_data_hamoa[] = {
 	},
 };
 
-static struct color_primaries_info color_primaries_data_hamoa[] = {
+static struct color_primaries_info color_primaries_data_purwa[] = {
 	{
 		.v4l2_color_primaries  = V4L2_COLORSPACE_DEFAULT,
 		.vidc_color_primaries  = MSM_VIDC_PRIMARIES_RESERVED,
@@ -167,7 +167,7 @@ static struct color_primaries_info color_primaries_data_hamoa[] = {
 	},
 };
 
-static struct transfer_char_info transfer_char_data_hamoa[] = {
+static struct transfer_char_info transfer_char_data_purwa[] = {
 	{
 		.v4l2_transfer_char  = V4L2_XFER_FUNC_DEFAULT,
 		.vidc_transfer_char  = MSM_VIDC_TRANSFER_RESERVED,
@@ -230,7 +230,7 @@ static struct transfer_char_info transfer_char_data_hamoa[] = {
 	},
 };
 
-static struct matrix_coeff_info matrix_coeff_data_hamoa[] = {
+static struct matrix_coeff_info matrix_coeff_data_purwa[] = {
 	{
 		.v4l2_matrix_coeff  = V4L2_YCBCR_ENC_DEFAULT,
 		.vidc_matrix_coeff  = MSM_VIDC_MATRIX_COEFF_RESERVED,
@@ -277,7 +277,7 @@ static struct matrix_coeff_info matrix_coeff_data_hamoa[] = {
 	},
 };
 
-static struct msm_platform_core_capability core_data_hamoa[] = {
+static struct msm_platform_core_capability core_data_purwa[] = {
 	/* {type, value} */
 	{ENC_CODECS, H264 | HEVC | HEIC},
 	{DEC_CODECS, H264 | HEVC | VP9 | AV1 | HEIC},
@@ -302,7 +302,7 @@ static struct msm_platform_core_capability core_data_hamoa[] = {
 	{MAX_MBPS_B_FRAME, 1958400}, /* 3840x2176/256 MBs@60fps */
 	{MAX_MBPS_ALL_INTRA, 1044480}, /* 4096x2176/256 MBs@30fps */
 	{MAX_ENH_LAYER_COUNT, 5},
-	{NUM_VPP_PIPE, 4},
+	{NUM_VPP_PIPE, 1},
 	{SW_PC, 1},
 	{FW_UNLOAD, 0},
 	{HW_RESPONSE_TIMEOUT, HW_RESPONSE_TIMEOUT_VALUE}, /* 1000 ms */
@@ -323,7 +323,7 @@ static struct msm_platform_core_capability core_data_hamoa[] = {
 	{SUPPORTS_REQUESTS, 0},
 };
 
-static struct msm_platform_inst_capability instance_cap_data_hamoa[] = {
+static struct msm_platform_inst_capability instance_cap_data_purwa[] = {
 	/* {cap, domain, codec,
 	 *      min, max, step_or_mask, value,
 	 *      v4l2_id,
@@ -1448,7 +1448,7 @@ static struct msm_platform_inst_capability instance_cap_data_hamoa[] = {
 		V4L2_MPEG_VIDEO_HEVC_TIER_HIGH,
 		V4L2_CID_MPEG_VIDEO_HEVC_TIER,
 		HFI_PROP_TIER,
-		CAP_FLAG_VOLATILE | CAP_FLAG_OUTPUT_PORT | CAP_FLAG_MENU},
+		CAP_FLAG_OUTPUT_PORT | CAP_FLAG_MENU},
 
 	{HEVC_TIER, ENC | DEC, HEIC,
 		V4L2_MPEG_VIDEO_HEVC_TIER_MAIN,
@@ -1457,7 +1457,7 @@ static struct msm_platform_inst_capability instance_cap_data_hamoa[] = {
 		V4L2_MPEG_VIDEO_HEVC_TIER_MAIN,
 		V4L2_CID_MPEG_VIDEO_HEVC_TIER,
 		HFI_PROP_TIER,
-		CAP_FLAG_VOLATILE | CAP_FLAG_OUTPUT_PORT | CAP_FLAG_MENU},
+		CAP_FLAG_OUTPUT_PORT | CAP_FLAG_MENU},
 
 	{LF_MODE, ENC, H264,
 		V4L2_MPEG_VIDEO_H264_LOOP_FILTER_MODE_ENABLED,
@@ -2023,7 +2023,7 @@ static struct msm_platform_inst_capability instance_cap_data_hamoa[] = {
 		CAP_FLAG_INPUT_PORT | CAP_FLAG_DYNAMIC_ALLOWED},
 };
 
-static struct msm_platform_inst_cap_dependency instance_cap_dependency_data_hamoa[] = {
+static struct msm_platform_inst_cap_dependency instance_cap_dependency_data_purwa[] = {
 	/* {cap, domain, codec,
 	 *      parents,
 	 *      children,
@@ -2669,58 +2669,61 @@ static struct msm_platform_inst_cap_dependency instance_cap_dependency_data_hamo
 };
 
 /* Default UBWC config for LPDDR5 */
-static struct msm_vidc_ubwc_config_data ubwc_config_hamoa[] = {
-	UBWC_CONFIG(8, 32, 17, 0, 1, 1, 1),
+static struct msm_vidc_ubwc_config_data ubwc_config_purwa[] = {
+	UBWC_CONFIG(8, 32, 16, 0, 1, 1, 1),
 };
 
-static struct msm_vidc_format_capability format_data_hamoa = {
-	.codec_info = codec_data_hamoa,
-	.codec_info_size = ARRAY_SIZE(codec_data_hamoa),
-	.color_format_info = color_format_data_hamoa,
-	.color_format_info_size = ARRAY_SIZE(color_format_data_hamoa),
-	.color_prim_info = color_primaries_data_hamoa,
-	.color_prim_info_size = ARRAY_SIZE(color_primaries_data_hamoa),
-	.transfer_char_info = transfer_char_data_hamoa,
-	.transfer_char_info_size = ARRAY_SIZE(transfer_char_data_hamoa),
-	.matrix_coeff_info = matrix_coeff_data_hamoa,
-	.matrix_coeff_info_size = ARRAY_SIZE(matrix_coeff_data_hamoa),
+static struct msm_vidc_format_capability format_data_purwa = {
+	.codec_info = codec_data_purwa,
+	.codec_info_size = ARRAY_SIZE(codec_data_purwa),
+	.color_format_info = color_format_data_purwa,
+	.color_format_info_size = ARRAY_SIZE(color_format_data_purwa),
+	.color_prim_info = color_primaries_data_purwa,
+	.color_prim_info_size = ARRAY_SIZE(color_primaries_data_purwa),
+	.transfer_char_info = transfer_char_data_purwa,
+	.transfer_char_info_size = ARRAY_SIZE(transfer_char_data_purwa),
+	.matrix_coeff_info = matrix_coeff_data_purwa,
+	.matrix_coeff_info_size = ARRAY_SIZE(matrix_coeff_data_purwa),
 };
 
 /* name, min_kbps, max_kbps */
-static const struct bw_table hamoa_bw_table[] = {
+static const struct bw_table purwa_bw_table[] = {
 	{ "cpu-cfg",  1000, 1000     },
 	{ "video-mem",   1000, 15000000 },
 	{ "venus-llcc",  1000, 15000000 },
 };
 
 /* name, hw_trigger, hw_enable */
-static struct pd_table hamoa_pd_table[] = {
+static struct pd_table purwa_pd_table[] = {
 	{ "venus",    0,  1 },
 	{ "vcodec0",  1,  1 },
 };
 
 /* name, clock id, scaling */
-static const struct clk_table hamoa_clk_table[] = {
+static const struct clk_table purwa_clk_table[] = {
 	{ "iface",                    GCC_VIDEO_AXI0_CLK,     0 },
 	{ "core",                     VIDEO_CC_MVS0C_CLK,     0 },
 	{ "vcodec0_core",             VIDEO_CC_MVS0_CLK,      0 },
 	{ "video_cc_mvs0_clk_src", VIDEO_CC_MVS0_CLK_SRC,  1,
-	 (u64[]) {481000000, 444000000, 366000000, 338000000, 240000000, 192000000}, 6},
+	 (u64[]) {460000000, 424000000, 335000000, 300000000, 210000000}, 5},
+	{ "vcodec0_bse",             VIDEO_CC_MVS0_BSE_CLK,      0 },
+	{ "video_cc_mvs0_bse_clk_src", VIDEO_CC_MVS0_BSE_CLK_SRC,  1,
+	 (u64[]) {920000000, 848000000, 670000000, 600000000, 400000000}, 5},
 };
 
 /* name, exclusive_release */
-static const struct clk_rst_table hamoa_clk_reset_table[] = {
+static const struct clk_rst_table purwa_clk_reset_table[] = {
 	{ "bus",        0  },
 };
 
 /* name, llcc_id */
-static const struct subcache_table hamoa_subcache_table[] = {
+static const struct subcache_table purwa_subcache_table[] = {
 	{ "vidsc0",     LLCC_VIDSC0 },
 	//{ "vidvsp",     LLCC_VIDVSP },
 };
 
 /* name, start, size, secure, dma_coherant, region, dma_mask */
-const struct context_bank_table hamoa_context_bank_table[] = {
+const struct context_bank_table purwa_context_bank_table[] = {
 	{"qcom,vidc,cb-ns",            0x25800000, 0xba800000, 0, 1,
 		MSM_VIDC_NON_SECURE | MSM_VIDC_NON_SECURE_BITSTREAM, 0 },
 	{"qcom,vidc,cb-ns-pxl",        0x00100000, 0xdff00000, 0, 1, MSM_VIDC_NON_SECURE_PIXEL, 0 },
@@ -2730,12 +2733,12 @@ const struct context_bank_table hamoa_context_bank_table[] = {
 };
 
 /* register, value, mask */
-static const struct reg_preset_table hamoa_reg_preset_table[] = {
+static const struct reg_preset_table purwa_reg_preset_table[] = {
 	{ 0xB0088, 0x0, 0x11 },
 };
 
 /* name, phys_addr, size, device_addr, device region type */
-static const struct device_region_table hamoa_device_region_table[] = {
+static const struct device_region_table purwa_device_region_table[] = {
 	{
 		"aon-registers",
 		0x0AAE0000, 0x1000, 0xFFAE0000,
@@ -2749,7 +2752,7 @@ static const struct device_region_table hamoa_device_region_table[] = {
 };
 
 /* decoder properties */
-static const u32 hamoa_vdec_psc_avc[] = {
+static const u32 purwa_vdec_psc_avc[] = {
 	HFI_PROP_BITSTREAM_RESOLUTION,
 	HFI_PROP_CROP_OFFSETS,
 	HFI_PROP_CODED_FRAMES,
@@ -2760,7 +2763,7 @@ static const u32 hamoa_vdec_psc_avc[] = {
 	HFI_PROP_SIGNAL_COLOR_INFO,
 };
 
-static const u32 hamoa_vdec_psc_hevc[] = {
+static const u32 purwa_vdec_psc_hevc[] = {
 	HFI_PROP_BITSTREAM_RESOLUTION,
 	HFI_PROP_CROP_OFFSETS,
 	HFI_PROP_LUMA_CHROMA_BIT_DEPTH,
@@ -2771,7 +2774,7 @@ static const u32 hamoa_vdec_psc_hevc[] = {
 	HFI_PROP_SIGNAL_COLOR_INFO,
 };
 
-static const u32 hamoa_vdec_psc_vp9[] = {
+static const u32 purwa_vdec_psc_vp9[] = {
 	HFI_PROP_BITSTREAM_RESOLUTION,
 	HFI_PROP_CROP_OFFSETS,
 	HFI_PROP_LUMA_CHROMA_BIT_DEPTH,
@@ -2780,7 +2783,7 @@ static const u32 hamoa_vdec_psc_vp9[] = {
 	HFI_PROP_LEVEL,
 };
 
-static const u32 hamoa_vdec_psc_av1[] = {
+static const u32 purwa_vdec_psc_av1[] = {
 	HFI_PROP_BITSTREAM_RESOLUTION,
 	HFI_PROP_CROP_OFFSETS,
 	HFI_PROP_LUMA_CHROMA_BIT_DEPTH,
@@ -2793,29 +2796,29 @@ static const u32 hamoa_vdec_psc_av1[] = {
 	HFI_PROP_SIGNAL_COLOR_INFO,
 };
 
-static const u32 hamoa_vdec_input_properties_avc[] = {
+static const u32 purwa_vdec_input_properties_avc[] = {
 	HFI_PROP_NO_OUTPUT,
 	HFI_PROP_SUBFRAME_INPUT,
 };
 
-static const u32 hamoa_vdec_input_properties_hevc[] = {
+static const u32 purwa_vdec_input_properties_hevc[] = {
 	HFI_PROP_NO_OUTPUT,
 	HFI_PROP_SUBFRAME_INPUT,
 };
 
-static const u32 hamoa_vdec_input_properties_vp9[] = {
+static const u32 purwa_vdec_input_properties_vp9[] = {
 	HFI_PROP_NO_OUTPUT,
 	HFI_PROP_SUBFRAME_INPUT,
 };
 
-static const u32 hamoa_vdec_input_properties_av1[] = {
+static const u32 purwa_vdec_input_properties_av1[] = {
 	HFI_PROP_NO_OUTPUT,
 	HFI_PROP_SUBFRAME_INPUT,
 	HFI_PROP_AV1_TILE_ROWS_COLUMNS,
 	HFI_PROP_AV1_UNIFORM_TILE_SPACING,
 };
 
-static const u32 hamoa_vdec_output_properties_avc[] = {
+static const u32 purwa_vdec_output_properties_avc[] = {
 	HFI_PROP_WORST_COMPRESSION_RATIO,
 	HFI_PROP_WORST_COMPLEXITY_FACTOR,
 	HFI_PROP_PICTURE_TYPE,
@@ -2824,7 +2827,7 @@ static const u32 hamoa_vdec_output_properties_avc[] = {
 	HFI_PROP_FENCE_OUTPUT,
 };
 
-static const u32 hamoa_vdec_output_properties_hevc[] = {
+static const u32 purwa_vdec_output_properties_hevc[] = {
 	HFI_PROP_WORST_COMPRESSION_RATIO,
 	HFI_PROP_WORST_COMPLEXITY_FACTOR,
 	HFI_PROP_PICTURE_TYPE,
@@ -2832,7 +2835,7 @@ static const u32 hamoa_vdec_output_properties_hevc[] = {
 	HFI_PROP_FENCE_OUTPUT,
 };
 
-static const u32 hamoa_vdec_output_properties_vp9[] = {
+static const u32 purwa_vdec_output_properties_vp9[] = {
 	HFI_PROP_WORST_COMPRESSION_RATIO,
 	HFI_PROP_WORST_COMPLEXITY_FACTOR,
 	HFI_PROP_PICTURE_TYPE,
@@ -2840,7 +2843,7 @@ static const u32 hamoa_vdec_output_properties_vp9[] = {
 	HFI_PROP_FENCE_OUTPUT,
 };
 
-static const u32 hamoa_vdec_output_properties_av1[] = {
+static const u32 purwa_vdec_output_properties_av1[] = {
 	HFI_PROP_WORST_COMPRESSION_RATIO,
 	HFI_PROP_WORST_COMPLEXITY_FACTOR,
 	HFI_PROP_PICTURE_TYPE,
@@ -2848,80 +2851,79 @@ static const u32 hamoa_vdec_output_properties_av1[] = {
 	HFI_PROP_FENCE_OUTPUT,
 };
 
-static const u32 hamoa_msm_vidc_ssr_type[] = {
+static const u32 purwa_msm_vidc_ssr_type[] = {
 	HFI_SSR_TYPE_SW_ERR_FATAL,
 };
-static const struct msm_vidc_platform_data hamoa_data = {
+static const struct msm_vidc_platform_data purwa_data = {
 	/* resources dependent on other module */
-	.bw_tbl = hamoa_bw_table,
-	.bw_tbl_size = ARRAY_SIZE(hamoa_bw_table),
-	.pd_tbl = hamoa_pd_table,
-	.pd_tbl_size = ARRAY_SIZE(hamoa_pd_table),
-	.clk_tbl = hamoa_clk_table,
-	.clk_tbl_size = ARRAY_SIZE(hamoa_clk_table),
-	.clk_rst_tbl = hamoa_clk_reset_table,
-	.clk_rst_tbl_size = ARRAY_SIZE(hamoa_clk_reset_table),
-	.subcache_tbl = hamoa_subcache_table,
-	.subcache_tbl_size = ARRAY_SIZE(hamoa_subcache_table),
+	.bw_tbl = purwa_bw_table,
+	.bw_tbl_size = ARRAY_SIZE(purwa_bw_table),
+	.pd_tbl = purwa_pd_table,
+	.pd_tbl_size = ARRAY_SIZE(purwa_pd_table),
+	.clk_tbl = purwa_clk_table,
+	.clk_tbl_size = ARRAY_SIZE(purwa_clk_table),
+	.clk_rst_tbl = purwa_clk_reset_table,
+	.clk_rst_tbl_size = ARRAY_SIZE(purwa_clk_reset_table),
+	.subcache_tbl = purwa_subcache_table,
+	.subcache_tbl_size = ARRAY_SIZE(purwa_subcache_table),
 
 	/* populate context bank */
-	.context_bank_tbl = hamoa_context_bank_table,
-	.context_bank_tbl_size = ARRAY_SIZE(hamoa_context_bank_table),
+	.context_bank_tbl = purwa_context_bank_table,
+	.context_bank_tbl_size = ARRAY_SIZE(purwa_context_bank_table),
 
 	/* platform specific resources */
-	.reg_prst_tbl = hamoa_reg_preset_table,
-	.reg_prst_tbl_size = ARRAY_SIZE(hamoa_reg_preset_table),
-	.dev_reg_tbl = hamoa_device_region_table,
-	.dev_reg_tbl_size = ARRAY_SIZE(hamoa_device_region_table),
+	.reg_prst_tbl = purwa_reg_preset_table,
+	.reg_prst_tbl_size = ARRAY_SIZE(purwa_reg_preset_table),
+	.dev_reg_tbl = purwa_device_region_table,
+	.dev_reg_tbl_size = ARRAY_SIZE(purwa_device_region_table),
 	.clock_source_scaling_ratio = 3,
-	.fwname = "vpu30_4v",
-	.vpu_ver = VPU_VERSION_IRIS3_4P,
+	.fwname = "vpu30_1v",
 	.pas_id = 9,
 	.supports_mmrm = 0,
 
 	/* caps related resorces */
-	.core_data = core_data_hamoa,
-	.core_data_size = ARRAY_SIZE(core_data_hamoa),
-	.inst_cap_data = instance_cap_data_hamoa,
-	.inst_cap_data_size = ARRAY_SIZE(instance_cap_data_hamoa),
-	.inst_cap_dependency_data = instance_cap_dependency_data_hamoa,
-	.inst_cap_dependency_data_size = ARRAY_SIZE(instance_cap_dependency_data_hamoa),
+	.core_data = core_data_purwa,
+	.core_data_size = ARRAY_SIZE(core_data_purwa),
+	.inst_cap_data = instance_cap_data_purwa,
+	.inst_cap_data_size = ARRAY_SIZE(instance_cap_data_purwa),
+	.inst_cap_dependency_data = instance_cap_dependency_data_purwa,
+	.inst_cap_dependency_data_size = ARRAY_SIZE(instance_cap_dependency_data_purwa),
 	.csc_data.vpe_csc_custom_bias_coeff = vpe_csc_custom_bias_coeff,
 	.csc_data.vpe_csc_custom_matrix_coeff = vpe_csc_custom_matrix_coeff,
 	.csc_data.vpe_csc_custom_limit_coeff = vpe_csc_custom_limit_coeff,
-	.ubwc_config = ubwc_config_hamoa,
-	.format_data = &format_data_hamoa,
+	.ubwc_config = ubwc_config_purwa,
+	.format_data = &format_data_purwa,
 
 	/* decoder properties related*/
-	.psc_avc_tbl = hamoa_vdec_psc_avc,
-	.psc_avc_tbl_size = ARRAY_SIZE(hamoa_vdec_psc_avc),
-	.psc_hevc_tbl = hamoa_vdec_psc_hevc,
-	.psc_hevc_tbl_size = ARRAY_SIZE(hamoa_vdec_psc_hevc),
-	.psc_vp9_tbl = hamoa_vdec_psc_vp9,
-	.psc_vp9_tbl_size = ARRAY_SIZE(hamoa_vdec_psc_vp9),
-	.psc_av1_tbl = hamoa_vdec_psc_av1,
-	.psc_av1_tbl_size = ARRAY_SIZE(hamoa_vdec_psc_av1),
-	.dec_input_prop_avc = hamoa_vdec_input_properties_avc,
-	.dec_input_prop_hevc = hamoa_vdec_input_properties_hevc,
-	.dec_input_prop_vp9 = hamoa_vdec_input_properties_vp9,
-	.dec_input_prop_av1 = hamoa_vdec_input_properties_av1,
-	.dec_input_prop_size_avc = ARRAY_SIZE(hamoa_vdec_input_properties_avc),
-	.dec_input_prop_size_hevc = ARRAY_SIZE(hamoa_vdec_input_properties_hevc),
-	.dec_input_prop_size_vp9 = ARRAY_SIZE(hamoa_vdec_input_properties_vp9),
-	.dec_input_prop_size_av1 = ARRAY_SIZE(hamoa_vdec_input_properties_av1),
-	.dec_output_prop_avc = hamoa_vdec_output_properties_avc,
-	.dec_output_prop_hevc = hamoa_vdec_output_properties_hevc,
-	.dec_output_prop_vp9 = hamoa_vdec_output_properties_vp9,
-	.dec_output_prop_av1 = hamoa_vdec_output_properties_av1,
-	.dec_output_prop_size_avc = ARRAY_SIZE(hamoa_vdec_output_properties_avc),
-	.dec_output_prop_size_hevc = ARRAY_SIZE(hamoa_vdec_output_properties_hevc),
-	.dec_output_prop_size_vp9 = ARRAY_SIZE(hamoa_vdec_output_properties_vp9),
-	.dec_output_prop_size_av1 = ARRAY_SIZE(hamoa_vdec_output_properties_av1),
-	.msm_vidc_ssr_type = hamoa_msm_vidc_ssr_type,
-	.msm_vidc_ssr_type_size = ARRAY_SIZE(hamoa_msm_vidc_ssr_type),
+	.psc_avc_tbl = purwa_vdec_psc_avc,
+	.psc_avc_tbl_size = ARRAY_SIZE(purwa_vdec_psc_avc),
+	.psc_hevc_tbl = purwa_vdec_psc_hevc,
+	.psc_hevc_tbl_size = ARRAY_SIZE(purwa_vdec_psc_hevc),
+	.psc_vp9_tbl = purwa_vdec_psc_vp9,
+	.psc_vp9_tbl_size = ARRAY_SIZE(purwa_vdec_psc_vp9),
+	.psc_av1_tbl = purwa_vdec_psc_av1,
+	.psc_av1_tbl_size = ARRAY_SIZE(purwa_vdec_psc_av1),
+	.dec_input_prop_avc = purwa_vdec_input_properties_avc,
+	.dec_input_prop_hevc = purwa_vdec_input_properties_hevc,
+	.dec_input_prop_vp9 = purwa_vdec_input_properties_vp9,
+	.dec_input_prop_av1 = purwa_vdec_input_properties_av1,
+	.dec_input_prop_size_avc = ARRAY_SIZE(purwa_vdec_input_properties_avc),
+	.dec_input_prop_size_hevc = ARRAY_SIZE(purwa_vdec_input_properties_hevc),
+	.dec_input_prop_size_vp9 = ARRAY_SIZE(purwa_vdec_input_properties_vp9),
+	.dec_input_prop_size_av1 = ARRAY_SIZE(purwa_vdec_input_properties_av1),
+	.dec_output_prop_avc = purwa_vdec_output_properties_avc,
+	.dec_output_prop_hevc = purwa_vdec_output_properties_hevc,
+	.dec_output_prop_vp9 = purwa_vdec_output_properties_vp9,
+	.dec_output_prop_av1 = purwa_vdec_output_properties_av1,
+	.dec_output_prop_size_avc = ARRAY_SIZE(purwa_vdec_output_properties_avc),
+	.dec_output_prop_size_hevc = ARRAY_SIZE(purwa_vdec_output_properties_hevc),
+	.dec_output_prop_size_vp9 = ARRAY_SIZE(purwa_vdec_output_properties_vp9),
+	.dec_output_prop_size_av1 = ARRAY_SIZE(purwa_vdec_output_properties_av1),
+	.msm_vidc_ssr_type = purwa_msm_vidc_ssr_type,
+	.msm_vidc_ssr_type_size = ARRAY_SIZE(purwa_msm_vidc_ssr_type),
 };
 
-int msm_vidc_hamoa_check_ddr_type(void)
+int msm_vidc_purwa_check_ddr_type(void)
 {
 	return 0;
 }
@@ -2933,9 +2935,9 @@ static int msm_vidc_init_data(struct msm_vidc_core *core)
 
 	dev = &core->pdev->dev;
 
-	d_vpr_h("%s: initialize hamoa data\n", __func__);
+	d_vpr_h("%s: initialize purwa data\n", __func__);
 
-	core->platform->data = hamoa_data;
+	core->platform->data = purwa_data;
 
 	core->mem_ops = get_mem_ops_ext();
 	if (!core->mem_ops) {
@@ -2947,22 +2949,22 @@ static int msm_vidc_init_data(struct msm_vidc_core *core)
 		d_vpr_e("%s: invalid resource ext ops\n", __func__);
 		return -EINVAL;
 	}
-	rc = msm_vidc_hamoa_check_ddr_type();
+	rc = msm_vidc_purwa_check_ddr_type();
 	if (rc)
 		return rc;
 
 	return rc;
 }
 
-int msm_vidc_get_platform_data_hamoa(struct msm_vidc_core *core)
+int msm_vidc_get_platform_data_purwa(struct msm_vidc_core *core)
 {
-	d_vpr_h("%s: initialize hamoa data\n", __func__);
-	core->platform->data = hamoa_data;
+	d_vpr_h("%s: initialize purwa data\n", __func__);
+	core->platform->data = purwa_data;
 
 	return 0;
 }
 
-int msm_vidc_init_platform_hamoa(struct msm_vidc_core *core)
+int msm_vidc_init_platform_purwa(struct msm_vidc_core *core)
 {
 	int rc = 0;
 

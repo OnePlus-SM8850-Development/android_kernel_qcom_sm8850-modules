@@ -738,6 +738,7 @@ static int msm_venc_metadata_delivery(struct msm_vidc_inst *inst,
 	int rc = 0;
 	u32 payload[32] = {0};
 	u32 i, count = 0;
+	struct msm_vidc_core *core = inst->core;
 
 	i_vpr_h(inst, "%s()\n", __func__);
 
@@ -749,6 +750,17 @@ static int msm_venc_metadata_delivery(struct msm_vidc_inst *inst,
 				if (count + 1 >= sizeof(payload) / sizeof(u32)) {
 					i_vpr_e(inst,
 						"%s: input metadatas (%d) exceeded limit (%lu)\n",
+						__func__, count, sizeof(payload) / sizeof(u32));
+					return -EINVAL;
+				}
+				payload[count + 1] = inst->capabilities[i].hfi_id;
+				count++;
+			}
+			if (core->platform->data.vpu_ver == VPU_VERSION_IRIS3_4P &&
+				is_dyn_meta_tx_inp_enabled(inst, i)) {
+				if (count + 1 >= sizeof(payload) / sizeof(u32)) {
+					i_vpr_e(inst,
+						"%s: dynamic input metadatas (%d) exceeded limit (%lu)\n",
 						__func__, count, sizeof(payload) / sizeof(u32));
 					return -EINVAL;
 				}
@@ -793,8 +805,13 @@ static int msm_venc_dynamic_metadata_delivery(struct msm_vidc_inst *inst,
 	int rc = 0;
 	u32 payload[32] = {0};
 	u32 i, count = 0;
+	struct msm_vidc_core *core = inst->core;
 
 	i_vpr_h(inst, "%s()\n", __func__);
+
+	if (core->platform->data.vpu_ver == VPU_VERSION_IRIS3_4P) {
+		return 0;
+	}
 
 	payload[0] = HFI_MODE_DYNAMIC_METADATA;
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved
- * Copyright (c) 2023-2025, Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  */
 
 #include "perf_static_model.h"
@@ -325,45 +325,72 @@ static u32 calculate_bandwidth_apv(struct api_calculation_input codec_input,
 				frame_height, ubwc_tile_w, ubwc_tile_h)
 				* 256 * codec_input.frame_rate + 999) / 1000 + 999) / 1000;
 			codec_output->dpb_rd_y_noc = frame420_y_bw_no_ubwc_tile_10bpp;
-			if (codec_input.format_10bpp <= 1) {//YUV420
-				codec_output->dpb_rd_crcb_noc =
-					(frame420_y_bw_no_ubwc_tile_10bpp >> 1);
-			} else {// YUV422
-				codec_output->dpb_rd_crcb_noc =
-					frame420_y_bw_no_ubwc_tile_10bpp;
-			}
+			codec_output->dpb_rd_crcb_noc =	frame420_y_bw_no_ubwc_tile_10bpp;
+
+			codec_output->dpb_rd_y_ddr = codec_output->dpb_rd_y_noc;
+			codec_output->dpb_rd_crcb_ddr = codec_output->dpb_rd_crcb_noc;
 			codec_output->ddr_bw_rd =
 				codec_output->dpb_rd_y_noc + codec_output->dpb_rd_crcb_noc;
 			codec_output->noc_bw_rd = codec_output->ddr_bw_rd;
-			if (codec_input.format_10bpp == 1)
-				codec_output->noc_bw_rd = (codec_output->noc_bw_rd) / 100 * 120;
-			if (codec_input.format_10bpp == 3)
-				codec_output->noc_bw_rd = (codec_output->noc_bw_rd) / 100 * 125;
+			if (codec_input.video_adv_feature == FEATURE_APV_ROTATION) {
+				if (codec_input.format_10bpp == 1) {
+					codec_output->noc_bw_rd =
+						(codec_output->noc_bw_rd) / 100 * 125;
+					codec_output->dpb_rd_y_noc =
+						(codec_output->dpb_rd_y_noc) / 100 * 125;
+					codec_output->dpb_rd_crcb_noc =
+						(codec_output->dpb_rd_crcb_noc) / 100 * 125;
+				}
+				if (codec_input.format_10bpp == 3) {
+					codec_output->noc_bw_rd =
+						(codec_output->noc_bw_rd) / 100 * 150;
+					codec_output->dpb_rd_y_noc =
+						(codec_output->noc_bw_rd) / 100 * 150;
+					codec_output->dpb_rd_crcb_noc =
+						(codec_output->noc_bw_rd) / 100 * 150;
+				}
+			}
 
 		} else {
 			codec_output->dpb_rd_y_noc = (frame420_y_bw_no_ubwc_tile_10bpp * 100
 						+ dpb_compression_factor_y - 1) /
 						dpb_compression_factor_y;
-			if (codec_input.format_10bpp <= 1) {//YUV420
-				codec_output->dpb_rd_crcb_noc =
+			codec_output->dpb_rd_crcb_noc =
 					((frame420_y_bw_no_ubwc_tile_10bpp * 100
-						+ dpb_compression_factor_cbcr - 1) /
-						dpb_compression_factor_cbcr) >> 1;
-			} else {//YUV422 format
-				codec_output->dpb_rd_crcb_noc =
-					((frame420_y_bw_no_ubwc_tile_10bpp * 100
-						+ dpb_compression_factor_cbcr - 1) /
+					  + dpb_compression_factor_cbcr - 1) /
 						dpb_compression_factor_cbcr);
-			}
+
+			codec_output->dpb_rd_y_ddr = codec_output->dpb_rd_y_noc;
+			codec_output->dpb_rd_crcb_ddr = codec_output->dpb_rd_crcb_noc;
 			codec_output->ddr_bw_rd = codec_output->dpb_rd_y_noc +
 						codec_output->dpb_rd_crcb_noc;
 			codec_output->noc_bw_rd = codec_output->ddr_bw_rd;
-			if (codec_input.format_10bpp == 0) //UBWC_TP10
-				codec_output->noc_bw_rd = (codec_output->noc_bw_rd) / 100 * 215;
-			if (codec_input.format_10bpp == 1) //UBWC_P010
-				codec_output->noc_bw_rd = (codec_output->noc_bw_rd) / 100 * 175;
-			if (codec_input.format_10bpp == 3) //UBWCP210
-				codec_output->noc_bw_rd = (codec_output->noc_bw_rd) / 100 * 185;
+			if (codec_input.video_adv_feature == FEATURE_APV_ROTATION) {
+				if (codec_input.format_10bpp == 0) {
+					codec_output->dpb_rd_y_noc =
+						(codec_output->dpb_rd_y_noc) / 100 * 300;
+					codec_output->dpb_rd_crcb_noc =
+						(codec_output->dpb_rd_crcb_noc) / 100 * 300;
+					codec_output->noc_bw_rd =
+						(codec_output->noc_bw_rd) / 100 * 300;
+				}
+				if (codec_input.format_10bpp == 1) {
+					codec_output->dpb_rd_y_noc =
+						(codec_output->dpb_rd_y_noc) / 100 * 200;
+					codec_output->dpb_rd_crcb_noc =
+						(codec_output->dpb_rd_crcb_noc) / 100 * 200;
+					codec_output->noc_bw_rd =
+						(codec_output->noc_bw_rd) / 100 * 200;
+				}
+				if (codec_input.format_10bpp == 3) {
+					codec_output->dpb_rd_y_noc =
+						(codec_output->dpb_rd_y_noc) / 100 * 200;
+					codec_output->dpb_rd_crcb_noc =
+						(codec_output->dpb_rd_crcb_noc) / 100 * 200;
+					codec_output->noc_bw_rd =
+						(codec_output->noc_bw_rd) / 100 * 200;
+				}
+			}
 		}
 
 		//CR bitstream copy
@@ -427,6 +454,7 @@ static int calculate_bandwidth_decoder_iris4(
 	u32 av1_fe_left_line_buffer_rdwr;
 
 	u32 bse_tlb_byte_per_lcu = 0;
+	u32 fe_tlb_total_rd_bw = 0;
 
 	u32 large_bw_calculation_fp = 0;
 
@@ -520,9 +548,7 @@ static int calculate_bandwidth_decoder_iris4(
 
 	dpb_ubwc_tile_height_pixels = ubwc_tile_h;
 
-	decoder_frame_complexity_factor =
-		(codec_input.complexity_setting == 0) ?
-		400 : ((codec_input.complexity_setting == 1) ? 266 : 100);
+	decoder_frame_complexity_factor = codec_input.ref_frame_complexity_factor;
 
 	reconstructed_write_bw_factor_rd = (codec_input.complexity_setting == 0) ? 105 : 100;
 
@@ -584,10 +610,29 @@ static int calculate_bandwidth_decoder_iris4(
 			bse_tlb_byte_per_lcu = 2064 / (128 * 128 / 32 / 32);
 	}
 
+	{
+		u32 fe_db_luma_packets_per_lcu = 2 * (frame_lcu_size >> 4);
+		u32 fe_db_chroma_packets_per_lcu = 2 * (frame_lcu_size >> 4);
+		u32 fe_db_ctl_packets_per_lcu = 1 * (frame_lcu_size >> 5);
+		u32 lcu_per_row = (frame_width % frame_lcu_size) ?
+			(frame_width / frame_lcu_size + 1) : (frame_width / frame_lcu_size);
+		u32 fe_total_bytes_per_frame =
+			(fe_db_luma_packets_per_lcu + fe_db_chroma_packets_per_lcu +
+			 fe_db_ctl_packets_per_lcu) * lcu_per_row *
+			((frame_height + codec_input.pipe_num * frame_lcu_size - 1) /
+			 (codec_input.pipe_num * frame_lcu_size)) * 80;
+
+		fe_tlb_total_rd_bw =
+			((fe_total_bytes_per_frame * codec_input.frame_rate + 999) /
+			 1000 + 999) / 1000;
+	}
+
 	codec_output->noc_bw_rd = 0;
 	codec_output->noc_bw_wr = 0;
 	codec_output->ddr_bw_rd = 0;
 	codec_output->ddr_bw_wr = 0;
+
+	codec_output->noc_bw_rd += fe_tlb_total_rd_bw;
 
 	large_bw_calculation_fp = 0;
 	large_bw_calculation_fp = ((target_bitrate *
@@ -726,6 +771,22 @@ static int calculate_bandwidth_decoder_iris4(
 					(large_bw_calculation_fp * 100 + 99) / dpb_to_opb_ratios_ds;
 				codec_output->opb_write_total_noc = large_bw_calculation_fp;
 			}
+		}
+
+		if (dpb_to_opb_ratios_ds != 100) {
+			u32 ppe_tlb_rd_wr_bw;
+
+			large_bw_calculation_fp =
+				((frame_height + codec_input.pipe_num * frame_lcu_size - 1) /
+				 (codec_input.pipe_num * frame_lcu_size)) *
+				(4 + 8) * codec_input.opb_frame_width * ((20 + 7) / 8);
+			large_bw_calculation_fp =
+				((large_bw_calculation_fp * codec_input.frame_rate + 999) /
+				 1000 + 999) / 1000;
+			ppe_tlb_rd_wr_bw = large_bw_calculation_fp;
+
+			codec_output->noc_bw_rd += ppe_tlb_rd_wr_bw;
+			codec_output->noc_bw_wr += ppe_tlb_rd_wr_bw;
 		}
 	} else {
 		codec_output->opb_write_total_noc = 0;
@@ -935,7 +996,7 @@ static int calculate_bandwidth_encoder_iris4(
 		((en_search_windows_size_horizontal + ubwc_tile_w - 1) / ubwc_tile_w) *
 		ubwc_tile_w + (frame_width - 1)) / frame_width + 100;
 
-	reference_crcb_read_bw_factor = 150;
+	reference_crcb_read_bw_factor = codec_input.ref_frame_complexity_factor;
 
 	codec_output->noc_bw_rd = 0;
 	codec_output->noc_bw_wr = 0;

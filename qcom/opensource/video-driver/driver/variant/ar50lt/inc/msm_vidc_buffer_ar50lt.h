@@ -14,4 +14,5 @@ int msm_buffer_min_count_ar50lt(struct msm_vidc_inst *inst,
 		enum msm_vidc_buffer_type buffer_type);
 int msm_buffer_extra_count_ar50lt(struct msm_vidc_inst *inst,
 		enum msm_vidc_buffer_type buffer_type);
+int msm_vidc_encoder_decide_slice_max_mb_ar50lt(struct msm_vidc_inst *inst);
 #endif /* __H_MSM_VIDC_BUFFER_AR50LT_H__ */
