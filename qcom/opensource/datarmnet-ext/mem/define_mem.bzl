@@ -8,10 +8,6 @@ def define_mem(target, variant):
 
     target_copts = []
 
-    # Enable C define only for selected target
-    if target == "malabar":
-        target_copts.append("-DRMNET_LOWMEM_TARGET")
-
     deps_mem = [soc_label("all_headers")]
 
     kernel_build = soc_label("{}_base_kernel".format(kernel_build_variant))

@@ -153,3 +153,40 @@ int rmnet_mem_nl_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
 	rmnet_mem_genl_send_int_to_userspace_no_info(ipa_config, info);
 	return 0;
 }
+
+int rmnet_mem_nl_cmd_set_lowmem_mode(struct sk_buff *skb, struct genl_info *info)
+{
+	uint32_t lowmem_mode;
+
+	if (!info->attrs[RMNET_MEM_ATTR_LOWMEM_MODE]) {
+		rm_err("RMNET_MEM: %s() - missing LOWMEM_MODE attribute\n", __func__);
+		rmnet_mem_genl_send_int_to_userspace_no_info(RMNET_MEM_NL_FAIL, info);
+		return 0;
+	}
+
+	lowmem_mode = nla_get_u32(info->attrs[RMNET_MEM_ATTR_LOWMEM_MODE]);
+
+	/* Update the global flag */
+	rmnet_lowmem_target_enabled = lowmem_mode ? 1 : 0;
+
+	if (rmnet_lowmem_target_enabled) {
+		/* Only update for VT targets */
+		rmnet_mem_cache_add_boundary = VT_CACHE_ADD_BOUNDARY;
+		rmnet_mem_pool_check_boundary = VT_POOL_CHECK_BOUNDARY;
+		rm_err("RMNET_MEM: LOW MEMORY MODE ENABLED - cache_boundary=%u, pool_boundary=%u", rmnet_mem_cache_add_boundary, rmnet_mem_pool_check_boundary);
+	} else {
+		/* Dont have to set the parameters for targets other than VT target.
+		Seems to be a redundant configuration. So logging the values for clarity. */
+		rm_err("RMNET_MEM: WARN: %s() - Parameters value: "
+		       "cache_add_boundary=%u (expected 3), pool_check_boundary=%u (expected 30), "
+		       "max_pool[O2]=%d (expected %d), max_pool[O3]=%d (expected %d), "
+		       "target_pool[O2]=%d (expected %d), target_pool[O3]=%d (expected %d)\n",
+		       __func__,
+		       rmnet_mem_cache_add_boundary, rmnet_mem_pool_check_boundary,
+		       max_pool_size[2], MAX_POOL_O2, max_pool_size[3], MAX_POOL_O3,
+		       target_pool_size[2], MID_POOL_O2, target_pool_size[3], MID_POOL_O3);
+	}
+
+	rmnet_mem_genl_send_int_to_userspace_no_info(RMNET_MEM_NL_SUCCESS, info);
+	return 0;
+}

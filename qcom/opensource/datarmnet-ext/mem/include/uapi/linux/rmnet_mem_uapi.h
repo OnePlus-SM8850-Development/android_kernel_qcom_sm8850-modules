@@ -39,6 +39,7 @@
 #define	RMNET_MEM_CMD_GET_MEM_STATS 4
 #define	RMNET_MEM_CMD_CONFIG_SET 5
 #define	RMNET_MEM_CMD_CONFIG_GET 6
+#define	RMNET_MEM_CMD_SET_LOWMEM_MODE 7
 #define	RMNET_MEM_GENL_CMD_MAX 255
 
 /* Update RMNET_SHS_GENL_ATTR_MAX with the maximum value if a new entry is added */
@@ -48,6 +49,7 @@
 #define	RMNET_MEM_ATTR_INT 3
 #define	RMNET_MEM_ATTR_STATS 4
 #define	RMNET_MEM_ATTR_CONFIG 5
+#define	RMNET_MEM_ATTR_LOWMEM_MODE 6
 
 struct rmnet_memzone_req {
 	int32_t zone;

@@ -33,6 +33,12 @@
 #define STATIC_F_O3 3
 #define OLD_MID_POOL_O3 600
 
+#define VT_CACHE_ADD_BOUNDARY 2
+#define CACHE_ADD_BOUNDARY 3
+
+#define VT_POOL_CHECK_BOUNDARY 40
+#define POOL_CHECK_BOUNDARY 30
+
 #define RAMP_DOWN_DELAY 3000
 #define PB_IND_DUR 105
 #define MAX_VOTE(a, b)    ((a) > (b) ? (a) : (b))
@@ -66,6 +72,9 @@ extern struct workqueue_struct *mem_wq;
 extern uint32_t ipa_config;
 extern unsigned int rmnet_mem_debug;
 extern unsigned int rmnet_mem_pb_enable;
+extern unsigned int rmnet_mem_cache_add_boundary;
+extern unsigned int rmnet_mem_pool_check_boundary;
+extern int rmnet_lowmem_target_enabled;
 extern int max_pool_size[POOL_LEN];
 extern int cache_pool_size[POOL_LEN];
 extern int static_pool_size[POOL_LEN];

@@ -14,19 +14,11 @@ unsigned int rmnet_mem_debug __read_mostly;
 module_param(rmnet_mem_debug, uint, 0644);
 MODULE_PARM_DESC(rmnet_mem_debug, "rmnet_mem debug status");
 
-#ifdef RMNET_LOWMEM_TARGET
-unsigned int rmnet_mem_cache_add_boundary __read_mostly = 2;
-#else
-unsigned int rmnet_mem_cache_add_boundary __read_mostly = 3;
-#endif
+unsigned int rmnet_mem_cache_add_boundary __read_mostly = CACHE_ADD_BOUNDARY;
 module_param(rmnet_mem_cache_add_boundary, uint, 0644);
 MODULE_PARM_DESC(rmnet_mem_cache_add_boundary, "rmnet_mem cache add boundary");
 
-#ifdef RMNET_LOWMEM_TARGET
-unsigned int rmnet_mem_pool_check_boundary __read_mostly = 40;
-#else
-unsigned int rmnet_mem_pool_check_boundary __read_mostly = 30;
-#endif
+unsigned int rmnet_mem_pool_check_boundary __read_mostly = POOL_CHECK_BOUNDARY;
 module_param(rmnet_mem_pool_check_boundary, uint, 0644);
 MODULE_PARM_DESC(rmnet_mem_pool_check_boundary, "rmnet_mem pool check boundary");
 
@@ -34,11 +26,11 @@ unsigned int rmnet_mem_pb_enable __read_mostly = 1;
 module_param(rmnet_mem_pb_enable, uint, 0644);
 MODULE_PARM_DESC(rmnet_mem_pb_enable, "rmnet_mem_pb_enable pb ind pool boosts");
 
-#ifdef RMNET_LOWMEM_TARGET
-int max_pool_size[POOL_LEN] = { 0, 0, VT_MAX_POOL_O2, VT_MAX_POOL_O3};
-#else
+int rmnet_lowmem_target_enabled __read_mostly = 0;
+module_param(rmnet_lowmem_target_enabled, int, 0644);
+MODULE_PARM_DESC(rmnet_lowmem_target_enabled, "Low memory target mode enabled");
+
 int max_pool_size[POOL_LEN] = { 0, 0, MAX_POOL_O2, MAX_POOL_O3};
-#endif
 module_param_array(max_pool_size, int, NULL, 0644);
 MODULE_PARM_DESC(max_pool_size, "Max Pool size per order");
 
@@ -50,11 +42,7 @@ int static_pool_size[POOL_LEN];
 module_param_array(static_pool_size, int, NULL, 0444);
 MODULE_PARM_DESC(static_pool_size, "Pool size per order");
 
-#ifdef RMNET_LOWMEM_TARGET
-int target_pool_size[POOL_LEN] = { 0, 0, VT_MID_POOL_O2, VT_MID_POOL_O3};
-#else
 int target_pool_size[POOL_LEN] = { 0, 0, MID_POOL_O2, MID_POOL_O3};
-#endif
 module_param_array(target_pool_size, int, NULL, 0644);
 MODULE_PARM_DESC(target_pool_size, "Pool size wq will adjust to on run");
 
@@ -398,9 +386,8 @@ struct page *rmnet_mem_get_pages_entry(gfp_t gfp_mask, unsigned int order, int *
 			break;
 		}
 		i = 0;
-#ifdef RMNET_LOWMEM_TARGET
-		if ( id == IPA_ID )  break;
-#endif /* RMNET_LOWMEM_TARGET */
+		if (rmnet_lowmem_target_enabled && id == IPA_ID)
+			break;
 	}
 
 	if (static_pool_size[order] < max_pool_size[order] &&
