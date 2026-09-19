@@ -11,8 +11,8 @@ _default_module_enablement_list = [
     "wlan_firmware_service",
 ]
 
-_cnss2_enabled_target = ["seraph", "niobe", "pineapple", "sun", "x1e80100", "volcano", "canoe", "hamoa", "hamoa_la", "sdxkova", "autogvm", "autoghgvm", "lahaina", "parrot", "art", "art16k", "sa510m", "sa510m.1g"]
-_icnss2_enabled_target = ["blair", "pineapple", "monaco", "pitti", "volcano", "parrot", "sun", "canoe", "lahaina", "chora", "art", "art16k", "alor-le", "bengal", "malabar", "shikra"]
+_cnss2_enabled_target = ["seraph", "niobe", "pineapple", "sun", "x1e80100", "volcano", "canoe", "hamoa", "hamoa_la", "sdxkova", "autogvm", "autoghgvm", "lahaina", "parrot", "art", "art16k", "sa510m", "sa510m.1g", "glymur"]
+_icnss2_enabled_target = ["blair", "pineapple", "monaco", "pitti", "volcano", "parrot", "sun", "canoe", "lahaina", "chora", "art", "art16k", "alor-le", "bengal", "malabar", "shikra", "pebble-le"]
 
 def matching_la_variant(target_16k):
     for target in targets:
@@ -159,6 +159,7 @@ def _define_modules_for_target_variant(target, variant):
 
         if target != "x1e80100" and target != "sdxkova" and target != "sa510m" and target != "sa510m.1g":
             deps += [
+              soc_label("{}/drivers/iommu/qcom_iommu_util".format(tv)),
               soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
               soc_label("{}/drivers/soc/qcom/qcom_ramdump".format(tv)),
               soc_label("{}/drivers/soc/qcom/socinfo".format(tv)),
@@ -224,6 +225,7 @@ def _define_modules_for_target_variant(target, variant):
         module = "icnss2"
         _define_platform_config_rule(module, target, variant)
         defconfig = ":{}/{}_defconfig_generate_{}".format(module, tv, variant)
+<<<<<<< HEAD
         deps = [
          soc_label("all_headers"),
          soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
@@ -235,6 +237,32 @@ def _define_modules_for_target_variant(target, variant):
          soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv)),
          soc_label("{}/drivers/soc/qcom/qcom_aoss".format(tv)),
         ]
+=======
+        deps = select({
+               "//build/qcom_build_extensions:qtisocrepo_true": [
+                "//soc-repo:all_headers",
+                "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
+                "//soc-repo:{}/drivers/soc/qcom/qcom_ramdump".format(tv),
+                "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
+                "//soc-repo:{}/drivers/soc/qcom/pdr_interface".format(tv),
+                "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
+                "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
+                "//soc-repo:{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv),
+                "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(tv),
+               ],
+               "//build/qcom_build_extensions:qtisocrepo_false": [
+                  "//msm-kernel:all_headers",
+               ],
+        })
+        if target == "art" or target == "art16k" or target == "canoe":
+            deps += select({
+                  "//build/qcom_build_extensions:qtisocrepo_true": [
+                    "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(tv),
+                ],
+                    "//build/qcom_build_extensions:qtisocrepo_false": [],
+            })
+
+>>>>>>> fbc9b811e7c99f17f48b13ff55af9719b76a6193
         ddk_module(
             name = "{}_icnss2".format(tv),
             srcs = native.glob([
@@ -316,7 +344,12 @@ def _define_modules_for_target_variant(target, variant):
         cnss_utils_dep_list += [ kernel_header ]
 
     if target == "sun" or target == "canoe" or target == "art" or target == "chora" or target == "art16k":
+<<<<<<< HEAD
         cnss_utils_dep_list = cnss_utils_dep_list + [modules_label("qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv)),]
+=======
+        cnss_utils_dep_list = cnss_utils_dep_list + ["//vendor/qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv),]
+
+>>>>>>> fbc9b811e7c99f17f48b13ff55af9719b76a6193
     if target == "sdxkova":
         tgt = "target-aarch64_cortex-a53_musl"
         board = "sdx85"
@@ -396,7 +429,7 @@ def _define_modules_for_target_variant(target, variant):
     )
 
     pkg_install(
-        name = "{}_modules_dist".format(tv),
+        name = "{}_wlan_platform_modules_dist".format(tv),
         srcs = [":{}_dist_files".format(tv)],
         destdir = "out/target/product/{}/dlkm/lib/modules/".format(target),
     )
