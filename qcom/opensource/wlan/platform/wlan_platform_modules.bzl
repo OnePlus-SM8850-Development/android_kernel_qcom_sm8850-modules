@@ -225,7 +225,6 @@ def _define_modules_for_target_variant(target, variant):
         module = "icnss2"
         _define_platform_config_rule(module, target, variant)
         defconfig = ":{}/{}_defconfig_generate_{}".format(module, tv, variant)
-<<<<<<< HEAD
         deps = [
          soc_label("all_headers"),
          soc_label("{}/kernel/trace/qcom_ipc_logging".format(tv)),
@@ -237,32 +236,7 @@ def _define_modules_for_target_variant(target, variant):
          soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv)),
          soc_label("{}/drivers/soc/qcom/qcom_aoss".format(tv)),
         ]
-=======
-        deps = select({
-               "//build/qcom_build_extensions:qtisocrepo_true": [
-                "//soc-repo:all_headers",
-                "//soc-repo:{}/kernel/trace/qcom_ipc_logging".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qcom_ramdump".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/socinfo".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/pdr_interface".format(tv),
-                "//soc-repo:{}/drivers/remoteproc/rproc_qcom_common".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qmi_helpers".format(tv),
-                "//soc-repo:{}/drivers/pinctrl/qcom/pinctrl-msm".format(tv),
-                "//soc-repo:{}/drivers/soc/qcom/qcom_aoss".format(tv),
-               ],
-               "//build/qcom_build_extensions:qtisocrepo_false": [
-                  "//msm-kernel:all_headers",
-               ],
-        })
-        if target == "art" or target == "art16k" or target == "canoe":
-            deps += select({
-                  "//build/qcom_build_extensions:qtisocrepo_true": [
-                    "//soc-repo:{}/drivers/iommu/qcom_iommu_util".format(tv),
-                ],
-                    "//build/qcom_build_extensions:qtisocrepo_false": [],
-            })
 
->>>>>>> fbc9b811e7c99f17f48b13ff55af9719b76a6193
         ddk_module(
             name = "{}_icnss2".format(tv),
             srcs = native.glob([
@@ -344,12 +318,8 @@ def _define_modules_for_target_variant(target, variant):
         cnss_utils_dep_list += [ kernel_header ]
 
     if target == "sun" or target == "canoe" or target == "art" or target == "chora" or target == "art16k":
-<<<<<<< HEAD
         cnss_utils_dep_list = cnss_utils_dep_list + [modules_label("qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv)),]
-=======
-        cnss_utils_dep_list = cnss_utils_dep_list + ["//vendor/qcom/opensource/data-kernel/drivers/smem-mailbox:{}_smem_mailbox".format(tv),]
 
->>>>>>> fbc9b811e7c99f17f48b13ff55af9719b76a6193
     if target == "sdxkova":
         tgt = "target-aarch64_cortex-a53_musl"
         board = "sdx85"
