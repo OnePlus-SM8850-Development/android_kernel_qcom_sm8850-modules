@@ -50,7 +50,7 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
     options = _get_kernel_build_options(modules, config_options)
     build_print = lambda message: print("{}: {}".format(kernel_build, message))
     formatter = lambda s: s.replace("%b", kernel_build).replace("%t", target)
-    deps = [
+    socrepo_deps = [
         soc_label("all_headers"),
         soc_label("{}/drivers/pinctrl/qcom/pinctrl-msm".format(kernel_build)),
         soc_label("{}/drivers/virt/gunyah/gh_mem_notifier".format(kernel_build)),
@@ -58,6 +58,14 @@ def define_target_variant_modules(target, variant, registry, modules, config_opt
         soc_label("{}/drivers/virt/gunyah/gh_rm_drv".format(kernel_build)),
         soc_label("{}/drivers/soc/qcom/panel_event_notifier".format(kernel_build)),
     ]
+
+    if target in ("art-tuivm", "art-oemvm"):
+        socrepo_deps.append(
+            soc_label("{}/drivers/virt/gunyah/gunyah_crash_cleaner".format(kernel_build)),
+        )
+
+
+    deps = socrepo_deps
 
     all_module_rules = []
 
