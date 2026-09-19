@@ -362,3 +362,8 @@ config OPLUS_LIQUID_DETECTION
 	bool "liquid detection support"
 	help
 	  Say Y here to declare liquid detection support
+
+config OPLUS_CANCEL_USB_SWITCH
+	bool "cancel usb switch support"
+	help
+	  Say Y here to declare cancel usb switch support
