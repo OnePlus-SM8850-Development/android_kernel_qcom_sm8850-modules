@@ -4174,30 +4174,33 @@ fail0:
 static void dp_pdev_flush_pending_vdevs(struct dp_pdev *pdev)
 {
 	struct dp_soc *soc = pdev->soc;
-	struct dp_vdev *vdev_arr[MAX_VDEV_CNT] = {0};
-	uint32_t i = 0;
-	uint32_t num_vdevs = 0;
-	struct dp_vdev *vdev = NULL;
+	struct dp_vdev *vdev, *tmp_vdev;
+	TAILQ_HEAD(, dp_vdev) local_list;
 
 	if (TAILQ_EMPTY(&soc->inactive_vdev_list))
 		return;
 
+	TAILQ_INIT(&local_list);
+
 	qdf_spin_lock_bh(&soc->inactive_vdev_list_lock);
-	TAILQ_FOREACH(vdev, &soc->inactive_vdev_list,
-		      inactive_list_elem) {
+	TAILQ_FOREACH_SAFE(vdev, &soc->inactive_vdev_list,
+			   inactive_list_elem, tmp_vdev) {
 		if (vdev->pdev != pdev)
 			continue;
 
-		vdev_arr[num_vdevs] = vdev;
-		num_vdevs++;
-		/* take reference to free */
-		dp_vdev_get_ref(soc, vdev, DP_MOD_ID_CDP);
+		if (dp_vdev_get_ref(soc, vdev, DP_MOD_ID_CDP) !=
+				QDF_STATUS_SUCCESS)
+			continue;
+
+		TAILQ_REMOVE(&soc->inactive_vdev_list, vdev,
+			     inactive_list_elem);
+		TAILQ_INSERT_TAIL(&local_list, vdev, inactive_list_elem);
 	}
 	qdf_spin_unlock_bh(&soc->inactive_vdev_list_lock);
 
-	for (i = 0; i < num_vdevs; i++) {
-		dp_vdev_flush_peers((struct cdp_vdev *)vdev_arr[i], 0, 0);
-		dp_vdev_unref_delete(soc, vdev_arr[i], DP_MOD_ID_CDP);
+	TAILQ_FOREACH_SAFE(vdev, &local_list, inactive_list_elem, tmp_vdev) {
+		dp_vdev_flush_peers((struct cdp_vdev *)vdev, 0, 0);
+		dp_vdev_unref_delete(soc, vdev, DP_MOD_ID_CDP);
 	}
 }
 
@@ -6439,6 +6442,7 @@ dp_peer_create_wifi3(struct cdp_soc_t *soc_hdl, uint8_t vdev_id,
 
 	/* initialize the peer_id */
 	peer->peer_id = HTT_INVALID_PEER;
+	peer->ast_idx = CDP_INVALID_PEER_AST_IDX;
 
 	qdf_mem_copy(
 		&peer->mac_addr.raw[0], peer_mac_addr, QDF_MAC_ADDR_SIZE);
@@ -6458,7 +6462,13 @@ dp_peer_create_wifi3(struct cdp_soc_t *soc_hdl, uint8_t vdev_id,
 	TAILQ_INIT(&peer->ast_entry_list);
 
 	/* get the vdev reference for new peer */
-	dp_vdev_get_ref(soc, vdev, DP_MOD_ID_CHILD);
+	if (dp_vdev_get_ref(soc, vdev, DP_MOD_ID_CHILD) !=
+	    QDF_STATUS_SUCCESS) {
+		dp_err("%pK: unable to get vdev reference for new peer "
+			QDF_MAC_ADDR_FMT " vdev_id %d",
+			soc, QDF_MAC_ADDR_REF(peer_mac_addr), vdev_id);
+		goto fail_vdev_ref;
+	}
 
 	if ((vdev->opmode == wlan_op_mode_sta) &&
 	    !qdf_mem_cmp(peer_mac_addr, &vdev->mac_addr.raw[0],
@@ -6535,6 +6545,12 @@ dp_peer_create_wifi3(struct cdp_soc_t *soc_hdl, uint8_t vdev_id,
 	dp_vdev_unref_delete(soc, vdev, DP_MOD_ID_CDP);
 
 	return QDF_STATUS_SUCCESS;
+fail_vdev_ref:
+	dp_monitor_peer_detach(soc, peer);
+	if (IS_MLO_DP_MLD_PEER(peer)) {
+		dp_mld_peer_deinit_link_peers_info(peer);
+		dp_txrx_peer_detach(soc, peer);
+	}
 fail:
 	qdf_mem_free(peer);
 	dp_vdev_unref_delete(soc, vdev, DP_MOD_ID_CDP);
@@ -9328,6 +9344,19 @@ dp_set_peer_freq(struct cdp_soc_t *cdp_soc,  uint8_t vdev_id,
 	return QDF_STATUS_SUCCESS;
 }
 
+#ifdef DRIVER_PASSTHRU_MODE
+static inline
+void dp_peer_set_assoc_state(struct dp_peer *peer, bool peer_param_assoc_done)
+{
+	peer->is_peer_assoc_done = peer_param_assoc_done;
+}
+#else
+static inline
+void dp_peer_set_assoc_state(struct dp_peer *peer, bool peer_param_assoc_done)
+{
+}
+#endif
+
 /**
  * dp_set_peer_param: function to set parameters in peer
  * @cdp_soc: DP soc handle
@@ -9382,6 +9411,9 @@ static QDF_STATUS dp_set_peer_param(struct cdp_soc_t *cdp_soc,  uint8_t vdev_id,
 		break;
 	case CDP_CONFIG_PEER_BW:
 		dp_peer_set_bw(soc, txrx_peer, val.cdp_peer_param_bw);
+		break;
+	case CDP_CONFIG_PEER_ASSOC_STATE:
+		dp_peer_set_assoc_state(peer, val.cdp_peer_param_assoc_done);
 		break;
 	default:
 		break;
@@ -10264,6 +10296,19 @@ dp_rx_peer_metadata_ver_update(struct dp_soc *soc, uint8_t peer_md_ver)
 	soc->rx_peer_metadata_ver = peer_md_ver;
 }
 
+#ifdef DRIVER_PASSTHRU_MODE
+static void dp_set_passthru_ampdu_feature(struct dp_soc *soc,
+					  bool passthru_ampdu_support)
+{
+	soc->features.passthru_ampdu_support = passthru_ampdu_support;
+}
+#else
+static inline void dp_set_passthru_ampdu_feature(struct dp_soc *soc,
+						 bool passthru_ampdu_support)
+{
+}
+#endif
+
 /**
  * dp_set_psoc_param: function to set parameters in psoc
  * @cdp_soc: DP soc handle
@@ -10417,6 +10462,10 @@ dp_set_psoc_param(struct cdp_soc_t *cdp_soc,
 			val.cdp_dyn_resource_mgr_support;
 		dp_info("Dynamic resource manager support: %u",
 			soc->features.dyn_resource_mgr_support);
+		break;
+	case CDP_CFG_PASSTHRU_AMPDU_SUPPORT:
+		dp_set_passthru_ampdu_feature(soc,
+					      val.cdp_passthru_ampdu_support);
 		break;
 	default:
 		break;

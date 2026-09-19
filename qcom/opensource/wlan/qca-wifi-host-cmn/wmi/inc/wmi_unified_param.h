@@ -5458,6 +5458,7 @@ typedef enum {
 	wmi_sap_ofl_del_sta_event_id,
 	wmi_ocb_set_config_resp_event_id,
 	wmi_ocb_get_tsf_timer_resp_event_id,
+	wmi_vdev_chan_hop_status_report_event_id,
 	wmi_dcc_get_stats_resp_event_id,
 	wmi_dcc_update_ndl_resp_event_id,
 	wmi_dcc_stats_event_id,
@@ -6911,6 +6912,7 @@ typedef enum {
 	wmi_service_vendor_oui_action_v2,
 	wmi_service_ndp_dfs_channel_support,
 	wmi_service_tx_power_limit,
+	wmi_service_vdev_traffic_monitoring,
 #ifdef FEATURE_WLAN_SUPPORT_P2P_R2
 	wmi_service_wfd_r2,
 #endif
@@ -6929,6 +6931,9 @@ typedef enum {
 	wmi_service_cfr_assoc_tx_capture_support,
 	wmi_service_p2p_cancel_one_shot_noa_support,
 	wmi_service_handle_roaming_without_rso_stop_for_4way_hs_offload_disable,
+	wmi_service_passthru_vdev_chan_hop_schedule_support,
+	wmi_service_vdev_chan_hop_status_report,
+	wmi_service_passthru_vdev_ampdu_ra_support,
 	wmi_services_max,
 } wmi_conv_service_ids;
 #define WMI_SERVICE_UNAVAILABLE 0xFFFF
@@ -7487,6 +7492,7 @@ typedef struct {
 	bool is_action_oui_v2_enabled;
 	bool enable_bcn_rssi_history_report;
 	uint32_t haps_feature_flags;
+	bool iot_temporal_mode_enabled;
 } target_resource_config;
 
 /**
@@ -10789,4 +10795,86 @@ struct wmi_sta_vdev_report_ap_oper_bw_params {
 	enum wlan_phymode ap_phymode;
 };
 
+/* struct vdev_ch_hop_ch_params - channel hopping channel parameters.
+ * @freq: frequency
+ * @bandwidth: channel width
+ * @role: operating role
+ */
+struct vdev_ch_hop_ch_params {
+	uint32_t freq;
+	wmi_channel_width bandwidth;
+	wmi_channel_hopping_role role;
+};
+
+/* struct vdev_ch_hop_sched_params - channel hopping schedule parameters for a
+ *  vdev
+ * request configurations
+ * @vdev_id: vdev id
+ * @next_channel_idx: start channel index within chan_list
+ * @dwell_time_tu: dwell time in terms of TU
+ * @target_switch_time_tsf: target switch time in terms of tsf
+ * @chan_list_len: channel list length
+ * @chan_list: channel list array
+ */
+struct vdev_ch_hop_sched_params {
+	uint32_t vdev_id;
+	uint32_t next_channel_idx;
+	uint32_t dwell_time_tu;
+	uint64_t target_switch_time_tsf;
+	uint8_t chan_list_len;
+	struct vdev_ch_hop_ch_params *chan_list;
+};
+
+/* Maximum number of channel hop slots to report */
+#define WLAN_MAX_CHAN_HOP_SLOTS 32
+
+/**
+ * struct vdev_chan_hop_status_req - Channel hop status request
+ * @vdev_id: vdev identifier
+ *
+ * Request structure for getting channel hopping status from firmware.
+ */
+struct vdev_chan_hop_status_req {
+	uint8_t vdev_id;
+};
+
+/**
+ * struct vdev_chan_hop_slot_info - Per-slot channel hop information
+ * @role: Channel hopping role (PASSTHRU/NON_PASSTHRU)
+ * @freq: Channel frequency in MHz
+ * @channel_switch_tsf: TSF timestamp of frequency transition
+ * @channel_start_tsf: TSF when this slot's active period began
+ * @channel_end_tsf: TSF when this slot's active period ended
+ * @tx_traffic_index: TX utilization percentage (0-100)
+ * @rx_traffic_index: RX utilization percentage (0-100)
+ *
+ * Contains detailed statistics for a single channel hopping slot.
+ */
+struct vdev_chan_hop_slot_info {
+	uint32_t role;
+	uint32_t freq;
+	uint32_t channel_switch_tsf;
+	uint32_t channel_start_tsf;
+	uint32_t channel_end_tsf;
+	uint32_t tx_traffic_index;
+	uint32_t rx_traffic_index;
+};
+
+/**
+ * struct vdev_chan_hop_status_response - Channel hop status response
+ * @vdev_id: vdev identifier
+ * @hopping_request_tsf: TSF timestamp of the hopping request
+ * @current_channel_index: Current channel index in hopping list
+ * @num_slots: Number of slot entries in the array
+ * @slot_info: Array of per-slot information
+ *
+ * Response structure containing channel hopping statistics from firmware.
+ */
+struct vdev_chan_hop_status_response {
+	uint8_t vdev_id;
+	uint32_t hopping_request_tsf;
+	uint32_t current_channel_index;
+	uint32_t num_slots;
+	struct vdev_chan_hop_slot_info slot_info[WLAN_MAX_CHAN_HOP_SLOTS];
+};
 #endif /* _WMI_UNIFIED_PARAM_H_ */

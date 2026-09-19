@@ -1147,6 +1147,13 @@ static bool cm_is_retry_with_same_candidate(struct cnx_mgr *cm_ctx,
 	}
 
 	/*
+	 * Try again for AUTH reject in SAE connection where transient auth
+	 * failures can occur during SAE commit/confirm exchange.
+	 */
+	if (resp->reason == CM_AUTH_FAILED && sae_connection)
+		goto use_same_candidate;
+
+	/*
 	 * Try again for the ASSOC timeout in SAE connection or
 	 * AP has reconnect on assoc timeout OUI.
 	 */
@@ -2157,7 +2164,7 @@ cm_connect_req_update_ml_partner_info(struct cnx_mgr *cm_ctx,
 		return;
 
 	mlo_support_link_num = wlan_mlme_get_sta_mlo_conn_max_num(psoc);
-	cm_get_ml_partner_info(conn_req, mlo_support_link_num);
+	cm_get_ml_partner_info(psoc, conn_req, mlo_support_link_num);
 	cm_modify_partner_info_based_on_dbs_or_sbs_mode(psoc, cm_req->cm_id,
 							scan_entry,
 							partner_info);
@@ -3683,7 +3690,13 @@ QDF_STATUS cm_connect_start_req(struct wlan_objmgr_vdev *vdev,
 	if (!cm_ctx)
 		return QDF_STATUS_E_INVAL;
 
-	cm_vdev_scan_cancel(wlan_vdev_get_pdev(cm_ctx->vdev), cm_ctx->vdev);
+	/*
+	 * Cancel all scans on the pdev (not just this vdev) before starting
+	 * connection. This prevents long-duration scans on other vdevs
+	 * (e.g., P2P-ROC) from blocking the VDEV_START critical channel
+	 * request, which can cause timeouts and crashes.
+	 */
+	cm_pdev_scan_cancel(wlan_vdev_get_pdev(cm_ctx->vdev), cm_ctx->vdev);
 
 	/*
 	 * This would be freed as part of removal from cm req list if adding

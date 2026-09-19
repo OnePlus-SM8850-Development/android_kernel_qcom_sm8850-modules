@@ -116,6 +116,31 @@ typedef __qdf_wondertap_capability_t qdf_wondertap_capability_t;
 typedef __qdf_wonder_txd_t qdf_wonder_txd_t;
 
 /**
+ * typedef qdf_wondertap_role_t - Wondertap role enumerator
+ *
+ * Wondertap data enum that defines role in channel hopping list.
+ */
+typedef __qdf_wondertap_role_t qdf_wondertap_role_t;
+
+/**
+ * typedef qdf_wondertap_chan_list_params_t - Wondertap channel list params
+ *  data structure
+ *
+ * Wondertap data structure that provides channel list parameters such as freq,
+ * bandwidth and role.
+ */
+typedef __qdf_wondertap_chan_list_params_t qdf_wondertap_chan_list_params_t;
+
+/**
+ * typedef qdf_wondertap_channel_sch_req_t - Wondertap channel schedule request
+ *  data structure
+ *
+ * Wondertap data structure that provides channel schedule
+ * request to be followed by vendor driver.
+ */
+typedef __qdf_wondertap_channel_sch_req_t qdf_wondertap_channel_sch_req_t;
+
+/**
  * typedef qdf_wondertap_init_params_t - Wondertap initialization parameters
  *
  * Structure containing all parameters required for wondertap interface
@@ -148,4 +173,44 @@ typedef __qdf_wondertap_ops_t qdf_wondertap_ops_t;
  * operations table for vendor specific implementation.
  */
 typedef __qdf_wondertap_priv_t qdf_wondertap_priv_t;
+
+/**
+ * typedef qdf_wondertap_channel_status_t - Channel status per slot
+ *
+ * Structure containing channel hopping status information for a single
+ * slot including role, frequency, TSF timestamps, and traffic indices.
+ */
+typedef __qdf_wondertap_channel_status_t qdf_wondertap_channel_status_t;
+
+/**
+ * typedef qdf_wondertap_channel_status_report_t - Channel status report
+ *
+ * Structure containing complete channel hopping status report including
+ * current channel index, hopping request TSF, and per-slot status information.
+ */
+typedef __qdf_wondertap_channel_status_report_t
+	qdf_wondertap_channel_status_report_t;
+
+/**
+ * typedef qdf_wondertap_station_capability_t - Wondertap station capability
+ *
+ * Defines the supported PHY capabilities for a station, used to construct
+ * the capability_mask in wondertap_station_info.
+ */
+typedef __qdf_wondertap_station_capability_t qdf_wondertap_station_capability_t;
+
+/**
+ * typedef qdf_wondertap_station_action_t - Wondertap station action
+ *
+ * Defines the action to perform on a station (NEW, UPDATE, DEL, or QUERY).
+ */
+typedef __qdf_wondertap_station_action_t qdf_wondertap_station_action_t;
+
+/**
+ * typedef qdf_wondertap_station_info_t - Wondertap station information
+ *
+ * Contains the details of a station being added or updated in the vendor
+ * driver, including MAC address and PHY capability structures.
+ */
+typedef __qdf_wondertap_station_info_t qdf_wondertap_station_info_t;
 #endif /* _QDF_WONDERTAP_H */
