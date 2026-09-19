@@ -535,6 +535,8 @@ enum hfi_msg_type {
 	F2H_MSG_SYNCOBJ_QUERY		= 153,
 	H2F_MSG_WARMBOOT_CMD		= 154,
 	F2H_MSG_PROCESS_TRACE		= 155,
+	H2F_MSG_CONTEXT_PRI_UPDATE	= 156,
+	F2H_MSG_CONTEXT_PRI_UPDATE_DONE	= 157,
 	F2H_MSG_PLATFORM_LA		= 200,
 	H2F_MSG_PLATFORM_LA		= 201,
 	F2H_MSG_PLATFORM_WIN		= 202, /* Reserved */
@@ -917,6 +919,15 @@ struct hfi_unregister_ctxt_cmd {
 	u32 ts;
 } __packed;
 
+/* H2F */
+struct hfi_context_priority_update_cmd {
+	u32 hdr;
+	u32 version;
+	u32 ctxt_id;
+	u32 new_ctx_pri;
+	u64 flags;
+} __packed;
+
 struct hfi_issue_ib {
 	u64 addr;
 	u32 size;
@@ -986,6 +997,14 @@ struct hfi_ts_retire_cmd {
 	u64 retired_on_gmu;
 	u64 active;
 	u32 version;
+} __packed;
+
+/* F2H */
+struct hfi_context_priority_update_done_cmd {
+	u32 hdr;
+	u32 ctxt_id;
+	u32 cur_ctx_pri;
+	u32 new_ctx_pri;
 } __packed;
 
 /* H2F */

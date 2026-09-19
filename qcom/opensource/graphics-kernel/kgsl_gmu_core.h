@@ -50,6 +50,9 @@ enum gmu_platform_capabilities {
 	FAC_FORCE_RETIRE_COMMAND = 5,
 	FAC_SOFT_RESET = 6,
 	FAC_FAST_CONTEXT_DESTROY = 7,
+	FAC_POWER_CONTROL_WA = 8,
+	FAC_SYNX = 9,
+	FAC_DYNAMIC_CTX_PRI_UPDATE = 10,
 };
 
 /*
@@ -332,6 +335,9 @@ enum gmu_trace_id {
 	GMU_TRACE_PWR_CONSTRAINT = 8,
 	GMU_TRACE_DCVS_PROFILE = 9,
 	GMU_TRACE_PREEMPT_INFO = 10,
+	GMU_TRACE_CTX_PRI_UPDATE_REQ      = 11,
+	GMU_TRACE_CTX_PRI_UPDATE_DONE     = 12,
+	GMU_TRACE_CTX_PRI_REQ_DEFERRED    = 13,
 	GMU_TRACE_MAX,
 };
 
@@ -412,6 +418,35 @@ struct trace_dcvs_profile {
 struct trace_preempt_info {
 	u32 level_info;
 	u32 reason;
+} __packed;
+
+#define TRACE_CUR_CTX_PRI(prio)        FIELD_GET(GENMASK(7,  0), (prio))
+#define TRACE_NEW_CTX_PRI(prio)        FIELD_GET(GENMASK(15, 8), (prio))
+#define KGSL_CTX_PRI_TO_RB_LEVEL(pri) \
+	((u32)(pri) * KGSL_PRIORITY_MAX_RB_LEVELS / KGSL_CONTEXT_PRIORITY_NUM)
+
+/* Payload for GMU_TRACE_CTX_PRI_UPDATE_REQ */
+struct trace_ctx_pri_update_req {
+	u16 ctx_id;
+	/* bits[15:8] = new_ctx_pri, bits[7:0] = cur_ctx_pri */
+	u16 prio;
+	u32 flags;
+	u32 last_submitted_ts;
+} __packed;
+
+/* Payload for GMU_TRACE_CTX_PRI_UPDATE_DONE */
+struct trace_ctx_pri_update_done {
+	u16 ctx_id;
+	/* bits[15:8] = new_ctx_pri, bits[7:0] = cur_ctx_pri */
+	u16 prio;
+} __packed;
+
+/* Payload for GMU_TRACE_CTX_PRI_REQ_DEFERRED */
+struct trace_ctx_pri_req_deferred {
+	u16 ctx_id;
+	/* bits[15:8] = new_ctx_pri, bits[7:0] = cur_ctx_pri */
+	u16 prio;
+	u32 last_ts;
 } __packed;
 
 /**

@@ -1069,6 +1069,36 @@ int gen8_hwsched_process_f2h_platform_msg(struct adreno_device *adreno_dev, u32 
 	return 0;
 }
 
+static void gen8_handle_ctx_priority_update_done(struct adreno_device *adreno_dev, u32 *rcvd)
+{
+	struct hfi_context_priority_update_done_cmd *cmd =
+		(struct hfi_context_priority_update_done_cmd *)rcvd;
+	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
+	struct kgsl_context *context = NULL;
+	struct adreno_context *drawctxt;
+	int ret;
+
+	read_lock(&device->context_lock);
+	context = idr_find(&device->context_idr, cmd->ctxt_id);
+	ret = _kgsl_context_get(context);
+	read_unlock(&device->context_lock);
+
+	if (!ret)
+		return;
+
+	drawctxt = ADRENO_CONTEXT(context);
+
+	spin_lock(&drawctxt->lock);
+	context->priority = cmd->new_ctx_pri;
+	context->flags = (context->flags & ~KGSL_CONTEXT_PRIORITY_MASK) |
+		((cmd->new_ctx_pri << KGSL_CONTEXT_PRIORITY_SHIFT) &
+		KGSL_CONTEXT_PRIORITY_MASK);
+	drawctxt->pending_ctx_pri = 0;
+	spin_unlock(&drawctxt->lock);
+
+	kgsl_context_put(context);
+}
+
 void gen8_hwsched_process_msgq(struct adreno_device *adreno_dev)
 {
 	struct gen8_gmu_device *gmu = to_gen8_gmu(adreno_dev);
@@ -1121,6 +1151,9 @@ void gen8_hwsched_process_msgq(struct adreno_device *adreno_dev)
 			break;
 		case F2H_MSG_SYNCOBJ_QUERY:
 			gen8_trigger_syncobj_query(adreno_dev, rcvd);
+			break;
+		case F2H_MSG_CONTEXT_PRI_UPDATE_DONE:
+			gen8_handle_ctx_priority_update_done(adreno_dev, rcvd);
 			break;
 		case F2H_MSG_GMU_CNTR_RELEASE: {
 			struct hfi_gmu_cntr_release_cmd *cmd =
@@ -3110,6 +3143,33 @@ static int send_context_pointers(struct adreno_device *adreno_dev,
 	return gen8_hfi_send_cmd_async(adreno_dev, &cmd, sizeof(cmd));
 }
 
+/* Apply any pending ctx pri update that was deferred while the GPU was in SLUMBER */
+static void gen8_apply_pending_ctx_priority_update(struct kgsl_context *context)
+{
+	struct adreno_context *drawctxt = ADRENO_CONTEXT(context);
+	u32 old_prio, new_prio;
+
+	spin_lock(&drawctxt->lock);
+	if (!drawctxt->pending_ctx_pri) {
+		spin_unlock(&drawctxt->lock);
+		return;
+	}
+
+	old_prio = context->priority;
+	new_prio = drawctxt->pending_ctx_pri;
+
+	context->flags =
+		(context->flags & ~KGSL_CONTEXT_PRIORITY_MASK) |
+		((new_prio << KGSL_CONTEXT_PRIORITY_SHIFT) &
+		 KGSL_CONTEXT_PRIORITY_MASK);
+	context->priority = new_prio;
+	drawctxt->pending_ctx_pri = 0;
+	spin_unlock(&drawctxt->lock);
+
+	trace_adreno_ctx_priority_update_done(context->id, old_prio, new_prio,
+		KGSL_CTX_PRI_TO_RB_LEVEL(old_prio), KGSL_CTX_PRI_TO_RB_LEVEL(new_prio), 0);
+}
+
 static int hfi_context_register(struct adreno_device *adreno_dev,
 	struct kgsl_context *context)
 {
@@ -3120,6 +3180,8 @@ static int hfi_context_register(struct adreno_device *adreno_dev,
 
 	if (context->gmu_registered)
 		return 0;
+
+	gen8_apply_pending_ctx_priority_update(context);
 
 	ret = send_context_register(adreno_dev, context);
 	if (ret) {
@@ -4479,6 +4541,83 @@ int gen8_hwsched_disable_hw_fence_throttle(struct adreno_device *adreno_dev)
 done:
 	_disable_hw_fence_throttle(adreno_dev, true);
 
+	return ret;
+}
+
+static int gen8_defer_ctx_priority_update(struct kgsl_context *context,
+	u32 cur_ctx_pri, u32 new_ctx_pri)
+{
+	struct adreno_context *drawctxt = ADRENO_CONTEXT(context);
+
+	spin_lock(&drawctxt->lock);
+	context->flags =
+		(context->flags & ~KGSL_CONTEXT_PRIORITY_MASK) |
+		((new_ctx_pri << KGSL_CONTEXT_PRIORITY_SHIFT) &
+		 KGSL_CONTEXT_PRIORITY_MASK);
+	context->priority = new_ctx_pri;
+	drawctxt->pending_ctx_pri = new_ctx_pri;
+	spin_unlock(&drawctxt->lock);
+
+	trace_adreno_ctx_priority_update_request(context->id,
+			cur_ctx_pri, new_ctx_pri,
+			KGSL_CTX_PRI_TO_RB_LEVEL(cur_ctx_pri),
+			KGSL_CTX_PRI_TO_RB_LEVEL(new_ctx_pri),
+			0, 0, 0);
+
+	return 0;
+}
+
+int gen8_hwsched_context_priority_update(struct adreno_device *adreno_dev,
+	struct kgsl_context *context, u32 new_ctx_pri)
+{
+	struct gen8_gmu_device *gmu = to_gen8_gmu(adreno_dev);
+	struct hfi_context_priority_update_cmd cmd = {0};
+	struct adreno_context *drawctxt = ADRENO_CONTEXT(context);
+	u32 cur_ctx_pri = context->priority;
+	u32 new_level = KGSL_CTX_PRI_TO_RB_LEVEL(new_ctx_pri);
+	u32 old_level = KGSL_CTX_PRI_TO_RB_LEVEL(cur_ctx_pri);
+	int ret;
+
+	/* LPAC has a fixed RB; dynamic priority is not supported */
+	if (context->flags & KGSL_CONTEXT_LPAC)
+		return -EOPNOTSUPP;
+
+	/* RB0 is reserved for real-time workloads, ctx pri change not allowed */
+	if (!new_level || !old_level)
+		return -EOPNOTSUPP;
+
+	/* No-op: priority is already at the requested value */
+	if (new_ctx_pri == cur_ctx_pri)
+		return 0;
+
+	/*
+	 * Defer if the GPU is in slumber OR if the context is unregistered
+	 * with the GMU (during slumber). In both cases the update is applied
+	 * at the next context registration
+	 */
+	if (!test_bit(GMU_PRIV_GPU_STARTED, &gmu->flags) ||
+		!context->gmu_registered)
+		return gen8_defer_ctx_priority_update(context, cur_ctx_pri, new_ctx_pri);
+
+	ret = CMD_MSG_HDR(cmd, H2F_MSG_CONTEXT_PRI_UPDATE);
+	if (ret)
+		return ret;
+
+	cmd.ctxt_id = context->id;
+	cmd.version = 1;
+	cmd.new_ctx_pri = new_ctx_pri;
+
+	ret = gen8_hfi_send_cmd_async(adreno_dev, &cmd, sizeof(cmd));
+	if (ret) {
+		dev_err_ratelimited(GMU_PDEV_DEV(KGSL_DEVICE(adreno_dev)),
+		"ctx %u: priority update from %u to %u failed: %d\n",
+		context->id, cur_ctx_pri, new_ctx_pri, ret);
+		new_ctx_pri = 0;
+	}
+
+	spin_lock(&drawctxt->lock);
+	drawctxt->pending_ctx_pri = new_ctx_pri;
+	spin_unlock(&drawctxt->lock);
 	return ret;
 }
 

@@ -1509,10 +1509,20 @@ static int _kgsl_alloc_pages(struct kgsl_memdesc *memdesc,
 {
 	int count = 0;
 	int npages = memdesc->size >> PAGE_SHIFT;
-	struct page **local = kvcalloc(npages, sizeof(*local), GFP_KERNEL);
+	struct page **local;
+	size_t size;
 	u32 page_size, align;
 	u64 len = memdesc->size;
 	bool memwq_flush_done = false;
+
+	if (check_mul_overflow((size_t)npages, sizeof(*local), &size))
+		return -ENOMEM;
+
+	/* Use vzalloc for large arrays to avoid high-order kmalloc pressure */
+	if (size > PAGE_SIZE)
+		local = vzalloc(size);
+	else
+		local = kcalloc(npages, sizeof(*local), GFP_KERNEL);
 
 	if (!local)
 		return -ENOMEM;

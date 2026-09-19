@@ -2076,6 +2076,7 @@ const struct adreno_hwsched_ops gen8_hwsched_ops = {
 	.preempt_count = gen8_hwsched_preempt_count_get,
 	.preempt_info = gen8_hwsched_preempt_info_get,
 	.create_hw_fence = gen8_hwsched_create_hw_fence,
+	.context_priority_update = gen8_hwsched_context_priority_update,
 	.set_dcvs_profile = gen8_hwsched_set_dcvs_profile,
 };
 

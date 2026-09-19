@@ -991,6 +991,97 @@ TRACE_EVENT(adreno_ifpc_count,
 	TP_printk("total times GMU entered IFPC = %d", __entry->ifpc_count)
 );
 
+TRACE_EVENT(adreno_ctx_priority_update_request,
+	TP_PROTO(u32 ctx_id, u32 cur_ctx_pri, u32 new_ctx_pri,
+		 u32 cur_rb_id, u32 new_rb_id,
+		 u32 flags, u32 last_submitted_ts, u64 gmu_ticks),
+	TP_ARGS(ctx_id, cur_ctx_pri, new_ctx_pri, cur_rb_id, new_rb_id,
+		flags, last_submitted_ts, gmu_ticks),
+	TP_STRUCT__entry(
+		__field(u32, ctx_id)
+		__field(u32, cur_ctx_pri)
+		__field(u32, new_ctx_pri)
+		__field(u32, cur_rb_id)
+		__field(u32, new_rb_id)
+		__field(u32, flags)
+		__field(u32, last_submitted_ts)
+		__field(u64, ticks)
+	),
+	TP_fast_assign(
+		__entry->ctx_id            = ctx_id;
+		__entry->cur_ctx_pri       = cur_ctx_pri;
+		__entry->new_ctx_pri       = new_ctx_pri;
+		__entry->cur_rb_id         = cur_rb_id;
+		__entry->new_rb_id         = new_rb_id;
+		__entry->flags             = flags;
+		__entry->last_submitted_ts = last_submitted_ts;
+		__entry->ticks             = gmu_ticks;
+	),
+	TP_printk(
+		"ctx=%u cur_ctx_pri=%u new_ctx_pri=%u cur_rb_id=%u new_rb_id=%u flags=0x%x last_submitted_ts=%u ticks=%llu",
+		__entry->ctx_id, __entry->cur_ctx_pri, __entry->new_ctx_pri,
+		__entry->cur_rb_id, __entry->new_rb_id,
+		__entry->flags, __entry->last_submitted_ts, __entry->ticks
+	)
+);
+
+TRACE_EVENT(adreno_ctx_priority_update_done,
+	TP_PROTO(u32 ctx_id, u32 cur_ctx_pri, u32 new_ctx_pri,
+		 u32 cur_rb_id, u32 new_rb_id, u64 gmu_ticks),
+	TP_ARGS(ctx_id, cur_ctx_pri, new_ctx_pri, cur_rb_id, new_rb_id, gmu_ticks),
+	TP_STRUCT__entry(
+		__field(u32, ctx_id)
+		__field(u32, cur_ctx_pri)
+		__field(u32, new_ctx_pri)
+		__field(u32, cur_rb_id)
+		__field(u32, new_rb_id)
+		__field(u64, ticks)
+	),
+	TP_fast_assign(
+		__entry->ctx_id      = ctx_id;
+		__entry->cur_ctx_pri = cur_ctx_pri;
+		__entry->new_ctx_pri = new_ctx_pri;
+		__entry->cur_rb_id   = cur_rb_id;
+		__entry->new_rb_id   = new_rb_id;
+		__entry->ticks       = gmu_ticks;
+	),
+	TP_printk("ctx=%u cur_ctx_pri=%u new_ctx_pri=%u cur_rb_id=%u new_rb_id=%u ticks=%llu",
+		__entry->ctx_id,
+		__entry->cur_ctx_pri,
+		__entry->new_ctx_pri,
+		__entry->cur_rb_id,
+		__entry->new_rb_id,
+		__entry->ticks)
+);
+
+TRACE_EVENT(adreno_ctx_pri_update_deferred,
+	TP_PROTO(u32 ctx_id, u32 cur_ctx_pri, u32 new_ctx_pri,
+		 u32 cur_rb_id, u32 new_rb_id, u32 last_ts, u64 gmu_ticks),
+	TP_ARGS(ctx_id, cur_ctx_pri, new_ctx_pri, cur_rb_id, new_rb_id, last_ts, gmu_ticks),
+	TP_STRUCT__entry(
+		__field(u32, ctx_id)
+		__field(u32, cur_ctx_pri)
+		__field(u32, new_ctx_pri)
+		__field(u32, cur_rb_id)
+		__field(u32, new_rb_id)
+		__field(u32, last_ts)
+		__field(u64, ticks)
+	),
+	TP_fast_assign(
+		__entry->ctx_id      = ctx_id;
+		__entry->cur_ctx_pri = cur_ctx_pri;
+		__entry->new_ctx_pri = new_ctx_pri;
+		__entry->cur_rb_id   = cur_rb_id;
+		__entry->new_rb_id   = new_rb_id;
+		__entry->last_ts     = last_ts;
+		__entry->ticks       = gmu_ticks;
+	),
+	TP_printk("ctx=%u cur_ctx_pri=%u new_ctx_pri=%u cur_rb_id=%u new_rb_id=%u last_ts=%u ticks=%llu",
+		__entry->ctx_id, __entry->cur_ctx_pri,
+		__entry->new_ctx_pri, __entry->cur_rb_id, __entry->new_rb_id,
+		__entry->last_ts, __entry->ticks)
+);
+
 TRACE_EVENT(adreno_dcvs_tuning,
 	TP_PROTO(u32 param, u32 mingap, u32 penalty, u32 numbusy),
 	TP_ARGS(param, mingap, penalty, numbusy),
@@ -1155,6 +1246,36 @@ TRACE_EVENT(adreno_gpu_dcvs_profile,
 		__entry->non_linear_ramp_down,
 		__entry->min_bus_freq,
 		__entry->max_bus_freq
+	)
+);
+
+TRACE_EVENT(adreno_hwsched_mem_alloc,
+	TP_PROTO(u32 mem_kind, u32 flags, u32 gmuaddr, u64 gpuaddr, u32 size, u32 handle,
+		u32 gmu_va_align, u32 gmu_sz_align),
+	TP_ARGS(mem_kind, flags, gmuaddr, gpuaddr, size, handle, gmu_va_align, gmu_sz_align),
+	TP_STRUCT__entry(
+		__field(u32, mem_kind)
+		__field(u32, flags)
+		__field(u32, gmuaddr)
+		__field(u64, gpuaddr)
+		__field(u32, size)
+		__field(u32, handle)
+		__field(u32, gmu_va_align)
+		__field(u32, gmu_sz_align)
+	),
+	TP_fast_assign(
+		__entry->mem_kind = mem_kind;
+		__entry->flags = flags;
+		__entry->gmuaddr = gmuaddr;
+		__entry->gpuaddr = gpuaddr;
+		__entry->size = size;
+		__entry->handle = handle;
+		__entry->gmu_va_align = gmu_va_align;
+		__entry->gmu_sz_align = gmu_sz_align;
+	),
+	TP_printk("mem_kind=%u flags=0x%x gmuaddr=0x%x gpuaddr=0x%llx size=0x%x handle=%u gmu_va_align=0x%x gmu_sz_align=0x%x",
+		__entry->mem_kind, __entry->flags, __entry->gmuaddr, __entry->gpuaddr,
+		__entry->size, __entry->handle, __entry->gmu_va_align, __entry->gmu_sz_align
 	)
 );
 

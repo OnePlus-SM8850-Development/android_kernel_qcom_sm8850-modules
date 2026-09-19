@@ -1667,6 +1667,7 @@ int kgsl_pwrctrl_enable_cx_gdsc(struct kgsl_device *device)
 {
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
 	int ret;
+	bool skip_tlb_flush = true;
 
 	if (!pwr->cx_regulator && !pwr->gmu_cx_pd)
 		return 0;
@@ -1682,6 +1683,7 @@ int kgsl_pwrctrl_enable_cx_gdsc(struct kgsl_device *device)
 		}
 		KGSL_GMU_CORE_FORCE_PANIC(device->gmu_core.gf_panic,
 			GMU_PDEV(device), 0ULL, GMU_FAULT_CX_WAIT_TIMEOUT);
+		skip_tlb_flush = false;
 	}
 
 	if (!completion_done(&pwr->cx_gdsc_gate))
@@ -1695,7 +1697,9 @@ int kgsl_pwrctrl_enable_cx_gdsc(struct kgsl_device *device)
 	if (ret)
 		dev_err(device->dev, "Failed to enable CX gdsc, error %d\n", ret);
 
-	kgsl_mmu_send_tlb_hint(&device->mmu, false);
+	kgsl_mmu_send_tlb_hint(&device->mmu,
+		skip_tlb_flush ? KGSL_MMU_TLB_HINT_SKIP_FLUSH : 0);
+
 	pwr->cx_gdsc_wait = false;
 	return ret;
 }
@@ -1726,7 +1730,8 @@ void kgsl_pwrctrl_disable_cx_gdsc(struct kgsl_device *device)
 	if (!pwr->cx_regulator && !pwr->gmu_cx_pd)
 		return;
 
-	kgsl_mmu_send_tlb_hint(&device->mmu, true);
+	kgsl_mmu_send_tlb_hint(&device->mmu,
+		KGSL_MMU_TLB_HINT_SKIP_MGNT | KGSL_MMU_TLB_HINT_SKIP_FLUSH);
 	reinit_completion(&pwr->cx_gdsc_gate);
 	pwr->cx_gdsc_wait = true;
 
@@ -1936,7 +1941,8 @@ static int kgsl_pwrctrl_pwrrail(struct kgsl_device *device, bool state)
 	if (!state) {
 		if (test_and_clear_bit(KGSL_PWRFLAGS_POWER_ON,
 			&pwr->power_flags)) {
-			kgsl_mmu_send_tlb_hint(&device->mmu, true);
+			kgsl_mmu_send_tlb_hint(&device->mmu,
+				KGSL_MMU_TLB_HINT_SKIP_MGNT | KGSL_MMU_TLB_HINT_SKIP_FLUSH);
 			trace_kgsl_rail(device, state);
 
 			/* Set the parent in retention voltage to disable CPR interrupts */
@@ -1952,7 +1958,7 @@ static int kgsl_pwrctrl_pwrrail(struct kgsl_device *device, bool state)
 		}
 	} else {
 		status = enable_gdscs(device);
-		kgsl_mmu_send_tlb_hint(&device->mmu, false);
+		kgsl_mmu_send_tlb_hint(&device->mmu, 0);
 	}
 
 	return status;
